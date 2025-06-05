@@ -1,0 +1,21 @@
+/* ===================================================================
+   Estilos generales para la página web
+   Este código asegura una presentación consistente eliminando márgenes
+   y rellenos predeterminados, además de manejar la altura y el scroll.
+   =================================================================== */
+
+   html, body {
+    /* Elimina los márgenes predeterminados del navegador */
+    margin: 0;
+
+    /* Elimina el relleno interno predeterminado en el cuerpo de la página */
+    padding: 0;
+
+    /* Establece la altura del `html` y `body` al 100% del tamaño del viewport */
+    /* Esto permite que elementos dentro del `body` ocupen toda la pantalla */
+    height: 100%;
+
+    /* Oculta la barra de desplazamiento horizontal */
+    /* Esto evita problemas con elementos que sobresalen del ancho de la ventana */
+    overflow-x: hidden;
+}

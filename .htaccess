@@ -1,0 +1,29 @@
+# Activar el motor de reescritura de Apache para permitir reglas de modificación de URL
+RewriteEngine On
+
+# Define la ruta base para las reglas de reescritura
+# Todas las reglas aplicarán dentro del directorio "sistema001"
+RewriteBase /sistema001/
+
+# Condición 1: Si el archivo solicitado NO existe en el servidor, entonces aplicar la regla de reescritura
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# Condición 2: Si el directorio solicitado NO existe en el servidor, entonces aplicar la regla de reescritura
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Regla de reescritura:
+# - Captura cualquier URL solicitada (^.*$)
+# - Redirige la solicitud hacia index.php pasando la URL original como un parámetro GET (index.php?url=$1)
+# - QSA: Conserva cualquier parámetro adicional en la URL original
+# - L: Indica que esta es la última regla aplicada
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+
+# Seguridad: Bloquear el acceso directo al archivo .htaccess
+<Files .htaccess>
+    Order Allow,Deny
+    Deny from All
+</Files>
+
+# Seguridad: Evita el listado de directorios cuando no hay un archivo index disponible
+Options -Indexes
+

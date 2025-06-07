@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 17-05-2025 a las 08:45:07
+-- Tiempo de generación: 07-06-2025 a las 02:01:10
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,6 +20,28 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `sistema`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `companys`
+--
+
+CREATE TABLE `companys` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `rfc` varchar(55) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `phone` varchar(25) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `companys`
+--
+
+INSERT INTO `companys` (`id`, `name`, `rfc`, `address`, `phone`, `email`) VALUES
+(1, 'company1', 'xxxxxxxxxxxx', 'direcion-de-empresa', '5525458796', 'email@empresa.com');
 
 -- --------------------------------------------------------
 
@@ -68,15 +90,23 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `level_user`, `created_at`, `updated_at`, `img_url`) VALUES
 (2, 'administrador2', 'administrador2@gmail.com', '$2y$10$GgtTWrlYykHcv6hednsnKOEJEKyOG5JQmrMnHjX736nL4p6gK2bAW', 1, '2025-03-18 20:15:59', '2025-05-05 20:12:37', ''),
-(15, 'administrador1', 'administrador1@gmail.com', '$2y$10$HqeAjVjU2IdwaCGQfV3T.OvgOXuWF.IpPJPKT57FqDO3FtBby5dom', 2, '2025-03-28 23:33:42', '2025-04-20 15:44:22', ''),
-(27, 'administrador', 'administrador@gmail.com', '$2y$10$5DSbp6nSLKLs1MfK.c8PUeq.RbXo94s7dF42u8maVwIGGOQInhIPS', 1, '2025-04-18 05:44:07', '2025-05-07 20:07:41', 'assets/images/users/administrador.png'),
+(15, 'administrador1', 'administrador1@gmail.com', '$2y$10$HqeAjVjU2IdwaCGQfV3T.OvgOXuWF.IpPJPKT57FqDO3FtBby5dom', 1, '2025-03-28 23:33:42', '2025-05-22 17:49:07', ''),
+(27, 'administrador', 'administrador@gmail.com', '$2y$10$j.n/yl2twdiwX7qdoYV1t.tT2dYVMYmKB3NCodQ9nyasBqHlOA45C', 1, '2025-04-18 05:44:07', '2025-05-25 01:38:46', 'assets/images/users/administrador.png'),
 (34, 'administrador3', 'administrador3@gmail.com', '$2y$10$oX3TFhuG8TISWvSvnYZ35eMBtZxhP5HnIviTvUaa9bC9QTxpRvQSe', 1, '2025-05-05 23:16:29', '2025-05-05 23:16:48', ''),
-(39, 'administrador4', 'administrador4@gamail.com', '$2y$10$oANVcX0Cwy9rJ/WkEp/N9.E4c2.Eloe4xKVGb7ztMogSJtZrrWzii', 1, '2025-05-08 21:49:15', '2025-05-08 21:49:15', ''),
-(43, 'administrador5', 'administrador5@gmail.com', '$2y$10$IcH46sHEntZZDtMW52LKHuxalaBb.iC1UzEueMuB6.qOnICUpvfmi', 1, '2025-05-12 18:22:58', '2025-05-12 18:22:58', '');
+(46, 'administrador4', 'administrador4@gmail.com', '$2y$10$j25.pyBSiZUGXT5J0H5kRO1Gyw3tLqjx/HEBLdnpfra09SnEz9Xuq', 1, '2025-05-23 01:42:43', '2025-05-23 01:42:43', ''),
+(47, 'administrador5', 'administrador5@gmail.com', '$2y$10$DIUdFkeiI2ls3sBLh0CAW.uoZuiMy.tB2.j6cBiDo89A2alhOa3cS', 1, '2025-05-23 01:43:30', '2025-05-23 01:43:30', ''),
+(49, 'administrador6', 'administrador6@gmail.com', '$2y$10$VPbzrZL5IVBp.T8RiHd1Q.AzBEfKi0jOVmKa/9ca3jJ7Td5tRIiG6', 1, '2025-05-23 02:35:28', '2025-05-23 02:35:28', ''),
+(50, 'administrador8', 'administrador8@gmail.com', '$2y$10$VX60KoRrbUg7d3s6V4tKROrtzh8skkYKXxAq4PS9QiNUZzrTORk9C', 1, '2025-05-23 02:38:41', '2025-05-24 21:12:21', '');
 
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `companys`
+--
+ALTER TABLE `companys`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `levels_users`
@@ -98,6 +128,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `companys`
+--
+ALTER TABLE `companys`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT de la tabla `levels_users`
 --
 ALTER TABLE `levels_users`
@@ -107,7 +143,7 @@ ALTER TABLE `levels_users`
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- Restricciones para tablas volcadas

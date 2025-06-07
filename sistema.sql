@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-06-2025 a las 02:01:10
+-- Tiempo de generación: 07-06-2025 a las 23:51:34
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -98,6 +98,27 @@ INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `level_user`, `
 (49, 'administrador6', 'administrador6@gmail.com', '$2y$10$VPbzrZL5IVBp.T8RiHd1Q.AzBEfKi0jOVmKa/9ca3jJ7Td5tRIiG6', 1, '2025-05-23 02:35:28', '2025-05-23 02:35:28', ''),
 (50, 'administrador8', 'administrador8@gmail.com', '$2y$10$VX60KoRrbUg7d3s6V4tKROrtzh8skkYKXxAq4PS9QiNUZzrTORk9C', 1, '2025-05-23 02:38:41', '2025-05-24 21:12:21', '');
 
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `user_logs`
+--
+
+CREATE TABLE `user_logs` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `action` enum('login','logout') NOT NULL,
+  `timestamp` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `user_logs`
+--
+
+INSERT INTO `user_logs` (`id`, `user_id`, `action`, `timestamp`) VALUES
+(1, 27, 'logout', '2025-06-07 13:24:49'),
+(2, 27, 'login', '2025-06-07 13:25:05');
+
 --
 -- Índices para tablas volcadas
 --
@@ -124,6 +145,13 @@ ALTER TABLE `users`
   ADD KEY `users-levels` (`level_user`);
 
 --
+-- Indices de la tabla `user_logs`
+--
+ALTER TABLE `user_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
@@ -146,6 +174,12 @@ ALTER TABLE `users`
   MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
+-- AUTO_INCREMENT de la tabla `user_logs`
+--
+ALTER TABLE `user_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- Restricciones para tablas volcadas
 --
 
@@ -154,6 +188,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `users-levels` FOREIGN KEY (`level_user`) REFERENCES `levels_users` (`id_level_user`);
+
+--
+-- Filtros para la tabla `user_logs`
+--
+ALTER TABLE `user_logs`
+  ADD CONSTRAINT `user_logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

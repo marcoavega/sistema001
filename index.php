@@ -24,7 +24,7 @@ if ($parts[0] == 'auth'){
     // Crea una instancia del controlador de autenticación
     $auth = new AuthController();
 
-    // Obtiene la segunda parte de la URL como la acción a ejecutar
+    // Obtiene la segunda parte de la URL como la acción a ejecutar-
     // Ejemplo: si la URL es "auth/login", $action será "login"
     $action = isset($parts[1]) ? trim($parts[1], "/ ") : '';
 

@@ -2,6 +2,7 @@
 
 // Se requiere el modelo `User`, que maneja la autenticación y gestión de usuarios en la base de datos.
 require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/Logger.php';  // 1. Importa el Logger
 
 
 // **Definición de la clase `AuthController`**
@@ -62,6 +63,9 @@ class AuthController
                     
                 ];
 
+                // Registrar el login
+            Logger::logAction($user['user_id'], 'login');
+
                 $_SESSION['flash'] = "Bienvenido, " . htmlspecialchars($user['username']); // Mensaje de bienvenida seguro contra inyección de HTML
                 header("Location: " . BASE_URL . "dashboard"); // Redirige al usuario al panel principal después de iniciar sesión correctamente
                 exit; // Detiene la ejecución para evitar seguir procesando el script
@@ -78,38 +82,34 @@ class AuthController
 
     // **Método para cerrar sesión**
     public function logout()
-    {
-        // Se inicia la sesión solo si no está activa.
-        // Esto asegura que podamos manipular la sesión aunque aún no se haya iniciado explícitamente.
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start(); // Inicia la sesión si no se ha iniciado aún
-        }
-
-        $_SESSION = array(); // Se vacía completamente la variable de sesión. Esto elimina todos los datos guardados del usuario (como 'user', 'flash', etc.)
-
-        // Verifica si las sesiones usan cookies (lo normal en la mayoría de los servidores).
-        if (ini_get("session.use_cookies")) {
-            // Obtiene los parámetros actuales de la cookie de sesión.
-            $params = session_get_cookie_params();
-
-            // Elimina la cookie de sesión del navegador.
-            // Esto se hace estableciendo una cookie con el mismo nombre pero con tiempo de expiración en el pasado (time() - 42000).
-            setcookie(
-                session_name(),     // Nombre de la cookie de sesión (por defecto: PHPSESSID)
-                '',                 // Valor vacío para eliminar
-                time() - 42000,     // Expiración pasada para forzar su eliminación
-                $params["path"],    // Ruta donde se aplica la cookie
-                $params["domain"],  // Dominio al que pertenece la cookie
-                $params["secure"],  // Solo HTTPS si estaba activa
-                $params["httponly"] // Evita que sea accedida desde JavaScript si estaba activa
-            );
-        }
-
-        session_destroy(); // Destruye completamente la sesión en el servidor (el archivo de sesión es eliminado).
-
-        // Redirige al usuario a la pantalla de login después de cerrar sesión.
-        header("Location: " . BASE_URL . "auth/login/");
-        exit(); // Detiene completamente la ejecución del script
+{
+    // Si el usuario está logueado, guarda el evento
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
     }
+    if (isset($_SESSION['user']['user_id'])) {
+        Logger::logAction($_SESSION['user']['user_id'], 'logout');
+    }
+
+    // --- tu código existente para destruir la sesión ---
+    $_SESSION = [];
+
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(
+            session_name(), '',
+            time() - 42000,
+            $params["path"],
+            $params["domain"],
+            $params["secure"],
+            $params["httponly"]
+        );
+    }
+
+    session_destroy();
+    header("Location: " . BASE_URL . "auth/login/");
+    exit();
+}
+
     
 }

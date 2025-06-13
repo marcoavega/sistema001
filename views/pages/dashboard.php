@@ -20,7 +20,6 @@ $username = htmlspecialchars($_SESSION['user']['username']);
 // Se usa un array asociativo donde cada sección tiene un ícono y un nombre descriptivo.
 $menuItems = [
     'dashboard'   => ['icon' => 'house-fill',   'label' => 'Panel de Control'],
-    'admin_users' => ['icon' => 'people-fill',  'label' => 'Usuarios'],
     'settings'    => ['icon' => 'gear-fill',    'label' => 'Configuración'],
 ];
 

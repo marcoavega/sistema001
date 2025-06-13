@@ -22,8 +22,8 @@ $segment = explode('/', trim($uri, '/'))[0];
              'fw-bold' enfatiza la fuente en negrita para mayor visibilidad. -->
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#mainNavbar" aria-controls="mainNavbar"
-                aria-expanded="false" aria-label="Toggle navigation">
+            data-bs-target="#mainNavbar" aria-controls="mainNavbar"
+            aria-expanded="false" aria-label="Toggle navigation">
             <!-- Botón de menú colapsable en dispositivos móviles.
                  'data-bs-toggle="collapse"' permite expandir o contraer el menú.
                  'data-bs-target' apunta a la sección que será colapsada (id="mainNavbar"). -->
@@ -42,7 +42,7 @@ $segment = explode('/', trim($uri, '/'))[0];
 
                 <li class="nav-item px-2">
                     <a class="nav-link text-body d-flex flex-column align-items-center <?= $segment === 'dashboard' ? 'active fw-bold' : '' ?>"
-                       href="<?= BASE_URL ?>dashboard">
+                        href="<?= BASE_URL ?>dashboard">
                         <!-- Si el segmento actual es 'dashboard', se resalta la opción con 'active fw-bold'. -->
                         <i class="bi bi-house-door-fill fs-6 mb-1"></i>
                         <span class="fs-6">Inicio</span>
@@ -51,12 +51,25 @@ $segment = explode('/', trim($uri, '/'))[0];
 
                 <li class="nav-item px-2">
                     <a class="nav-link text-body d-flex flex-column align-items-center <?= $segment === 'admin_users' ? 'active fw-bold' : '' ?>"
-                       href="<?= BASE_URL ?>admin_users">
+                        href="<?= BASE_URL ?>admin_users">
                         <!-- Si el segmento actual es 'admin_users', se resalta la opción con 'active fw-bold'. -->
                         <i class="bi bi-people-fill fs-6 mb-1"></i>
                         <span class="fs-6">Usuarios</span>
                     </a>
                 </li>
+
+
+                <li class="nav-item px-2">
+                    <a
+                        class="nav-link text-body d-flex flex-column align-items-center <?= $segment === 'inventory' ? 'active fw-bold' : '' ?>"
+                        href="<?= BASE_URL ?>inventory">
+                        <!-- Icono de inventario: aquí usamos 'bi-box-seam', ajústalo si prefieres otro -->
+                        <i class="bi bi-box-seam fs-6 mb-1"></i>
+                        <span class="fs-6">Inventario</span>
+                    </a>
+                </li>
+
+
                 <!-- Se pueden añadir más ítems según las rutas de la aplicación. -->
             </ul>
 
@@ -72,7 +85,7 @@ $segment = explode('/', trim($uri, '/'))[0];
                 <!-- Menú desplegable con opciones -->
                 <div class="dropdown">
                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="optionsMenu"
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                        data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-gear-fill"></i>
                     </button>
 
@@ -81,10 +94,10 @@ $segment = explode('/', trim($uri, '/'))[0];
                             <a class="dropdown-item" href="<?= BASE_URL ?>profile">
                                 <!-- Si el usuario tiene una imagen de perfil en sesión, se muestra junto con el enlace al perfil. -->
                                 <?php if (!empty($_SESSION['user']['img_url'])): ?>
-                                    <img src="<?= BASE_URL . ltrim($_SESSION['user']['img_url'], '/')?>"
-                                         alt="Foto de usuario"
-                                         class="rounded-circle me-3"
-                                         style="width:32px;height:32px;object-fit:cover;">
+                                    <img src="<?= BASE_URL . ltrim($_SESSION['user']['img_url'], '/') ?>"
+                                        alt="Foto de usuario"
+                                        class="rounded-circle me-3"
+                                        style="width:32px;height:32px;object-fit:cover;">
                                 <?php endif; ?>
                                 Perfil
                             </a>
@@ -95,7 +108,7 @@ $segment = explode('/', trim($uri, '/'))[0];
                             </button>
                         </li>
                     </ul>
-                    
+
                 </div>
 
             </div>
@@ -120,4 +133,5 @@ include __DIR__ . '/../modals/modal-logout.php';
 </div>
 
 </body>
+
 </html>

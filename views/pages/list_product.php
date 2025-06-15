@@ -11,37 +11,26 @@ if (!isset($_SESSION['user'])) {
 }
 
 // Obtener segmento de URL para destacar menú activo
-// Suponemos que la ruta para este listado es 'list_product' o similar
 $uri = $_GET['url'] ?? 'list_product';
 $segment = explode('/', trim($uri, '/'))[0];
 
 // Iniciar buffer de salida
 ob_start();
 
-// Conexión a BD si necesitas cargar datos adicionales (categorías, proveedores, etc.)
+// Conexión a la base de datos
 require_once __DIR__ . '/../../models/Database.php';
 $pdo = (new Database())->getConnection();
 
-// Nombre de usuario para mostrar
+// Nombre de usuario
 $username = htmlspecialchars($_SESSION['user']['username']);
 
-// Cargar o definir ítems del menú lateral (usa tu partial lateral_menu_products.php u otro)
-// Por ejemplo, suponiendo que lateral_menu_products.php define $menuItems:
+// Menú lateral
 require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
-// Asegúrate que lateral_menu_products.php define un array $menuItems con rutas e íconos.
-// Ejemplo de $menuItems en lateral_menu_products.php:
-// $menuItems = [
-//   'dashboard'    => ['icon'=>'house-fill','label'=>'Panel de Control'],
-//   'list_product' => ['icon'=>'box-seam','label'=>'Productos'],
-//   'admin_inventory' => ['icon'=>'clipboard-data','label'=>'Inventario'],
-//   // ...
-// ];
-
 ?>
 
 <div class="container-fluid m-0 p-0">
   <div class="row g-0">
-    <!-- Sidebar lateral -->
+    <!-- Sidebar -->
     <nav class="col-md-2 d-none d-md-block sidebar min-vh-100">
       <ul class="nav flex-column pt-3">
         <?php foreach ($menuItems as $route => $item): ?>
@@ -57,7 +46,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 
     <!-- Contenido principal -->
     <main class="col-12 col-md-10 px-4 py-3">
-      <!-- Menú desplegable para pantallas pequeñas -->
+      <!-- Menú móvil -->
       <div class="d-md-none mb-3">
         <div class="dropdown">
           <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start" type="button" id="mobileMenuBtn" data-bs-toggle="dropdown">
@@ -75,7 +64,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
         </div>
       </div>
 
-      <!-- Verificación de permisos: ajusta según tu lógica -->
+      <!-- Verificación de permisos -->
       <?php if ($_SESSION['user']['level_user'] != 1): ?>
         <h2>Acceso Denegado</h2>
         <div class="alert alert-danger">No tienes permiso para ver esta página.</div>
@@ -85,7 +74,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
           <span class="text-muted">Bienvenido, <?= $username ?>.</span>
         </div>
 
-        <!-- Botones de acción -->
+        <!-- Botones -->
         <div class="row mb-3 g-2">
           <div class="col-12 col-md-auto">
             <button id="addProductBtn" class="btn btn-primary">Agregar Producto</button>
@@ -104,25 +93,23 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
           </div>
         </div>
 
-        <!-- Buscador de productos -->
+        <!-- Buscador -->
         <div class="mb-3">
           <input type="text" id="table-search" class="form-control" placeholder="Buscar productos por código o nombre">
         </div>
 
-        <!-- Contenedor de la tabla Tabulator -->
+        <!-- Tabla -->
         <div id="products-table"></div>
 
-        <!-- Incluir modales de agregar/editar/eliminar productos -->
+        <!-- Modales necesarios para funcionamiento -->
         <?php
-        // Asegúrate de tener estos partials con los formularios adecuados:
-            /*
-        include __DIR__ . '/../partials/modals/modal_add_product.php';
-        include __DIR__ . '/../partials/modals/modal_edit_product.php';
-        include __DIR__ . '/../partials/modals/modal_delete_product.php';
-        */
+        /*
+          include __DIR__ . '/../partials/modals/modal_add_product.php';
+          include __DIR__ . '/../partials/modals/modal_edit_product.php';
+          include __DIR__ . '/../partials/modals/modal_delete_product.php';
+          */
         ?>
       <?php endif; ?>
-
     </main>
   </div>
 </div>
@@ -132,5 +119,5 @@ $content = ob_get_clean();
 include __DIR__ . '/../partials/layouts/navbar.php';
 ?>
 
-<!-- Script para la gestión de la tabla de productos -->
+<!-- Script JS -->
 <script src="<?php echo BASE_URL; ?>assets/js/ajax/products-table.js"></script>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-06-2025 a las 06:45:01
+-- Tiempo de generación: 15-06-2025 a las 02:42:36
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -743,7 +743,14 @@ INSERT INTO `user_logs` (`id`, `user_id`, `action`, `timestamp`) VALUES
 (11, 27, 'login', '2025-06-12 10:38:49'),
 (12, 27, 'login', '2025-06-12 13:13:09'),
 (13, 27, 'login', '2025-06-12 17:25:34'),
-(14, 27, 'login', '2025-06-12 21:12:06');
+(14, 27, 'login', '2025-06-12 21:12:06'),
+(15, 27, 'login', '2025-06-13 08:30:44'),
+(16, 27, 'login', '2025-06-13 19:30:25'),
+(17, 27, 'login', '2025-06-13 20:35:17'),
+(18, 27, 'login', '2025-06-14 07:34:38'),
+(19, 27, 'login', '2025-06-14 08:39:44'),
+(20, 27, 'login', '2025-06-14 11:16:43'),
+(21, 27, 'login', '2025-06-14 15:50:03');
 
 --
 -- Índices para tablas volcadas
@@ -820,7 +827,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de la tabla `user_logs`
 --
 ALTER TABLE `user_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- Restricciones para tablas volcadas

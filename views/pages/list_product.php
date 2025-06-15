@@ -1,32 +1,42 @@
 <?php
-// Archivo: views/pages/admin_inventory.php
+// Archivo: views/pages/list_product.php
 
 // Verificación de sesión
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if (!isset($_SESSION['user'])) {
     header("Location: " . BASE_URL . "auth/login/");
     exit();
 }
 
 // Obtener segmento de URL para destacar menú activo
-$uri = $_GET['url'] ?? 'inventory';
+// Suponemos que la ruta para este listado es 'list_product' o similar
+$uri = $_GET['url'] ?? 'list_product';
 $segment = explode('/', trim($uri, '/'))[0];
 
-// Iniciar buffer
+// Iniciar buffer de salida
 ob_start();
 
-// Conexión a BD si necesitas cargar datos (por ejemplo categorías):
+// Conexión a BD si necesitas cargar datos adicionales (categorías, proveedores, etc.)
 require_once __DIR__ . '/../../models/Database.php';
 $pdo = (new Database())->getConnection();
-
-// Ejemplo: cargar categorías o datos necesarios para filtros en el inventario
-// $stmt = $pdo->query("SELECT id_category, name FROM categories ORDER BY name");
-// $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Nombre de usuario para mostrar
 $username = htmlspecialchars($_SESSION['user']['username']);
 
-// Definir ítems del menú lateral, agregando 'inventory'
-require_once __DIR__ . '/../partials/layouts/lateral_menu_produts.php';
+// Cargar o definir ítems del menú lateral (usa tu partial lateral_menu_products.php u otro)
+// Por ejemplo, suponiendo que lateral_menu_products.php define $menuItems:
+require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
+// Asegúrate que lateral_menu_products.php define un array $menuItems con rutas e íconos.
+// Ejemplo de $menuItems en lateral_menu_products.php:
+// $menuItems = [
+//   'dashboard'    => ['icon'=>'house-fill','label'=>'Panel de Control'],
+//   'list_product' => ['icon'=>'box-seam','label'=>'Productos'],
+//   'admin_inventory' => ['icon'=>'clipboard-data','label'=>'Inventario'],
+//   // ...
+// ];
+
 ?>
 
 <div class="container-fluid m-0 p-0">
@@ -37,7 +47,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_produts.php';
         <?php foreach ($menuItems as $route => $item): ?>
           <li class="nav-item mb-2">
             <a class="nav-link text-body d-flex align-items-center <?= $segment === $route ? 'active fw-bold' : '' ?>"
-              href="<?= BASE_URL . $route ?>">
+               href="<?= BASE_URL . $route ?>">
               <i class="bi bi-<?= $item['icon'] ?> me-2"></i> <?= $item['label'] ?>
             </a>
           </li>
@@ -51,7 +61,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_produts.php';
       <div class="d-md-none mb-3">
         <div class="dropdown">
           <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start" type="button" id="mobileMenuBtn" data-bs-toggle="dropdown">
-            <i class="bi bi-list me-1"></i>
+            <i class="bi bi-list me-1"></i> Menú
           </button>
           <ul class="dropdown-menu w-100" aria-labelledby="mobileMenuBtn">
             <?php foreach ($menuItems as $route => $item): ?>
@@ -65,13 +75,13 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_produts.php';
         </div>
       </div>
 
-      <!-- Verificación de permisos: ajustar según tu lógica -->
+      <!-- Verificación de permisos: ajusta según tu lógica -->
       <?php if ($_SESSION['user']['level_user'] != 1): ?>
         <h2>Acceso Denegado</h2>
         <div class="alert alert-danger">No tienes permiso para ver esta página.</div>
       <?php else: ?>
         <div class="d-flex justify-content-between align-items-center pb-3 mb-3 border-bottom">
-          <h2 class="mb-0">Administración de Inventario Listado de Productos.</h2>
+          <h2 class="mb-0">Listado de Productos</h2>
           <span class="text-muted">Bienvenido, <?= $username ?>.</span>
         </div>
 
@@ -94,31 +104,26 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_produts.php';
           </div>
         </div>
 
-       
-        <!-- Buscador de usuarios -->
+        <!-- Buscador de productos -->
         <div class="mb-3">
-          <input type="text" id="table-search" class="form-control" placeholder="Buscar Productos por nombre o código">
-          <!-- id="table-search" permite buscar dinámicamente usuarios en la tabla con JavaScript -->
+          <input type="text" id="table-search" class="form-control" placeholder="Buscar productos por código o nombre">
         </div>
 
-        <!-- Tabla de usuarios -->
+        <!-- Contenedor de la tabla Tabulator -->
         <div id="products-table"></div>
-        <!-- id="users-table" es donde se cargan los datos dinámicamente con Tabulator.js -->
 
-        <!-- Modales: Editar y Eliminar Usuario -->
+        <!-- Incluir modales de agregar/editar/eliminar productos -->
         <?php
-        include __DIR__ . '/../partials/modals/modal_edit_user.php';
-        include __DIR__ . '/../partials/modals/modal_delete_user.php';
+        // Asegúrate de tener estos partials con los formularios adecuados:
+            /*
+        include __DIR__ . '/../partials/modals/modal_add_product.php';
+        include __DIR__ . '/../partials/modals/modal_edit_product.php';
+        include __DIR__ . '/../partials/modals/modal_delete_product.php';
+        */
         ?>
-
-        <!-- Modal: Agregar Usuario -->
-        <?php
-        include __DIR__ . '/../partials/modals/modal_add_user.php';
-        ?>
-
       <?php endif; ?>
-    </main>
 
+    </main>
   </div>
 </div>
 
@@ -127,6 +132,5 @@ $content = ob_get_clean();
 include __DIR__ . '/../partials/layouts/navbar.php';
 ?>
 
-<!-- Script para gestión de usuarios -->
+<!-- Script para la gestión de la tabla de productos -->
 <script src="<?php echo BASE_URL; ?>assets/js/ajax/products-table.js"></script>
-<!-- Este script maneja todas las interacciones con la tabla de usuarios, incluyendo búsquedas, ediciones y eliminaciones -->

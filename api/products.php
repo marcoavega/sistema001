@@ -1,100 +1,146 @@
 <?php
-// **Establece el encabezado para asegurarse de que la respuesta sea en formato JSON**.
-// `header('Content-Type: application/json')` le indica al navegador y al cliente que la respuesta
-// será en formato JSON, lo que facilita su interpretación en aplicaciones web.
+// Archivo: api/products.php
+
+// Asegurarse de que la respuesta sea JSON
 header('Content-Type: application/json');
 
-// **Importa archivos requeridos**.
-// `require_once` se usa para incluir archivos sin riesgo de duplicación.
-require_once __DIR__ . '/../config/config.php'; // Carga la configuración global del sistema.
-require_once __DIR__ . '/../controllers/ProductController.php'; // Importa el controlador de usuarios.
+// Incluir configuración y controlador de productos
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../controllers/ProductController.php';
 
-// **Obtiene la acción enviada en la petición HTTP**.
-// `$_GET['action'] ?? ''` significa que si no se envía `action`, la variable tendrá un valor vacío (`''`).
+// Obtener la acción enviada por GET, p.ej. ?action=get|create|update|delete
 $action = $_GET['action'] ?? '';
 
-// **Crea una instancia del controlador de usuarios** para gestionar las operaciones.
-$ProductController = new ProductController();
+$productController = new ProductController();
 
-// **Maneja las diferentes acciones solicitadas en la API**.
-// `switch` permite ejecutar distintas partes del código según el valor de `$action`.
+// Función auxiliar para leer body JSON
+function getJsonInput() {
+    $input = file_get_contents("php://input");
+    if (empty($input)) {
+        return [];
+    }
+    $data = json_decode($input, true);
+    return is_array($data) ? $data : [];
+}
+
 switch ($action) {
-
     case 'get':
-        // **Obtiene todos los usuarios desde el controlador**.
-        $products = $productController->getAllProducts();
+        // Obtener todos los productos
+        try {
+            $products = $productController->getAllProducts();
+            echo json_encode($products);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error al obtener productos: ' . $e->getMessage(),
+            ]);
+        }
+        break;
 
-        // **Convierte el resultado en JSON y lo muestra**.
-        echo json_encode($products);
-        
+    case 'create':
+        // Crear nuevo producto
+        // Esperamos el JSON con clave "productData", por ejemplo:
+        // { "productData": { "product_code": "...", "product_name": "...", ... } }
+        $input = getJsonInput();
+        $data = $input['productData'] ?? [];
+
+        // Validaciones básicas (puedes extender en el controlador/modelo)
+        if (empty($data)) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'No se recibieron datos de producto para crear.'
+            ]);
+            break;
+        }
+
+        // Llamar al controlador
+        $result = $productController->createProduct($data);
+        // Se espera que createProduct devuelva ['success'=>bool, 'product'=>[...] ] o ['success'=>false,'message'=>...]
+        if (!empty($result['success'])) {
+            // Devolver el nuevo producto
+            echo json_encode([
+                'success' => true,
+                'newProduct' => $result['product']
+            ]);
+        } else {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => $result['message'] ?? 'No se pudo crear el producto.'
+            ]);
+        }
         break;
 
     case 'update':
-        // **Recibe y decodifica los datos enviados en la solicitud**.
-        // `file_get_contents("php://input")` obtiene el cuerpo de la petición HTTP.
-        // `json_decode(..., true)` convierte el JSON en un array asociativo.
-        $data = json_decode(file_get_contents("php://input"), true);
+        // Actualizar un producto existente
+        // Esperamos JSON con clave "productData", que incluya al menos 'product_id'
+        // { "productData": { "product_id": 123, "product_name": "...", ... } }
+        $input = getJsonInput();
+        $data = $input['productData'] ?? [];
 
-        // **Actualiza la información del usuario con los datos recibidos**.
-        $result = $userController->updateUser($data['userData'] ?? []);
-
-        // **Envía la respuesta JSON según el resultado obtenido**.
-        if ($result['success']) {
+        if (empty($data) || empty($data['product_id'])) {
+            http_response_code(400);
             echo json_encode([
-                "success" => true,
-                "message" => "Usuario actualizado correctamente",
-                "updatedData" => $result['user'] // Aquí debe estar description_level
+                'success' => false,
+                'message' => 'No se proporcionó product_id o datos insuficientes para actualizar.'
+            ]);
+            break;
+        }
+
+        // Llamar al controlador
+        $result = $productController->updateProduct($data);
+        // Se espera que updateProduct devuelva ['success'=>bool, 'product'=>[...] ] o ['success'=>false,'message'=>...]
+        if (!empty($result['success'])) {
+            echo json_encode([
+                'success' => true,
+                'updatedProduct' => $result['product']
             ]);
         } else {
+            http_response_code(400);
             echo json_encode([
-                "success" => false,
-                "message" => "No se pudo actualizar"
+                'success' => false,
+                'message' => $result['message'] ?? 'No se pudo actualizar el producto.'
             ]);
         }
         break;
 
     case 'delete':
-        // **Recibe el user_id desde el JSON para eliminar un usuario**.
-        $data = json_decode(file_get_contents("php://input"), true);
-        $userID = $data['user_id'] ?? null;
+        // Eliminar un producto por ID
+        $input = getJsonInput();
+        $productID = $input['product_id'] ?? null;
 
-        // **Validar que se haya proporcionado un ID válido**
-        if ($userID === null || !is_numeric($userID)) {
+        if ($productID === null || !is_numeric($productID)) {
+            http_response_code(400);
             echo json_encode([
                 'success' => false,
-                'message' => 'ID de usuario no proporcionado o inválido.'
+                'message' => 'Product ID no proporcionado o inválido.'
             ]);
             break;
         }
+        $productID = (int)$productID;
 
-        // **Elimina al usuario según el ID recibido**.
-        $result = $userController->deleteUser((int)$userID);
-
-        // **Devuelve el resultado en formato JSON**.
-        echo json_encode($result);
-        break;
-
-
-    case 'create':
-        // **Recibe los datos enviados en formato JSON**.
-        $data = json_decode(file_get_contents('php://input'), true)['userData'] ?? [];
-
-        // **Llama al controlador para crear un usuario con los datos recibidos**.
-        $result = $userController->createUser($data);
-
-        // **Devuelve la respuesta JSON según el éxito o fallo en la creación del usuario**.
-        if ($result['success']) {
-            echo json_encode(['success' => true, 'newUser' => $result['user']]);
+        $result = $productController->deleteProduct($productID);
+        // Se espera que deleteProduct devuelva ['success'=>bool] o ['success'=>false,'message'=>...]
+        if (!empty($result['success'])) {
+            echo json_encode(['success' => true]);
         } else {
-            echo json_encode(['success' => false, 'message' => $result['message']]);
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => $result['message'] ?? 'No se pudo eliminar el producto.'
+            ]);
         }
         break;
 
     default:
-        // **Si la acción solicitada no está definida, se envía un mensaje de error en formato JSON**.
-        echo json_encode(["error" => "Acción no definida"]);
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Acción no definida.'
+        ]);
         break;
 }
 
-// **Finaliza la ejecución del script para evitar procesamiento innecesario**.
 exit();

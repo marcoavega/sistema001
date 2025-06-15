@@ -26,7 +26,7 @@ $pdo = (new Database())->getConnection();
 $username = htmlspecialchars($_SESSION['user']['username']);
 
 // Definir ítems del menú lateral, agregando 'inventory'
-require_once __DIR__ . '/../partials/layouts/lateral_menu_produts.php';
+require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 ?>
 
 <div class="container-fluid m-0 p-0">

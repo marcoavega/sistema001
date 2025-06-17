@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 15-06-2025 a las 02:42:36
+-- Tiempo de generación: 17-06-2025 a las 05:23:48
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,6 +20,31 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `sistema`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `categories`
+--
+
+CREATE TABLE `categories` (
+  `category_id` int(11) NOT NULL,
+  `category_name` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `categories`
+--
+
+INSERT INTO `categories` (`category_id`, `category_name`) VALUES
+(1, 'Herramientas generales'),
+(2, 'Insumos consumibles'),
+(3, 'Herramientas maquinados'),
+(4, 'Papelería'),
+(5, 'Tlapalería'),
+(6, 'Materia prima maquinado'),
+(9, 'Piezas para kit de articulador'),
+(11, 'Producto terminado');
 
 -- --------------------------------------------------------
 
@@ -42,6 +67,26 @@ CREATE TABLE `companys` (
 
 INSERT INTO `companys` (`id`, `name`, `rfc`, `address`, `phone`, `email`) VALUES
 (1, 'company1', 'xxxxxxxxxxxx', 'direcion-de-empresa', '5525458796', 'email@empresa.com');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `currencies`
+--
+
+CREATE TABLE `currencies` (
+  `currency_id` int(11) NOT NULL,
+  `currency_name` varchar(10) NOT NULL,
+  `exchange_rate` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `currencies`
+--
+
+INSERT INTO `currencies` (`currency_id`, `currency_name`, `exchange_rate`) VALUES
+(1, 'MXN', 20.00),
+(2, 'USD', 20.00);
 
 -- --------------------------------------------------------
 
@@ -587,20 +632,12 @@ INSERT INTO `products` (`product_id`, `product_code`, `product_name`, `location`
 (587, 'H-0268', 'DADO LARGO 1/2\"', 'LOCKER FILA 3', 80.00, 2, '2024-05-31 14:25:30', 1, 17, 1, 1, 'DADO_LARGO_1_2__52.jpg', 5, 2, 1, 80.0000, NULL, NULL, NULL, NULL, NULL),
 (588, 'H-0269', 'Machuelo Helicoidal Yellow Shark UNF 3/8\"-24 HPP, tolerancia 2B, 0.3810\" zanco, 0.2840\" cuadrillo de arrastre, HSS-E, MCA DOMER', 'HM3-9', 63.10, 1, '2024-06-03 11:30:03', 3, 11, 1, 2, 'Machuelo_Helicoidal_Yellow_Shark_UNF_3_8_24_HPP_tolerancia_2B_0_3810_zanco_0_2840_cuadrillo_de_arrastre_HSS_E_MCA_DOMER_64.jpg', 5, 2, 1, 63.1000, NULL, NULL, NULL, NULL, NULL),
 (589, 'DELT-9E', 'Desarmador (destornillador) Allen Hexagonal de 3 mm, con mango recubierto', 'F1', 59.68, 243, '2024-06-04 15:22:59', 9, 13, 1, 1, 'DESTORMILLADOR_PARA_PUNTAS_INTERCAMBIABLES_90.jpg', 4, 26, 1, 59.6800, NULL, NULL, NULL, NULL, NULL),
-(591, 'PTARC001-5', 'KIT DELTA ORTHO', 'PRODUCTO TERMINADO', 25878.00, 106, '2024-06-05 10:27:13', 11, 34, 12, 1, 'KIT_ARTICULADOR_COMPLETO_DELTA_78.png', 5, 50, 1, 32400.0000, 7.0000, 0.0000, 0.0000, 0.0000, 0.0000),
-(592, 'ARC-DELT-C', 'ARTICULADOR DELTA', 'PRODUCTO TERMINADO', 10000.00, 0, '2024-06-07 16:15:46', 11, 34, 1, 1, 'ARTICULADOR_ANALOGO_39.png', 5, 2, 1, 13470.6600, 1.7000, 0.2000, 0.1700, 0.1800, 0.0000),
-(593, 'MCD-DELT-C', 'MCD DELTA', 'PRODUCTO TERMINADO', 10000.00, 0, '2024-06-07 16:16:40', 11, 34, 1, 1, 'CPI_77.png', 5, 2, 1, 13470.6600, 1.7500, 0.2000, 0.1900, 0.1800, 0.0000),
-(594, 'AF-DELT-C', 'ARCO FACIAL DELTA', 'PRODUCTO TERMINADO', 10000.00, 0, '2024-06-07 16:17:34', 11, 34, 1, 1, 'ARCO_FACIAL_0.png', 5, 2, 1, 7602.4800, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000),
-(595, 'H-0270', 'CINTA GORILA DE COLOR GRAFT DE 70 X 137m.', 'ALMACEN', 175.00, 10, '2024-06-12 13:05:19', 2, 35, 1, 1, 'CINTA_GORILA_DE_COLOR_GRAFT_DE_70_X_137m__57.jpg', 5, 2, 1, 175.0000, NULL, NULL, NULL, NULL, NULL),
 (596, 'H-0271', '(cortador) Fresa de punta esférica serie estándar, 2 canales, diámetro 1/4&quot;, longitud de corte 3/4&quot;, longitud total 2-1/2&quot;, zanco cilíndrico 1/4&quot;.', 'HM3-4', 28.80, 3, '2024-06-13 11:53:54', 3, 11, 1, 2, '_cortador_Fresa_de_punta_esf_rica_serie_est_ndar_2_canales_di_metro_1_4_longitud_de_corte_3_4_longitud_total_2_1_2_zanco_cil_ndrico_1_4__88.jpg', 5, 2, 0, 28.8000, NULL, NULL, NULL, NULL, NULL),
 (597, 'H-0272', '(cortador) Fresa de punta esférica serie estándar, 2 canales, diámetro 3/8&quot;, longitud decorte 7/8&quot;, longitud total 2-1/2&quot;, zanco cilíndrico 3/8&quot;.', 'HM3-4', 46.13, 3, '2024-06-13 11:55:23', 3, 11, 1, 2, 'Fresa_de_punta_esf_rica_serie_est_ndar_2_canales_di_metro_3_8_longitud_de_corte_7_8_longitud_total_2_1_2_zanco_cil_ndrico_3_8__55.jpg', 5, 2, 0, 46.1300, NULL, NULL, NULL, NULL, NULL),
 (598, 'H-0273', '(cortador) Fresa de punta esférica serie extra larga, 2 canales, diámetro 3/8&quot;,longitud de corte 1-3/4&quot;, longitud total 4&quot;, zanco cilíndrico 3/8&quot;.', 'HM3-4', 71.40, 3, '2024-06-13 11:56:25', 3, 11, 1, 2, 'Fresa_de_punta_esf_rica_serie_extra_larga_2_canales_di_metro_3_8_longitud_de_corte_1_3_4_longitud_total_4_zanco_cil_ndrico_3_8__85.jpg', 5, 2, 0, 71.4000, NULL, NULL, NULL, NULL, NULL),
 (599, 'H-0274', 'Macho machuelo recto de mano, con segunda entrada de 4-6xP, A IZQUIERDA Rosca MétricaISO M4 con 0.70 mm de paso, tolerancia 6H, mango de 4.0mm y cuadradillo dearrastre de 3.15mm, HSS con', 'HM2-15', 25.50, 3, '2024-06-14 10:53:39', 3, 11, 1, 2, 'Macho_recto_de_mano_con_segunda_entrada_de_4_6xP_A_IZQUIERDA_Rosca_M_trica_ISO_M4_con_0_70_mm_de_paso_tolerancia_6H_mango_de_4_0mm_y_cuadradillo_de_arrastre_de_3_15mm_HSS_con__72.jpg', 5, 2, 0, 25.5000, NULL, NULL, NULL, NULL, NULL),
 (600, 'H-275', 'PIEDRA PARA ASENTAR 150MM. DOBLE GRANO 150 Y 240', 'LOCKER FILA 4', 66.38, 1, '2024-06-17 09:18:08', 1, 17, 1, 1, 'PIEDRA_PARA_ASENTAR_150MM_DOBLE_GRANO_150_Y_240_93.jpg', 5, 2, 1, 66.3800, NULL, NULL, NULL, NULL, NULL),
 (601, 'H-0276', 'Macho machuelo Helicoidal, rosca ISO-Métrica M5 paso de 0,80 mm, clase de ajuste 6H, vástago de 0,1940&quot; y cuadrado de 0,1520&quot;, HSSM5 X 0.8 mm', 'HM2-11', 21.50, 5, '2024-06-18 14:19:27', 3, 11, 1, 2, 'Macho_Helicoidal_rosca_ISO_M_trica_M5_paso_de_0_80_mm_clase_de_ajuste_6H_v_stago_de_0_1940_y_cuadrado_de_0_1520_HSS_M5_X_0_8_mm_92.jpg', 5, 2, 1, 21.5000, NULL, NULL, NULL, NULL, NULL),
-(602, 'I-0207', 'BOLSA CON CIERRE CAL. 150 DE 12CM X 20CM', 'MESA 1', 0.52, 2000, '2024-07-08 11:21:39', 2, 36, 1, 1, 'BOLSA_CON_CIERRE_CAL_150_DE_12CM_X_20CM_17.jpg', 5, 2, 1, 0.5200, NULL, NULL, NULL, NULL, NULL),
-(603, 'I-0208', 'BOLSA CON CIERRE CAL. 150 DE 10CM X 16', 'MESA 1', 0.36, 4000, '2024-07-08 11:23:12', 2, 36, 1, 1, 'BOLSA_CON_CIERRE_CAL_150_DE_10CM_X_16_73.jpg', 5, 2, 1, 0.3600, NULL, NULL, NULL, NULL, NULL),
-(604, 'I-0209', 'BOLSA CON CIERRE CAL. 150 DE 30CM X 40CM', 'MESA 1', 2.80, 800, '2024-07-08 11:24:25', 2, 36, 1, 1, 'BOLSA_CON_CIERRE_CAL_150_DE_30CM_X_40CM_48.jpg', 5, 2, 1, 2.8000, NULL, NULL, NULL, NULL, NULL),
 (605, 'DELT-9H', 'ANALOGO IZQUIERDO CON PERNOS', 'MESA', 30.00, 236, '2024-07-10 15:37:34', 9, 26, 1, 1, 'ANALOGO_IZQUIERDO_2.jpg', 4, 2, 1, 30.0000, NULL, NULL, NULL, NULL, NULL),
 (606, 'DELT-9G', 'ANALOGO DERECHO CON PERNOS', 'MESA', 30.00, 236, '2024-07-10 15:39:50', 9, 26, 1, 1, 'ANALOGO_DERECHO_53.jpg', 4, 50, 1, 30.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000),
 (607, 'MPM-004', 'SOLERA DE ALUMINIO 6061 DE 1 X 3 X  3.66 MTS.', 'MAQUINADOS', 2820.00, 4, '2024-07-11 09:56:07', 6, 1, 1, 1, '', 5, 2, 1, 0.0000, 0.0000, 0.0254, 3.6600, 0.0762, 0.0000),
@@ -616,16 +653,7 @@ INSERT INTO `products` (`product_id`, `product_code`, `product_name`, `location`
 (620, 'MPM-014', 'BARRA REDONDA DE ALUMINIO 6061 DE 1 INCH X 3.66 MTS.', 'MAQUINADO', 718.00, 12, '2024-07-11 10:34:45', 6, 1, 1, 1, '', 5, 2, 1, 0.0000, 0.0000, 0.0000, 3.6600, 0.0000, 0.0254),
 (621, 'MPM-022', 'BARRA DE ACERO INOXIDABLE T-304 DE 1/4 INCH X 3.05 MTS.', 'MAQUINADO', 74.00, 14, '2024-07-11 10:36:18', 6, 1, 1, 1, '', 5, 2, 1, 0.0000, 0.0000, 0.0000, 3.0500, 0.0000, 0.0063),
 (622, 'MPM-019', 'BARRA REDONDA DE ACERO INOXIDABLE T-304 DE 1/2 INCH X 3..05 MTS.', 'MAQUINADO', 292.00, 8, '2024-07-11 10:37:50', 6, 1, 1, 1, '', 5, 2, 1, 0.0000, 0.0000, 0.0000, 3.0500, 0.0000, 0.0127),
-(624, 'DELT-9M', 'HORQUILLA CON VARILLA DOBLADA', 's/u', 58.00, 163, '2024-07-11 10:52:53', 9, 42, 1, 1, 'HORQUILLA_COMPLETA_69.jpg', 4, 2, 1, 58.0000, NULL, NULL, NULL, NULL, NULL),
-(625, 'DELT-9P', 'HORQUILLA CON VARILLA PLANA', 's/u', 58.00, 119, '2024-07-11 10:54:43', 9, 42, 1, 1, 'HOQUILLA_COMPLETA_PLANA_21.jpg', 4, 2, 1, 58.0000, NULL, NULL, NULL, NULL, NULL),
-(626, 'DELT-8Z', 'HORQUILLA COMPLETA PARA NIÑOS', 's/u', 57.00, 30, '2024-07-11 11:06:07', 9, 42, 1, 1, 'HORQUILLA_COMPLETA_PARA_NI_OS_80.jpg', 4, 2, 1, 57.0000, NULL, NULL, NULL, NULL, NULL),
 (628, 'H-0277', 'DISCO DE SIERRA 12', 'MAQUINADO', 1560.00, 2, '2024-07-16 16:37:51', 3, 2, 1, 1, 'DISCO_DE_SIERRA_12_DW03240_DEWALT_15.jpg', 5, 1, 1, 1560.0000, NULL, NULL, NULL, NULL, NULL),
-(629, 'H-278', '[YGBM284] Machuelo Helicoidal M5.0X0.80 C/Hardslick 3Fl D4 Bm YG-1', 'HM2-12', 330.33, 8, '2024-07-17 13:35:53', 3, 43, 1, 1, '_YGBM284_Machuelo_Helicoidal_M5_0X0_80_C_Hardslick_3Fl_D4_Bm_YG_1_100.jpg', 5, 3, 1, 330.3300, NULL, NULL, NULL, NULL, NULL),
-(630, 'H-279', '[YGBT203] Machuelo Helicoidal M3.0X0.50 C/Hardslick 3Fl D3 Bt YG-1', 'HM2-19', 384.69, 8, '2024-07-17 13:36:53', 3, 43, 1, 1, '_YGBT203_Machuelo_Helicoidal_M3_0X0_50_C_Hardslick_3Fl_D3_Bt_YG_1_95.jpg', 5, 2, 1, 384.6900, NULL, NULL, NULL, NULL, NULL),
-(631, 'H-280', '[YGF6323] Machuelo Helicoidal 10-24 C/Hardslick 3Fl H3 F6 YG-1', 'HM2-19', 197.37, 8, '2024-07-17 13:37:57', 3, 43, 1, 1, '_YGF6323_Machuelo_Helicoidal_10_24_C_Hardslick_3Fl_H3_F6_YG_1_16.jpg', 5, 2, 1, 197.3700, NULL, NULL, NULL, NULL, NULL),
-(632, 'H-281', '[AQT-20413] Cortador Carburo Plano 2 Fl 1/4 X 1/4 X 1.1/2 X 4 Cobra', 'HM2-12', 584.94, 6, '2024-07-17 13:38:51', 3, 43, 1, 1, '_AQT_20413_Cortador_Carburo_Plano_2_Fl_1_4X1_4X1_1_2X4_Cobra_69.jpg', 5, 2, 1, 584.9400, NULL, NULL, NULL, NULL, NULL),
-(633, 'H-282', '[AQT-22688] Cortador Carburo Plano 4 Fl  D 1/2 X Z 1/2 X C 1 X  LT 3, Cobra Bricht', 'HM2-13', 653.94, 7, '2024-07-19 16:40:30', 3, 43, 1, 1, '_AQT_22688_Cortador_Carburo_Plano_4_Fl_D_1_2_X_Z_1_2_X_C_1_X_LT_3_Cobra_3.jpg', 5, 4, 1, 653.9400, NULL, NULL, NULL, NULL, NULL),
-(634, 'H-283', '[VOL-83414-2] Machuelo 1/4-28 UNF Volkel', 'HM2-20', 85.94, 4, '2024-07-19 16:41:36', 3, 43, 1, 1, '_VOL_83414_2_Machuelo_1_4_28_UNF_Volkel_67.jpg', 5, 4, 1, 85.9400, NULL, NULL, NULL, NULL, NULL),
 (635, 'I-0210', 'GU-152 GUANTE DE NITRILO NEGRO, MEDIANO', 'LOCKER FILA 4', 47.42, 4, '2024-07-22 08:54:57', 2, 17, 8, 1, 'GU_152_GUANTE_DE_NITRILO_NEGRO_MEDIANO_23.jpg', 5, 2, 1, 47.4200, NULL, NULL, NULL, NULL, NULL),
 (636, 'I-0211', 'GU-151 GUANTE DE NITRILO NEGRO, CHICO', 'LOCKER FILA 4', 47.42, 4, '2024-07-22 08:56:31', 2, 17, 8, 1, 'GU_151_GUANTE_DE_NITRILO_NEGRO_CHICO_88.jpg', 5, 2, 1, 47.4200, NULL, NULL, NULL, NULL, NULL),
 (637, 'H-0284', 'PORTA INSERTO RANURADO A4 DER. ZANCO 3/4\" INS. W2.0 MMA4SMR120214', 'HM3-1', 195.00, 1, '2024-07-24 13:47:23', 3, 2, 1, 2, 'PORTA_INSERTO_RANURADO_A4_DER_ZANCO_3_4_INS_W2_0_MMA4SMR120214_100.jpg', 5, 2, 1, 195.0000, NULL, NULL, NULL, NULL, NULL),
@@ -634,7 +662,6 @@ INSERT INTO `products` (`product_id`, `product_code`, `product_name`, `location`
 (640, 'H-0287', 'TORNILLO DE MAQUINADOS, S2112, BTN HD CAP SCR #10-32 X 0.750,  2050082  4506728018 CVL1', 'HM3-6', 4.50, 9, '2024-07-26 14:37:08', 3, 2, 1, 2, 'TORNILLO_DE_MAQUINADOS_S2112_BTN_HD_CAP_SCR_10_32_X_0_750_2050082_4506728018_CVL1_26.jpg', 5, 2, 1, 4.5000, NULL, NULL, NULL, NULL, NULL),
 (641, 'H-0288', 'Macho (Machuelo) helicoidal Blue Shark con chaflán forma C, con entrada de 2-3xP, UNF 1/4\"\r\ncon 28 HPP, tolerancia 0.002\", zanco 0.2550\", cuadro 0.1890\", HSS-E pulvimetalúrgico con\r\n', 'HM2-20', 59.50, 3, '2024-07-30 13:32:48', 3, 11, 1, 2, 'Macho_Machuelo_helicoidal_Blue_Shark_con_chafl_n_forma_C_con_entrada_de_2_3xP_UNF_1_4_con_28_HPP_tolerancia_0_002_zanco_0_2550_cuadro_0_1890_HSS_E_pulvimetal_rgico_con__3.jpg', 5, 2, 1, 59.5000, NULL, NULL, NULL, NULL, NULL),
 (642, 'H-0289', 'INSERTOS PARA ALUMINIO,SINTERGRIP ALU PARA PRENSA 5 EJES,MCA. SMW AUTOBLOK.', 'HM2-16', 48.00, 1, '2024-07-31 14:44:57', 3, 11, 9, 2, 'SET_DE_10_INSERTOS_PARA_ALUMINIO_SINTERGRIP_ALU_PARA_PRENSA_5_EJES_MCA_SMW_AUTOBLOK__73.jpg', 5, 2, 1, 48.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000),
-(643, 'DELT-9T', 'PLATINA', 'GABETA G8', 98.00, 332, '2024-08-05 10:16:08', 9, 50, 1, 1, 'PLATINA_6.jpg', 4, 2, 1, 98.0000, NULL, NULL, NULL, NULL, NULL),
 (644, 'H-0289', 'MICROFRESA DE MDI (CARBURO) DIÁMETRO DE CORTE 2.5mm, ZANCO REDUCIDO 20mm, MCA. GARANT', 'HM2-15', 91.50, 9, '2024-08-07 09:59:52', 3, 11, 1, 2, 'MICROFRESA_DE_MDI_CARBURO_DI_METRO_DE_CORTE_2_5mm_ZANCO_REDUCIDO_20mm_MCA_GARANT_45.jpg', 5, 2, 1, 91.5000, NULL, NULL, NULL, NULL, NULL),
 (645, 'H-0290', 'BARRA DE INTERIORES A-SCLCR 8-2 ISCAR', 'HM2-15', 237.30, 1, '2024-08-08 13:51:46', 3, 2, 1, 2, 'BARRA_DE_INTERIORES_A_SCLCR_8_2_ISCAR_59.jpg', 5, 2, 1, 237.3000, NULL, NULL, NULL, NULL, NULL),
 (646, 'H-0291', 'INSERTOS DE CARBURO CCMT 2-1F3P IC8150ISCAR', 'HM2-15', 15.50, 10, '2024-08-08 13:53:40', 3, 2, 1, 2, 'INSERTOS_DE_CARBURO_CCMT_2_1F3P_IC8150ISCAR_87.jpg', 5, 2, 1, 15.5000, NULL, NULL, NULL, NULL, NULL),
@@ -658,12 +685,9 @@ INSERT INTO `products` (`product_id`, `product_code`, `product_name`, `location`
 (669, 'MPM-023', 'BARRA REDONDA ACERO INOXIDABLE T-304 DE 3/16 Inch X 3.05 mts.', 'MAQUINADOS', 64.00, 3, '2024-10-11 15:02:05', 6, 1, 1, 1, '', 5, 2, 1, 0.0000, 0.0000, 0.0000, 3.0500, 0.0000, 0.0047),
 (670, 'MPM-021', 'BARRA REDONDA ACERO INOXIDABLE T-304 DE 5/16 Inch X 3.05 Mts', 'MAQUINADOS', 1115.00, 11, '2024-10-11 15:04:25', 6, 1, 1, 1, '', 5, 2, 1, 0.0000, 0.0000, 0.0000, 3.0500, 0.0000, 0.0079),
 (671, 'MPM-024', 'BARRA REDONDA ACERO INOXIDABLE T-304 DE 1/8 Inch X 3.66 MTS.', 'MAQUINADOS', 45.00, 4, '2024-10-11 15:09:24', 6, 1, 1, 1, '', 5, 4, 1, 0.0000, 0.0000, 0.0000, 3.6600, 0.0000, 0.0031),
-(672, 'H-0305', 'Rima ajustable 9/32 - 5/16 7/a soba 211616821003812', 'HM3-7', 132.27, 5, '2024-10-14 12:09:23', 3, 54, 1, 1, 'Rima_ajustable_9_32_5_16_7_a_soba_211616821003812_22.jpg', 5, 2, 1, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000),
 (673, 'H-0306', 'HERRAMIENTA DE CARBURO PARA CHAMBER A 45 GRADOS', 'HM3-8', 840.00, 20, '2024-10-21 12:06:48', 3, 18, 1, 1, 'HERRAMIENTA_DE_CARBURO_PARA_CHAMBER_A_45_GRADOS_60.jpg', 5, 4, 1, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000),
 (674, 'DELT-9I', 'CAJA PARA ARCO FACIAL', 'RACK-001', 7.22, 324, '2024-10-21 12:19:42', 9, 4, 1, 1, 'CAJA_PARA_ARCO_FACIAL_33.jpg', 4, 50, 1, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000),
 (675, 'DELT-9J', 'FOAM PARA CAJA DE ARCO', 'RACK-001', 5.00, 149, '2024-10-21 12:22:10', 9, 4, 1, 1, 'BASE_DE_FOAM_PARA_CAJA_DE_ARCO_86.jpg', 4, 50, 1, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000),
-(678, 'H-0307', 'MAZO DE HULE 24 Oz PRETUL', 'LOCKER FILA 3', 93.97, 0, '2024-10-22 09:41:21', 1, 0, 1, 1, 'MAZO_DE_HULE_24_Oz_PRETUL_99.jpg', 5, 1, 1, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000),
-(679, 'H-308', 'ARCO DE SIERRA CON HOJA BIMETALICA 24 DPP 300 HOLEX', 'MAQUINADOS', 462.21, 2, '2024-10-22 09:47:42', 1, 52, 1, 1, 'ARCO_DE_SIERRA_CON_HOJA_BIMETALICA_24_DPP_300_HOLEX_76.png', 5, 1, 1, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000),
 (680, 'H-0309', 'TORNILLO MS2166 / PARA CORONA KENNAMETAL', 'HM3-9', 6.94, 10, '2024-10-23 14:57:20', 3, 2, 1, 2, '', 5, 5, 1, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000),
 (681, 'H-0310', 'MACHUELO RECTO M4 X 0.7 ( 1. 1/2 hilos de chaflán) ROYCO', 'HM2-12', 168.00, 5, '2024-10-23 15:08:52', 3, 2, 1, 1, '', 5, 3, 1, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000),
 (682, 'H-0311', 'BROCA RECTA Ø5/32\" X 3\" CORTE X 5.3/8\" LARGO TOTAL, CLEV', 'HM2-8', 98.00, 5, '2024-10-23 15:12:24', 3, 2, 1, 1, '', 5, 3, 1, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000),
@@ -672,7 +696,6 @@ INSERT INTO `products` (`product_id`, `product_code`, `product_name`, `location`
 (685, 'H-0313', 'BOQUILLA ER16 10-9', 'HM3-4', 428.04, 2, '2024-11-08 14:51:29', 3, 2, 1, 1, 'BOQUILLA_ER16_10_9_6.jpg', 5, 1, 1, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000),
 (686, 'H-0314', 'BOQUILLA ER16 7-6 OLIMA', 'HM3-4', 428.04, 2, '2024-11-08 14:53:30', 3, 2, 1, 1, 'BOQUILLA_ER16_7_6_OLIMA_17.jpg', 5, 1, 1, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000),
 (687, 'H-0315', 'RIMA RECTA HSS 5/16\" FENES', 'HM3-1', 433.04, 2, '2024-11-08 14:54:59', 3, 2, 1, 1, 'RIMA_RECTA_HSS_5_16_FENES_72.jpg', 5, 1, 1, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000),
-(688, 'ART-DELT-P', 'KIT DELTA PROTÉSICO', 'PRODUCTO TERMINADO', 20194.01, 0, '2024-11-17 10:37:05', 11, 34, 1, 1, 'KIT_DELTA_PROT_SICO_93.png', 5, 100, 1, 20194.0100, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000),
 (689, 'MPM-003', 'SOLERA ALUMINIO 6061 DE 1 X 1-1/2 X 3.66MTS.', 'MAQUINADOS', 1510.00, 3, '2024-11-20 11:05:50', 6, 1, 1, 1, '', 5, 2, 1, 0.0000, 0.0000, 0.0254, 3.6600, 0.0381, 0.0000),
 (690, 'MPM-006', 'SOLERA ALUMINIO 6061 DE 1-1/4 X 2 X 3.66 MTS.', 'MAQUINADOS', 2592.00, 2, '2024-11-20 11:17:33', 6, 1, 1, 1, '', 5, 2, 1, 0.0000, 0.0000, 0.0317, 3.6600, 0.0508, 0.0000),
 (691, 'MPM-011', 'SOLERA NYLAMID T-M DE 1 X 11/2 X 3.05 MTS.', 'MAQUINADOS', 1920.00, 1, '2024-11-20 11:41:17', 6, 1, 1, 1, '', 5, 2, 1, 0.0000, 0.0000, 0.0254, 3.0500, 0.0381, 0.0000),
@@ -680,6 +703,106 @@ INSERT INTO `products` (`product_id`, `product_code`, `product_name`, `location`
 (693, 'MPM-017', 'BARRA REDONDA ALUMINIO 6061 DE 5/16 INCH X 3.66 MTS.', 'MAQUINADOS', 80.00, 12, '2024-11-20 12:09:57', 6, 1, 1, 1, '', 5, 2, 1, 0.0000, 0.0000, 0.0000, 3.6600, 0.0000, 0.0079),
 (694, 'MPM-018', 'BARRA REDONDA DE ALUMINIO 6061 1/4 INCH X 3.66 MTS.', 'MAQUINADO', 48.00, 2, '2024-11-20 12:18:11', 6, 1, 1, 1, '', 5, 2, 1, 0.0000, 0.0000, 0.0000, 3.6600, 0.0000, 0.0063),
 (695, 'MPM-020', 'BARRA ACERO INOXIDABLE T-304 DE 3/8 INCH X 3.66 MTS.', 'MAQUINADO', 198.00, 2, '2024-11-20 12:24:20', 6, 1, 1, 1, '', 5, 2, 1, 0.0000, 0.0000, 0.0000, 3.6600, 0.0000, 0.0095);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `subcategories`
+--
+
+CREATE TABLE `subcategories` (
+  `subcategory_id` int(11) NOT NULL,
+  `subcategory_name` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `subcategories`
+--
+
+INSERT INTO `subcategories` (`subcategory_id`, `subcategory_name`) VALUES
+(1, 'TORNILLERIA COMPRA EXTERNA PARA KIT'),
+(2, 'TORNILLERIA MAQUINADOS'),
+(3, 'PIEZAS KIT MAQUINADOS'),
+(4, 'PIEZAS COMPRA EXTERNA PARA KIT'),
+(5, 'SIN SUB CATEGORIA');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `suppliers`
+--
+
+CREATE TABLE `suppliers` (
+  `supplier_id` int(11) NOT NULL,
+  `supplier_name` varchar(255) NOT NULL,
+  `supplier_rfc` varchar(20) DEFAULT NULL,
+  `supplier_email` varchar(255) DEFAULT NULL,
+  `supplier_phone` varchar(100) DEFAULT NULL,
+  `supplier_address` text DEFAULT NULL,
+  `supplier_contact` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `suppliers`
+--
+
+INSERT INTO `suppliers` (`supplier_id`, `supplier_name`, `supplier_rfc`, `supplier_email`, `supplier_phone`, `supplier_address`, `supplier_contact`) VALUES
+(1, 'MAPI', 'LOMG900317UX8', 'mapiventas@outlook.com, mapifacturas@outlook.com', '5516579866, 5511629508', 'Torre Ladera, Lt 19/Mz 202, Santa María Guadalupe ...', 'David Castro Monroy'),
+(2, 'HIGHER-TOOLS', 'HTO150907A20', 'ventas1@higher-tools.com, facturacion@higher-tools...', '5545022954, 5556087437', '5 DE MAYO, MANZANA 28 LOTE 8, LOS REYES CULHUACAN,...', 'Andres Tello Hurtado'),
+(3, 'MAQUINADOS', NULL, 'sup_maquinados@borgatta.com.mx', 'ext. 418', NULL, 'Luis Antonio'),
+(4, 'COMPRAS EXTERNAS', NULL, NULL, NULL, NULL, NULL),
+(5, 'TONY PAPELERIA', NULL, NULL, NULL, NULL, NULL),
+(10, 'MICRO PARTES', 'MPM060610BR1', 'aramirez@micropartes.com.mx', '8127453490', 'Calle: NUEVA YORK No. 4003, Col. INDUSTRIAL HABITA...', 'Azeneth Ramirez'),
+(11, 'INGHECO S DE RL DE CV', 'DHI160120JA1', 'francisco.gonzalez@ingheco.com.mx', '5519531412', 'Avenida Hacienda El Roble Mz. 5 Lt...', 'Francisco Gonzalez Gutierrez'),
+(12, 'Quantum', 'PMI190325T31', 'thalia.zilch@gpoquantum.com', '5574615084', 'Jorge Washington No 2 PB Col Moderna CP 03510 Ciudad...', 'Thalia M Zilch Cruz'),
+(13, 'FIJATEC CITY', 'FCI110511SV8', 'city@fijatec.com', '5555617279', 'Av Azcapotzalco No 742 local A', 'Edgar Medina'),
+(14, 'TORNILLOS TOREC', 'TT0230821357', 'ventas1@torec.mx', '3323940278', 'Susana Gomez Palafox #5334 C.P. 45079 Paseos del S...', 'DIEGO ALBERTO BARAJAS MARTINEZ'),
+(15, 'INDUSTRIA ANODIZADORA NACIONAL', 'SARA8301082M0', 'electropintarq@gmail.com', '5572580254', 'San Francisco 3 col San Francisco Tlaltenco Tlahua...', 'Sergio Hernandez'),
+(16, 'FERNANDO SAUL VALERO ARIAS', 'VAAF700813PWA', 'saul.valero@hotmail.com', '5593132882', 'Circuito Hacienda de San Pablo N° Ext.Mz 19 Lt 68...', 'FERNANDO SAUL VALERO ARIAS'),
+(17, 'INFRA', 'INF891031lt4', 'ixtapalucaurbana@infra.com.mx', '5522300455', 'SUCURSAL 107 IXTAPALUCA AV. CUAUHTEMOC NUMERO 240 ...', 'ARMANDO GONZALEZ WHATAPP: 5534926376'),
+(18, 'INGENIERIA EN EMPAQUES DURAN', 'IED990212AY6', 'claudia_g.p@hotmail.com', '5511563641', 'Av Henry Ford No. 4111, Col. Gertrudis Sánchez 2a ...', 'CLAUDIA GARCIA PEREZ'),
+(19, 'ONLY IMPRESION', 'HEJL941125FL5', 'maytep@onlyimpression.com', '00000000', 'SIN DEFINIR', 'LILIANA VANESSA HERNANDEZ JAIME'),
+(23, 'CAJAS Y SERVICIOS MELGAR', 'MERP850326HY2', 'PORDEFINIR2@GMAIL.COM', '558862538', 'AV. INDEPENDENCIA 1 CERRO DEL TEJOLOTE CD 56567 IX...', 'PEDRO MEJIA RAMIREZ'),
+(24, 'CPACSA COMERCIALIZADORA DE PORTATROQUELES Y ACCESORIOS', 'CPT840820M37', 'daniel@cpacsa.com', '5557524551', 'AV 45 METROS N.651 SAN BARTOLO ATEPEHUACAN CP. 077...', 'DANIEL'),
+(25, 'INNOVATEC', 'IPR910118NJ5', 'ventas@imanesdemexico.com', '018183330709', 'WASHINGTON 2712 PTE. COL. DEPORTOVP OBISPADO MONTE...', 'MAURICIO BOLADO'),
+(26, 'FERNANDO SAUL VALERO ARIAS', 'VAAF700813PWA', 'saul.valero@hotmail.com', '5593132882', 'Circuito Hacienda de San Pablo N° Ext.Mz 19 Lt 68...', 'FERNANDO SAUL VALERO ARIAS'),
+(27, 'INFRA', 'INF891031lt4', 'ixtapalucaurbana@infra.com.mx', '5522300455', 'SUCURSAL 107 IXTAPALUCA AV. CUAUHTEMOC NUMERO 240 ...', 'ARMANDO GONZALEZ WHATAPP: 5534926376'),
+(28, 'INGENIERIA EN EMPAQUES DURAN', 'IED990212AY6', 'claudia_g.p@hotmail.com', '5511563641', 'Av Henry Ford No. 4111, Col. Gertrudis Sánchez 2a ...', 'CLAUDIA GARCIA PEREZ'),
+(29, 'ONLY IMPRESION', 'HEJL941125FL5', 'maytep@onlyimpression.com', '00000000', 'SIN DEFINIR', 'LILIANA VANESSA HERNANDEZ JAIME'),
+(30, 'PEDRO MEJIA RAMIREZ', 'MERP850326HY2', 'SINCORREO@SIN.COM', '5565560882', 'Avenida Independencia, 1, Cerro del Tejolote, 5656...', 'PEDRO MEJIA RAMIREZ'),
+(31, 'Grupo Eléctrico Delta, Victor Manuel Garcia Arteaga', 'GAAV5610016W0', 'ventas@devsa.mx', '59740256', 'Av. Cuauhtémoc 90, Santo Tomas, 56560 Ixtapaluca, ...', 'Victor Manuel Garcia Arteaga'),
+(32, 'RAUL JESUS DELGADO BARRIOS', 'DEBR860728U34', 'raul_delgado86@hotmail.com', '7227099856', 'sin especificar', 'RAUL JESUS DELGADO BARRIOS');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `units`
+--
+
+CREATE TABLE `units` (
+  `unit_id` int(11) NOT NULL,
+  `unit_name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `units`
+--
+
+INSERT INTO `units` (`unit_id`, `unit_name`) VALUES
+(1, 'Pieza'),
+(2, 'Kilogramos'),
+(3, 'Metros'),
+(4, 'Centímetros'),
+(5, 'Pulgadas'),
+(6, 'Milímetros'),
+(7, 'Litros'),
+(8, 'Par'),
+(9, 'Juego'),
+(10, 'Gramos'),
+(11, 'SERVICIO'),
+(12, 'KIT'),
+(13, 'MILLAR'),
+(14, 'CIENTO');
 
 -- --------------------------------------------------------
 
@@ -703,7 +826,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `level_user`, `created_at`, `updated_at`, `img_url`) VALUES
-(2, 'administrador2', 'administrador2@gmail.com', '$2y$10$GgtTWrlYykHcv6hednsnKOEJEKyOG5JQmrMnHjX736nL4p6gK2bAW', 1, '2025-03-18 20:15:59', '2025-05-05 20:12:37', ''),
+(2, 'administrador2', 'administrador2@gmail.com', '$2y$10$GgtTWrlYykHcv6hednsnKOEJEKyOG5JQmrMnHjX736nL4p6gK2bAW', 6, '2025-03-18 20:15:59', '2025-06-16 23:12:36', ''),
 (15, 'administrador1', 'administrador1@gmail.com', '$2y$10$HqeAjVjU2IdwaCGQfV3T.OvgOXuWF.IpPJPKT57FqDO3FtBby5dom', 1, '2025-03-28 23:33:42', '2025-05-22 17:49:07', ''),
 (27, 'administrador', 'administrador@gmail.com', '$2y$10$j.n/yl2twdiwX7qdoYV1t.tT2dYVMYmKB3NCodQ9nyasBqHlOA45C', 1, '2025-04-18 05:44:07', '2025-05-25 01:38:46', 'assets/images/users/administrador.png'),
 (34, 'administrador3', 'administrador3@gmail.com', '$2y$10$oX3TFhuG8TISWvSvnYZ35eMBtZxhP5HnIviTvUaa9bC9QTxpRvQSe', 1, '2025-05-05 23:16:29', '2025-05-05 23:16:48', ''),
@@ -750,17 +873,40 @@ INSERT INTO `user_logs` (`id`, `user_id`, `action`, `timestamp`) VALUES
 (18, 27, 'login', '2025-06-14 07:34:38'),
 (19, 27, 'login', '2025-06-14 08:39:44'),
 (20, 27, 'login', '2025-06-14 11:16:43'),
-(21, 27, 'login', '2025-06-14 15:50:03');
+(21, 27, 'login', '2025-06-14 15:50:03'),
+(22, 27, 'login', '2025-06-14 20:22:16'),
+(23, 27, 'login', '2025-06-16 16:16:32'),
+(24, 27, 'logout', '2025-06-16 17:09:31'),
+(25, 46, 'login', '2025-06-16 17:09:43'),
+(26, 46, 'logout', '2025-06-16 17:10:02'),
+(27, 27, 'login', '2025-06-16 17:10:09'),
+(28, 27, 'logout', '2025-06-16 17:12:47'),
+(29, 2, 'login', '2025-06-16 17:12:57'),
+(30, 2, 'logout', '2025-06-16 17:13:16'),
+(31, 27, 'login', '2025-06-16 17:13:25'),
+(32, 27, 'login', '2025-06-16 19:43:02');
 
 --
 -- Índices para tablas volcadas
 --
 
 --
+-- Indices de la tabla `categories`
+--
+ALTER TABLE `categories`
+  ADD PRIMARY KEY (`category_id`);
+
+--
 -- Indices de la tabla `companys`
 --
 ALTER TABLE `companys`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `currencies`
+--
+ALTER TABLE `currencies`
+  ADD PRIMARY KEY (`currency_id`);
 
 --
 -- Indices de la tabla `levels_users`
@@ -778,6 +924,24 @@ ALTER TABLE `products`
   ADD KEY `idx_unit` (`unit_id`),
   ADD KEY `idx_currency` (`currency_id`),
   ADD KEY `idx_subcategory` (`subcategory_id`);
+
+--
+-- Indices de la tabla `subcategories`
+--
+ALTER TABLE `subcategories`
+  ADD PRIMARY KEY (`subcategory_id`);
+
+--
+-- Indices de la tabla `suppliers`
+--
+ALTER TABLE `suppliers`
+  ADD PRIMARY KEY (`supplier_id`);
+
+--
+-- Indices de la tabla `units`
+--
+ALTER TABLE `units`
+  ADD PRIMARY KEY (`unit_id`);
 
 --
 -- Indices de la tabla `users`
@@ -800,10 +964,22 @@ ALTER TABLE `user_logs`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `categories`
+--
+ALTER TABLE `categories`
+  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
 -- AUTO_INCREMENT de la tabla `companys`
 --
 ALTER TABLE `companys`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `currencies`
+--
+ALTER TABLE `currencies`
+  MODIFY `currency_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `levels_users`
@@ -818,6 +994,18 @@ ALTER TABLE `products`
   MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=696;
 
 --
+-- AUTO_INCREMENT de la tabla `subcategories`
+--
+ALTER TABLE `subcategories`
+  MODIFY `subcategory_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de la tabla `suppliers`
+--
+ALTER TABLE `suppliers`
+  MODIFY `supplier_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+
+--
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
@@ -827,11 +1015,21 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de la tabla `user_logs`
 --
 ALTER TABLE `user_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `products`
+--
+ALTER TABLE `products`
+  ADD CONSTRAINT `products-categories` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`),
+  ADD CONSTRAINT `products-currencies` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`currency_id`),
+  ADD CONSTRAINT `products-subcategorys` FOREIGN KEY (`subcategory_id`) REFERENCES `subcategories` (`subcategory_id`),
+  ADD CONSTRAINT `products-supliers` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`supplier_id`),
+  ADD CONSTRAINT `products-units` FOREIGN KEY (`unit_id`) REFERENCES `units` (`unit_id`);
 
 --
 -- Filtros para la tabla `users`

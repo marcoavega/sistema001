@@ -314,20 +314,38 @@ document.addEventListener("DOMContentLoaded", function () {
         // category_id: ..., supplier_id, etc., si aplica
       };
 
+
       fetch(BASE_URL + "api/products.php?action=create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productData: productData }),
       })
-        .then((res) => res.json())
+        .then((res) => {
+          // Si el status HTTP no está en el rango 200-299, consideramos error.
+          if (!res.ok) {
+            // Leer la respuesta como texto para debug (puede contener mensaje JSON o HTML de error).
+            return res.text().then((text) => {
+              console.error("Respuesta no OK al crear producto. Status:", res.status, "Response body:", text);
+              // Opcional: mostrar mensaje más amigable al usuario
+              throw new Error("Error al crear producto. Verifica consola para más detalles.");
+            });
+          }
+          // Respuesta OK: parsear JSON
+          return res.json().catch((err) => {
+            console.error("No se pudo parsear JSON de la respuesta:", err);
+            throw new Error("Respuesta inválida del servidor al crear producto.");
+          });
+        })
         .then((data) => {
+          // Aquí ya sabemos que res.ok era true y JSON fue parseado
           if (!data.success) {
-            alert("Error al crear producto: " + data.message);
+            // La API devolvió éxito=false
+            alert("Error al crear producto: " + (data.message || "Mensaje no disponible"));
           } else {
-            // Suponemos que la API devuelve el objeto nuevo en `data.product`
+            // Éxito: esperamos que data.product exista
             if (data.product) {
               table.addData([data.product]).then(() => {
-                // Cerrar modal
+                // Cerrar modal si existe
                 var modalEl = document.getElementById("addProductModal");
                 if (modalEl) {
                   var modalInst = bootstrap.Modal.getInstance(modalEl);
@@ -335,15 +353,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
               });
             } else {
-              console.warn(
-                "No se devolvió objeto `product` en la respuesta. Verifica tu API."
-              );
+              console.warn("Respuesta correcta pero no se devolvió `data.product`. Revisa el endpoint.");
             }
           }
         })
         .catch((err) => {
+          // Captura cualquier error lanzado arriba: network, parsing, throw manual, etc.
           console.error("Error en solicitud AJAX creación:", err);
+          alert(err.message); // Mostrar un mensaje genérico al usuario
         });
+
+        
     });
   }
 

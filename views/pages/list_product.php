@@ -103,8 +103,9 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 
         <!-- Modales necesarios para funcionamiento -->
         <?php
-        /*
+        
           include __DIR__ . '/../partials/modals/modal_add_product.php';
+          /*
           include __DIR__ . '/../partials/modals/modal_edit_product.php';
           include __DIR__ . '/../partials/modals/modal_delete_product.php';
           */

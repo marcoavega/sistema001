@@ -1,146 +1,106 @@
 <?php
-// Archivo: api/products.php
+// api/products.php
 
-// Asegurarse de que la respuesta sea JSON
+// Mostrar errores en desarrollo:
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 header('Content-Type: application/json');
 
-// Incluir configuración y controlador de productos
+// Incluir configuración y controlador:
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../controllers/ProductController.php';
 
-// Obtener la acción enviada por GET, p.ej. ?action=get|create|update|delete
 $action = $_GET['action'] ?? '';
 
 $productController = new ProductController();
 
-// Función auxiliar para leer body JSON
-function getJsonInput() {
-    $input = file_get_contents("php://input");
-    if (empty($input)) {
-        return [];
-    }
-    $data = json_decode($input, true);
-    return is_array($data) ? $data : [];
-}
-
 switch ($action) {
     case 'get':
-        // Obtener todos los productos
-        try {
-            $products = $productController->getAllProducts();
-            echo json_encode($products);
-        } catch (\Exception $e) {
-            http_response_code(500);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Error al obtener productos: ' . $e->getMessage(),
-            ]);
-        }
+        $products = $productController->getAllProducts();
+        echo json_encode($products);
         break;
 
     case 'create':
-        // Crear nuevo producto
-        // Esperamos el JSON con clave "productData", por ejemplo:
-        // { "productData": { "product_code": "...", "product_name": "...", ... } }
-        $input = getJsonInput();
-        $data = $input['productData'] ?? [];
-
-        // Validaciones básicas (puedes extender en el controlador/modelo)
-        if (empty($data)) {
+        // Lee body JSON:
+        $raw = file_get_contents('php://input');
+        $payload = json_decode($raw, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
             http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'No se recibieron datos de producto para crear.'
-            ]);
-            break;
+            echo json_encode(['success' => false, 'message' => 'JSON inválido: '. json_last_error_msg()]);
+            exit;
         }
 
-        // Llamar al controlador
-        $result = $productController->createProduct($data);
-        // Se espera que createProduct devuelva ['success'=>bool, 'product'=>[...] ] o ['success'=>false,'message'=>...]
-        if (!empty($result['success'])) {
-            // Devolver el nuevo producto
-            echo json_encode([
-                'success' => true,
-                'newProduct' => $result['product']
-            ]);
+        // Esperamos { productData: {...} }
+        if (!isset($payload['productData']) || !is_array($payload['productData'])) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Datos de producto faltantes']);
+            exit;
+        }
+        $data = $payload['productData'];
+
+        // Llamar al método de creación en ProductController
+        $result = $productController->createProduct($data); 
+        // Asegúrate de tener createProduct en ProductController que inserte y devuelva ['success'=>..., 'product'=>...]
+        if ($result['success']) {
+            echo json_encode(['success' => true, 'product' => $result['product']]);
         } else {
             http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => $result['message'] ?? 'No se pudo crear el producto.'
-            ]);
+            echo json_encode(['success' => false, 'message' => $result['message']]);
         }
         break;
 
     case 'update':
-        // Actualizar un producto existente
-        // Esperamos JSON con clave "productData", que incluya al menos 'product_id'
-        // { "productData": { "product_id": 123, "product_name": "...", ... } }
-        $input = getJsonInput();
-        $data = $input['productData'] ?? [];
-
-        if (empty($data) || empty($data['product_id'])) {
+        // Similar al create, lee JSON, valida product_id y productData
+        $raw = file_get_contents('php://input');
+        $payload = json_decode($raw, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
             http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'No se proporcionó product_id o datos insuficientes para actualizar.'
-            ]);
-            break;
+            echo json_encode(['success'=>false,'message'=>'JSON inválido']);
+            exit;
         }
-
-        // Llamar al controlador
-        $result = $productController->updateProduct($data);
-        // Se espera que updateProduct devuelva ['success'=>bool, 'product'=>[...] ] o ['success'=>false,'message'=>...]
-        if (!empty($result['success'])) {
-            echo json_encode([
-                'success' => true,
-                'updatedProduct' => $result['product']
-            ]);
+        if (!isset($payload['product_id']) || !isset($payload['productData'])) {
+            http_response_code(400);
+            echo json_encode(['success'=>false,'message'=>'Faltan parámetros para actualización']);
+            exit;
+        }
+        $id = (int)$payload['product_id'];
+        $data = $payload['productData'];
+        $result = $productController->updateProduct($id, $data);
+        if ($result['success']) {
+            echo json_encode(['success'=>true, 'product'=>$result['product']]);
         } else {
             http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => $result['message'] ?? 'No se pudo actualizar el producto.'
-            ]);
+            echo json_encode(['success'=>false,'message'=>$result['message']]);
         }
         break;
 
     case 'delete':
-        // Eliminar un producto por ID
-        $input = getJsonInput();
-        $productID = $input['product_id'] ?? null;
-
-        if ($productID === null || !is_numeric($productID)) {
+        $raw = file_get_contents('php://input');
+        $payload = json_decode($raw, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
             http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Product ID no proporcionado o inválido.'
-            ]);
-            break;
+            echo json_encode(['success'=>false,'message'=>'JSON inválido']);
+            exit;
         }
-        $productID = (int)$productID;
-
-        $result = $productController->deleteProduct($productID);
-        // Se espera que deleteProduct devuelva ['success'=>bool] o ['success'=>false,'message'=>...]
-        if (!empty($result['success'])) {
-            echo json_encode(['success' => true]);
+        if (!isset($payload['product_id'])) {
+            http_response_code(400);
+            echo json_encode(['success'=>false,'message'=>'Falta product_id']);
+            exit;
+        }
+        $id = (int)$payload['product_id'];
+        $result = $productController->deleteProduct($id);
+        if ($result['success']) {
+            echo json_encode(['success'=>true]);
         } else {
             http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => $result['message'] ?? 'No se pudo eliminar el producto.'
-            ]);
+            echo json_encode(['success'=>false,'message'=>$result['message']]);
         }
         break;
 
     default:
         http_response_code(400);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Acción no definida.'
-        ]);
-        break;
+        echo json_encode(['success'=>false,'message'=>'Acción no definida']);
 }
-
-exit();
+exit;

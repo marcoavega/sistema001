@@ -17,20 +17,20 @@ $segment = explode('/', trim($uri, '/'))[0];
 // Iniciar buffer de salida
 ob_start();
 
-// Conexión a la base de datos
+// Conexión a la base de datos (si necesitas cargar datos adicionales)
 require_once __DIR__ . '/../../models/Database.php';
 $pdo = (new Database())->getConnection();
 
-// Nombre de usuario
+// Nombre de usuario para mostrar
 $username = htmlspecialchars($_SESSION['user']['username']);
 
-// Menú lateral
+// Incluir menú lateral de productos/inventario
 require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 ?>
 
 <div class="container-fluid m-0 p-0">
   <div class="row g-0">
-    <!-- Sidebar -->
+    <!-- Sidebar lateral -->
     <nav class="col-md-2 d-none d-md-block sidebar min-vh-100">
       <ul class="nav flex-column pt-3">
         <?php foreach ($menuItems as $route => $item): ?>
@@ -46,7 +46,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 
     <!-- Contenido principal -->
     <main class="col-12 col-md-10 px-4 py-3">
-      <!-- Menú móvil -->
+      <!-- Menú desplegable para pantallas pequeñas -->
       <div class="d-md-none mb-3">
         <div class="dropdown">
           <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start" type="button" id="mobileMenuBtn" data-bs-toggle="dropdown">
@@ -64,7 +64,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
         </div>
       </div>
 
-      <!-- Verificación de permisos -->
+      <!-- Verificación de permisos: ajustar según tu lógica -->
       <?php if ($_SESSION['user']['level_user'] != 1): ?>
         <h2>Acceso Denegado</h2>
         <div class="alert alert-danger">No tienes permiso para ver esta página.</div>
@@ -74,7 +74,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
           <span class="text-muted">Bienvenido, <?= $username ?>.</span>
         </div>
 
-        <!-- Botones -->
+        <!-- Botones de acción -->
         <div class="row mb-3 g-2">
           <div class="col-12 col-md-auto">
             <button id="addProductBtn" class="btn btn-primary">Agregar Producto</button>
@@ -93,24 +93,23 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
           </div>
         </div>
 
-        <!-- Buscador -->
+        <!-- Buscador de productos -->
         <div class="mb-3">
           <input type="text" id="table-search" class="form-control" placeholder="Buscar productos por código o nombre">
         </div>
 
-        <!-- Tabla -->
+        <!-- Contenedor de la tabla Tabulator -->
         <div id="products-table"></div>
 
-        <!-- Modales necesarios para funcionamiento -->
+        <!-- Incluir modales de agregar/editar/eliminar productos -->
         <?php
-        
           include __DIR__ . '/../partials/modals/modal_add_product.php';
-          /*
+          // Si tienes modal_edit_product.php y modal_delete_product.php, inclúyelos aquí:
           include __DIR__ . '/../partials/modals/modal_edit_product.php';
           include __DIR__ . '/../partials/modals/modal_delete_product.php';
-          */
         ?>
       <?php endif; ?>
+
     </main>
   </div>
 </div>

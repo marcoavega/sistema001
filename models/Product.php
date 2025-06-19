@@ -50,7 +50,7 @@ class Product {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Product::getAllProducts Error: " . $e->getMessage());
-            return []; // o lanzar excepción si prefieres
+            return []; 
         }
     }
 
@@ -101,28 +101,16 @@ class Product {
     /**
      * Crea un nuevo producto.
      * @param array $data Array con claves:
-     *   - product_code (string, requerido)
-     *   - product_name (string, requerido)
-     *   - location (string, requerido)
-     *   - price (float, requerido)
-     *   - stock (int, requerido)
-     *   - category_id (int, requerido)
-     *   - supplier_id (int, requerido)
-     *   - unit_id (int, requerido)
-     *   - currency_id (int, requerido)
-     *   - subcategory_id (int, requerido)
-     *   - desired_stock (int, opcional)
-     *   - status (0|1, opcional, por defecto 1)
-     *   - sale_price (float, opcional)
-     *   - weight, height, length, width, diameter (float, opcional)
-     *   - image_url (string, opcional: ruta relativa o URL de la imagen)
-     * @return array Resultado: ['success' => bool, 'product' => array, 'message' => string?]
+     *   - product_code, product_name, location, price, stock,
+     *     category_id, supplier_id, unit_id, currency_id, subcategory_id,
+     *   - desired_stock (opcional), status (opcional), sale_price, weight, height, length, width, diameter, image_url (opcional).
+     * @return array Resultado: ['success'=>bool, 'product'=>array|null, 'message'=>string?]
      */
     public function createProduct(array $data): array {
-        // Validaciones básicas
+        // Validaciones básicas de campos obligatorios
         $required = ['product_code', 'product_name', 'location', 'price', 'stock', 'category_id', 'supplier_id', 'unit_id', 'currency_id', 'subcategory_id'];
         foreach ($required as $field) {
-            if (!isset($data[$field]) || $data[$field] === '') {
+            if (!isset($data[$field]) || $data[$field] === '' || $data[$field] === null) {
                 return [
                     'success' => false,
                     'message' => "El campo '$field' es obligatorio."
@@ -158,32 +146,57 @@ class Product {
             $stmt->bindParam(':subcategory_id', $data['subcategory_id'], PDO::PARAM_INT);
 
             // Bind opcionales con valor por defecto si no vienen
-            $image_url = $data['image_url'] ?? null;
-            $stmt->bindParam(':image_url', $image_url, $image_url !== null ? PDO::PARAM_STR : PDO::PARAM_NULL);
-
-            $desired_stock = $data['desired_stock'] ?? null;
-            $stmt->bindParam(':desired_stock', $desired_stock, $desired_stock !== null ? PDO::PARAM_INT : PDO::PARAM_NULL);
-
+            // image_url
+            if (isset($data['image_url'])) {
+                $stmt->bindParam(':image_url', $data['image_url'], PDO::PARAM_STR);
+            } else {
+                $stmt->bindValue(':image_url', null, PDO::PARAM_NULL);
+            }
+            // desired_stock
+            if (isset($data['desired_stock']) && $data['desired_stock'] !== '') {
+                $stmt->bindParam(':desired_stock', $data['desired_stock'], PDO::PARAM_INT);
+            } else {
+                $stmt->bindValue(':desired_stock', null, PDO::PARAM_NULL);
+            }
+            // status (por defecto 1)
             $status = isset($data['status']) ? (int)$data['status'] : 1;
             $stmt->bindParam(':status', $status, PDO::PARAM_INT);
-
-            $sale_price = $data['sale_price'] ?? null;
-            $stmt->bindParam(':sale_price', $sale_price, $sale_price !== null ? PDO::PARAM_STR : PDO::PARAM_NULL);
-
-            $weight = $data['weight'] ?? null;
-            $stmt->bindParam(':weight', $weight, $weight !== null ? PDO::PARAM_STR : PDO::PARAM_NULL);
-
-            $height = $data['height'] ?? null;
-            $stmt->bindParam(':height', $height, $height !== null ? PDO::PARAM_STR : PDO::PARAM_NULL);
-
-            $length = $data['length'] ?? null;
-            $stmt->bindParam(':length', $length, $length !== null ? PDO::PARAM_STR : PDO::PARAM_NULL);
-
-            $width = $data['width'] ?? null;
-            $stmt->bindParam(':width', $width, $width !== null ? PDO::PARAM_STR : PDO::PARAM_NULL);
-
-            $diameter = $data['diameter'] ?? null;
-            $stmt->bindParam(':diameter', $diameter, $diameter !== null ? PDO::PARAM_STR : PDO::PARAM_NULL);
+            // sale_price
+            if (isset($data['sale_price']) && $data['sale_price'] !== '') {
+                $stmt->bindParam(':sale_price', $data['sale_price']);
+            } else {
+                $stmt->bindValue(':sale_price', null, PDO::PARAM_NULL);
+            }
+            // weight
+            if (isset($data['weight']) && $data['weight'] !== '') {
+                $stmt->bindParam(':weight', $data['weight']);
+            } else {
+                $stmt->bindValue(':weight', null, PDO::PARAM_NULL);
+            }
+            // height
+            if (isset($data['height']) && $data['height'] !== '') {
+                $stmt->bindParam(':height', $data['height']);
+            } else {
+                $stmt->bindValue(':height', null, PDO::PARAM_NULL);
+            }
+            // length
+            if (isset($data['length']) && $data['length'] !== '') {
+                $stmt->bindParam(':length', $data['length']);
+            } else {
+                $stmt->bindValue(':length', null, PDO::PARAM_NULL);
+            }
+            // width
+            if (isset($data['width']) && $data['width'] !== '') {
+                $stmt->bindParam(':width', $data['width']);
+            } else {
+                $stmt->bindValue(':width', null, PDO::PARAM_NULL);
+            }
+            // diameter
+            if (isset($data['diameter']) && $data['diameter'] !== '') {
+                $stmt->bindParam(':diameter', $data['diameter']);
+            } else {
+                $stmt->bindValue(':diameter', null, PDO::PARAM_NULL);
+            }
 
             $stmt->execute();
             $newId = (int)$this->db->lastInsertId();
@@ -206,7 +219,7 @@ class Product {
     /**
      * Actualiza un producto existente.
      * @param array $data Debe incluir 'product_id' (int) y el resto de campos a actualizar.
-     * @return array Resultado: ['success'=>bool, 'product'=>array, 'message'=>string?]
+     * @return array Resultado: ['success'=>bool, 'product'=>array|null, 'message'=>string?]
      */
     public function updateProduct(array $data): array {
         if (!isset($data['product_id']) || !is_numeric($data['product_id'])) {
@@ -236,13 +249,21 @@ class Product {
             // Bind dinámico
             foreach ($allowed as $field) {
                 if (array_key_exists($field, $data)) {
-                    // Detectar tipo
                     $value = $data[$field];
+                    // Campos enteros/nulos
                     if (in_array($field, ['stock','category_id','supplier_id','unit_id','currency_id','subcategory_id','desired_stock','status'])) {
-                        $stmt->bindValue(":$field", $value !== null ? (int)$value : null, $value !== null ? PDO::PARAM_INT : PDO::PARAM_NULL);
+                        if ($value === '' || $value === null) {
+                            $stmt->bindValue(":$field", null, PDO::PARAM_NULL);
+                        } else {
+                            $stmt->bindValue(":$field", (int)$value, PDO::PARAM_INT);
+                        }
                     } else {
-                        // numéricos decimales o strings/url
-                        $stmt->bindValue(":$field", $value !== null ? $value : null, $value !== null ? PDO::PARAM_STR : PDO::PARAM_NULL);
+                        // Strings o decimales
+                        if ($value === '' || $value === null) {
+                            $stmt->bindValue(":$field", null, PDO::PARAM_NULL);
+                        } else {
+                            $stmt->bindValue(":$field", $value, PDO::PARAM_STR);
+                        }
                     }
                 }
             }

@@ -28,4 +28,10 @@ define('APP_SESSION_NAME','sistema001_session');
 
 define('APP_SESSION_TIME','3600'); // 1 hora (3600 segundos) 
 // Establece la duración de la sesión, tras este tiempo inactivo el usuario debe volver a autenticarse.
+
+define('PRODUCT_IMAGE_DIR', __DIR__ . '/../../assets/images/products/'); 
+// ruta absoluta en el FS al directorio de imágenes de productos
+define('PRODUCT_IMAGE_URL_PATH', BASE_URL . 'assets/images/products/'); 
+// URL base para servir las imágenes (para guardar en BD se guarda solo el nombre o ruta relativa).
+
 ?>

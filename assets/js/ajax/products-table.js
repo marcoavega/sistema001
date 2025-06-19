@@ -95,13 +95,29 @@ document.addEventListener("DOMContentLoaded", function () {
             var editLocationEl = document.getElementById("edit-location");
             var editPriceEl = document.getElementById("edit-price");
             var editStockEl = document.getElementById("edit-stock");
+            var editCategoryEl = document.getElementById("edit-category");
+            var editSupplierEl = document.getElementById("edit-supplier");
+            var editUnitEl = document.getElementById("edit-unit");
+            var editCurrencyEl = document.getElementById("edit-currency");
+            var editSubcategoryEl = document.getElementById("edit-subcategory");
+            var editDesiredStockEl = document.getElementById("edit-desired-stock");
+            var editStatusEl = document.getElementById("edit-status");
+            // Asumimos que rowData tiene las claves exactas: product_id, product_code, product_name, location, price, stock,
+            // category_id, supplier_id, unit_id, currency_id, subcategory_id, desired_stock, status, image_url (si aplica).
             if (
               editIdEl &&
               editCodeEl &&
               editNameEl &&
               editLocationEl &&
               editPriceEl &&
-              editStockEl
+              editStockEl &&
+              editCategoryEl &&
+              editSupplierEl &&
+              editUnitEl &&
+              editCurrencyEl &&
+              editSubcategoryEl &&
+              editDesiredStockEl &&
+              editStatusEl
             ) {
               editIdEl.value = rowData.product_id;
               editCodeEl.value = rowData.product_code;
@@ -109,6 +125,13 @@ document.addEventListener("DOMContentLoaded", function () {
               editLocationEl.value = rowData.location;
               editPriceEl.value = rowData.price;
               editStockEl.value = rowData.stock;
+              editCategoryEl.value = rowData.category_id;
+              editSupplierEl.value = rowData.supplier_id;
+              editUnitEl.value = rowData.unit_id;
+              editCurrencyEl.value = rowData.currency_id;
+              editSubcategoryEl.value = rowData.subcategory_id;
+              editDesiredStockEl.value = rowData.desired_stock ?? "";
+              editStatusEl.value = rowData.status != null ? rowData.status : "1";
             }
             // Mostrar modal edición si existe
             var editModalEl = document.getElementById("editProductModal");
@@ -162,8 +185,18 @@ document.addEventListener("DOMContentLoaded", function () {
       var locationEl = document.getElementById("edit-location");
       var priceEl = document.getElementById("edit-price");
       var stockEl = document.getElementById("edit-stock");
-      if (!(idEl && codeEl && nameEl && locationEl && priceEl && stockEl))
+      var categoryEl = document.getElementById("edit-category");
+      var supplierEl = document.getElementById("edit-supplier");
+      var unitEl = document.getElementById("edit-unit");
+      var currencyEl = document.getElementById("edit-currency");
+      var subcategoryEl = document.getElementById("edit-subcategory");
+      var desiredStockEl = document.getElementById("edit-desired-stock");
+      var statusEl = document.getElementById("edit-status");
+
+      if (!(idEl && codeEl && nameEl && locationEl && priceEl && stockEl && categoryEl && supplierEl && unitEl && currencyEl && subcategoryEl && desiredStockEl && statusEl)) {
+        console.error("Faltan campos en el formulario de edición");
         return;
+      }
 
       var id = parseInt(idEl.value, 10);
       var code = codeEl.value.trim();
@@ -171,14 +204,60 @@ document.addEventListener("DOMContentLoaded", function () {
       var location = locationEl.value.trim();
       var price = parseFloat(priceEl.value);
       var stock = parseInt(stockEl.value, 10);
+      var categoryId = categoryEl.value ? parseInt(categoryEl.value,10) : null;
+      var supplierId = supplierEl.value ? parseInt(supplierEl.value,10) : null;
+      var unitId = unitEl.value ? parseInt(unitEl.value,10) : null;
+      var currencyId = currencyEl.value ? parseInt(currencyEl.value,10) : null;
+      var subcategoryId = subcategoryEl.value ? parseInt(subcategoryEl.value,10) : null;
+      var desiredStock = desiredStockEl.value ? parseInt(desiredStockEl.value,10) : null;
+      var status = statusEl.value ? parseInt(statusEl.value,10) : 1;
+
+      // Validaciones básicas
+      if (!code || !name) {
+        alert("Código y nombre son obligatorios.");
+        return;
+      }
+      if (isNaN(price) || isNaN(stock)) {
+        alert("Precio y stock deben ser números válidos.");
+        return;
+      }
+      // Validar FK obligatorios
+      if (categoryId === null) {
+        alert("Selecciona una categoría.");
+        return;
+      }
+      if (supplierId === null) {
+        alert("Selecciona un proveedor.");
+        return;
+      }
+      if (unitId === null) {
+        alert("Selecciona una unidad.");
+        return;
+      }
+      if (currencyId === null) {
+        alert("Selecciona una moneda.");
+        return;
+      }
+      if (subcategoryId === null) {
+        alert("Selecciona una subcategoría.");
+        return;
+      }
 
       var productData = {
+        product_id: id,
         product_code: code,
         product_name: name,
         location: location,
-        price: isNaN(price) ? null : price,
-        stock: isNaN(stock) ? null : stock,
-        // Agrega más campos si aplican: category_id, supplier_id, etc.
+        price: price,
+        stock: stock,
+        category_id: categoryId,
+        supplier_id: supplierId,
+        unit_id: unitId,
+        currency_id: currencyId,
+        subcategory_id: subcategoryId,
+        desired_stock: desiredStock,
+        status: status
+        // Otros opcionales que quieras manejar
       };
 
       fetch(BASE_URL + "api/products.php?action=update", {
@@ -189,46 +268,47 @@ document.addEventListener("DOMContentLoaded", function () {
           productData: productData,
         }),
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            return res.text().then((text) => {
+              console.error("Error al actualizar producto. Status:", res.status, "Body:", text);
+              throw new Error("Error al actualizar producto. Revisa consola.");
+            });
+          }
+          return res.json().catch((err) => {
+            console.error("No se pudo parsear JSON en actualización:", err);
+            throw new Error("Respuesta inválida del servidor.");
+          });
+        })
         .then((data) => {
           if (!data.success) {
-            alert("Error al actualizar producto: " + data.message);
+            alert("Error al actualizar producto: " + (data.message || ""));
           } else {
             alert("Producto actualizado correctamente");
-            // Actualiza la fila en la tabla (suponemos que la API responde con campo `product` actualizado)
             if (data.product) {
-              table
-                .updateOrAddData([data.product])
-                .then(() => {
-                  console.log("Producto actualizado en la tabla");
-                })
-                .catch((err) => {
-                  console.error("Error actualizando producto:", err);
-                });
+              table.updateOrAddData([data.product]).catch((err) => {
+                console.error("Error actualizando fila en tabla:", err);
+              });
             } else {
-              // Si la API devolviera otro nombre, ajústalo aquí
-              console.warn(
-                "No se devolvió objeto `product` en la respuesta. Verifica tu API."
-              );
+              console.warn("No se devolvió data.product al actualizar.");
             }
             // Cerrar modal
             var modalEl = document.getElementById("editProductModal");
             if (modalEl) {
-              var modalInstance = bootstrap.Modal.getInstance(modalEl);
-              if (modalInstance) modalInstance.hide();
+              var modalInst = bootstrap.Modal.getInstance(modalEl);
+              if (modalInst) modalInst.hide();
             }
           }
         })
         .catch((err) => {
           console.error("Error en solicitud AJAX edición:", err);
+          alert(err.message);
         });
     });
   }
 
   // CONFIRMAR ELIMINAR
-  var confirmDeleteBtn = document.getElementById(
-    "confirmDeleteProductBtn"
-  );
+  var confirmDeleteBtn = document.getElementById("confirmDeleteProductBtn");
   if (confirmDeleteBtn) {
     confirmDeleteBtn.addEventListener("click", function () {
       if (!deleteProductID) return;
@@ -237,20 +317,26 @@ document.addEventListener("DOMContentLoaded", function () {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ product_id: deleteProductID }),
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            return res.text().then((text) => {
+              console.error("Error al eliminar producto. Status:", res.status, "Body:", text);
+              throw new Error("Error al eliminar producto. Revisa consola.");
+            });
+          }
+          return res.json().catch((err) => {
+            console.error("No se pudo parsear JSON en eliminación:", err);
+            throw new Error("Respuesta inválida del servidor.");
+          });
+        })
         .then((data) => {
           if (!data.success) {
-            alert("Error al eliminar producto: " + data.message);
+            alert("Error al eliminar producto: " + (data.message || ""));
           } else {
             alert("Producto eliminado correctamente");
             table
               .deleteRow(deleteProductID)
-              .then(() => {
-                console.log("Producto eliminado de la tabla");
-              })
-              .catch((err) => {
-                console.error("Error eliminando fila:", err);
-              });
+              .catch((err) => console.error("Error eliminando fila:", err));
             deleteProductID = null;
             var modalEl = document.getElementById("deleteProductModal");
             if (modalEl) {
@@ -261,6 +347,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch((err) => {
           console.error("Error en solicitud AJAX eliminación:", err);
+          alert(err.message);
         });
     });
   }
@@ -269,8 +356,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var addProductBtn = document.getElementById("addProductBtn");
   if (addProductBtn) {
     var addProductModalEl = document.getElementById("addProductModal");
-    var addProductModal =
-      addProductModalEl && new bootstrap.Modal(addProductModalEl);
+    var addProductModal = addProductModalEl && new bootstrap.Modal(addProductModalEl);
 
     addProductBtn.addEventListener("click", function () {
       // Limpiar formulario antes de mostrar
@@ -279,15 +365,31 @@ document.addEventListener("DOMContentLoaded", function () {
       var newLocationEl = document.getElementById("new-location");
       var newPriceEl = document.getElementById("new-price");
       var newStockEl = document.getElementById("new-stock");
+      var categoryEl = document.getElementById("new-category");
+      var supplierEl = document.getElementById("new-supplier");
+      var unitEl = document.getElementById("new-unit");
+      var currencyEl = document.getElementById("new-currency");
+      var subcategoryEl = document.getElementById("new-subcategory");
+      var desiredStockEl = document.getElementById("new-desired-stock");
+      var statusEl = document.getElementById("new-status");
+
       if (newCodeEl) newCodeEl.value = "";
       if (newNameEl) newNameEl.value = "";
       if (newLocationEl) newLocationEl.value = "";
       if (newPriceEl) newPriceEl.value = "";
       if (newStockEl) newStockEl.value = "";
-      // Limpia selects adicionales si existen...
+      if (categoryEl) categoryEl.value = "";
+      if (supplierEl) supplierEl.value = "";
+      if (unitEl) unitEl.value = "";
+      if (currencyEl) currencyEl.value = "";
+      if (subcategoryEl) subcategoryEl.value = "";
+      if (desiredStockEl) desiredStockEl.value = "";
+      if (statusEl) statusEl.value = "1";
+
       if (addProductModal) addProductModal.show();
     });
   }
+
   var saveNewProductBtn = document.getElementById("saveNewProductBtn");
   if (saveNewProductBtn) {
     saveNewProductBtn.addEventListener("click", function () {
@@ -296,24 +398,77 @@ document.addEventListener("DOMContentLoaded", function () {
       var newLocationEl = document.getElementById("new-location");
       var newPriceEl = document.getElementById("new-price");
       var newStockEl = document.getElementById("new-stock");
-      if (!(newCodeEl && newNameEl && newLocationEl && newPriceEl && newStockEl))
+      var categoryEl = document.getElementById("new-category");
+      var supplierEl = document.getElementById("new-supplier");
+      var unitEl = document.getElementById("new-unit");
+      var currencyEl = document.getElementById("new-currency");
+      var subcategoryEl = document.getElementById("new-subcategory");
+      var desiredStockEl = document.getElementById("new-desired-stock");
+      var statusEl = document.getElementById("new-status");
+
+      if (!(newCodeEl && newNameEl && newLocationEl && newPriceEl && newStockEl && categoryEl && supplierEl && unitEl && currencyEl && subcategoryEl && desiredStockEl && statusEl)) {
+        console.error("Faltan campos en formulario de creación");
         return;
+      }
 
       var code = newCodeEl.value.trim();
       var name = newNameEl.value.trim();
       var location = newLocationEl.value.trim();
       var price = parseFloat(newPriceEl.value);
       var stock = parseInt(newStockEl.value, 10);
+      var categoryId = categoryEl.value ? parseInt(categoryEl.value,10) : null;
+      var supplierId = supplierEl.value ? parseInt(supplierEl.value,10) : null;
+      var unitId = unitEl.value ? parseInt(unitEl.value,10) : null;
+      var currencyId = currencyEl.value ? parseInt(currencyEl.value,10) : null;
+      var subcategoryId = subcategoryEl.value ? parseInt(subcategoryEl.value,10) : null;
+      var desiredStock = desiredStockEl.value ? parseInt(desiredStockEl.value,10) : null;
+      var status = statusEl.value ? parseInt(statusEl.value,10) : 1;
+
+      // Validaciones básicas antes de enviar
+      if (!code || !name) {
+        alert("Código y nombre son obligatorios.");
+        return;
+      }
+      if (isNaN(price) || isNaN(stock)) {
+        alert("Precio y stock deben ser números válidos.");
+        return;
+      }
+      // Validar FK obligatorios
+      if (categoryId === null) {
+        alert("Selecciona una categoría.");
+        return;
+      }
+      if (supplierId === null) {
+        alert("Selecciona un proveedor.");
+        return;
+      }
+      if (unitId === null) {
+        alert("Selecciona una unidad.");
+        return;
+      }
+      if (currencyId === null) {
+        alert("Selecciona una moneda.");
+        return;
+      }
+      if (subcategoryId === null) {
+        alert("Selecciona una subcategoría.");
+        return;
+      }
 
       var productData = {
         product_code: code,
         product_name: name,
         location: location,
-        price: isNaN(price) ? null : price,
-        stock: isNaN(stock) ? null : stock,
-        // category_id: ..., supplier_id, etc., si aplica
+        price: price,
+        stock: stock,
+        category_id: categoryId,
+        supplier_id: supplierId,
+        unit_id: unitId,
+        currency_id: currencyId,
+        subcategory_id: subcategoryId,
+        desired_stock: desiredStock,
+        status: status
       };
-
 
       fetch(BASE_URL + "api/products.php?action=create", {
         method: "POST",
@@ -321,31 +476,24 @@ document.addEventListener("DOMContentLoaded", function () {
         body: JSON.stringify({ productData: productData }),
       })
         .then((res) => {
-          // Si el status HTTP no está en el rango 200-299, consideramos error.
           if (!res.ok) {
-            // Leer la respuesta como texto para debug (puede contener mensaje JSON o HTML de error).
             return res.text().then((text) => {
-              console.error("Respuesta no OK al crear producto. Status:", res.status, "Response body:", text);
-              // Opcional: mostrar mensaje más amigable al usuario
-              throw new Error("Error al crear producto. Verifica consola para más detalles.");
+              console.error("Respuesta no OK al crear producto. Status:", res.status, "Body:", text);
+              throw new Error("Error al crear producto. Revisa consola.");
             });
           }
-          // Respuesta OK: parsear JSON
           return res.json().catch((err) => {
-            console.error("No se pudo parsear JSON de la respuesta:", err);
-            throw new Error("Respuesta inválida del servidor al crear producto.");
+            console.error("No se pudo parsear JSON en creación:", err);
+            throw new Error("Respuesta inválida del servidor.");
           });
         })
         .then((data) => {
-          // Aquí ya sabemos que res.ok era true y JSON fue parseado
           if (!data.success) {
-            // La API devolvió éxito=false
-            alert("Error al crear producto: " + (data.message || "Mensaje no disponible"));
+            alert("Error al crear producto: " + (data.message || ""));
           } else {
-            // Éxito: esperamos que data.product exista
             if (data.product) {
               table.addData([data.product]).then(() => {
-                // Cerrar modal si existe
+                // Cerrar modal
                 var modalEl = document.getElementById("addProductModal");
                 if (modalEl) {
                   var modalInst = bootstrap.Modal.getInstance(modalEl);
@@ -353,17 +501,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
               });
             } else {
-              console.warn("Respuesta correcta pero no se devolvió `data.product`. Revisa el endpoint.");
+              console.warn("No se devolvió data.product al crear.");
             }
           }
         })
         .catch((err) => {
-          // Captura cualquier error lanzado arriba: network, parsing, throw manual, etc.
           console.error("Error en solicitud AJAX creación:", err);
-          alert(err.message); // Mostrar un mensaje genérico al usuario
+          alert(err.message);
         });
-
-        
     });
   }
 
@@ -374,7 +519,7 @@ document.addEventListener("DOMContentLoaded", function () {
       var datos = table.getData();
       let csvContent = "";
       csvContent += `"REPORTE DE LISTA DE PRODUCTOS"\n`;
-      csvContent += `"Formato: L001"\n\n`; // Ajusta o trae dinámico si quieres
+      csvContent += `"Formato: L001"\n\n`;
       // Encabezados
       const headers = [
         "ID",
@@ -432,7 +577,6 @@ document.addEventListener("DOMContentLoaded", function () {
         sheetName: "Reporte Productos",
         documentProcessing: function (workbook) {
           const sheet = workbook.Sheets["Reporte Productos"];
-          // Ejemplo: negrita en A1
           sheet["A1"].s = { font: { bold: true } };
           return workbook;
         },
@@ -494,30 +638,16 @@ document.addEventListener("DOMContentLoaded", function () {
               // TÍTULO CENTRADO
               doc.setFontSize(16);
               doc.setFont(undefined, "bold");
-              doc.text(
-                "REPORTE DE LISTA DE PRODUCTOS",
-                pageWidth / 2,
-                y,
-                { align: "center" }
-              );
+              doc.text("REPORTE DE LISTA DE PRODUCTOS", pageWidth / 2, y, { align: "center" });
               y += 10;
               // FORMATO
               doc.setFontSize(10);
               doc.setFont(undefined, "normal");
-              doc.text(
-                "Formato: L001",
-                pageWidth / 2,
-                y,
-                { align: "center" }
-              );
+              doc.text("Formato: L001", pageWidth / 2, y, { align: "center" });
               // Fecha generación
               y += 10;
               doc.setFontSize(9);
-              doc.text(
-                "Generado: " + new Date().toLocaleDateString(),
-                data.settings.margin.left,
-                y
-              );
+              doc.text("Generado: " + new Date().toLocaleDateString(), data.settings.margin.left, y);
             },
           },
         });

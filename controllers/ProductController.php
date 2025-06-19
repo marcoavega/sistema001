@@ -13,32 +13,30 @@ class ProductController
         $this->productModel = new Product();
     }
 
-    // Obtener todos los productos (array de arrays asociativos)
     public function getAllProducts()
     {
+        // Si quieres hacer JOINs para mostrar nombres de categoría, etc,
+        // puedes extender este método. Por simplicidad devolvemos todo.
         return $this->productModel->getAllProducts();
     }
 
-    // Crear un nuevo producto
-    // $data: array con claves: product_code, product_name, location, price, stock,
-    // category_id, supplier_id, unit_id, currency_id, subcategory_id, desired_stock, status, etc.
-    public function createProduct(array $data)
+    public function createProduct($data)
     {
-        // Delegamos al modelo Product->createProduct y retornamos su resultado
+        // $data incluye image_url si vino imagen
         return $this->productModel->createProduct($data);
     }
 
-    // Actualizar un producto existente
-    // $data: array que debe contener 'product_id' y los demás campos a actualizar
-    public function updateProduct(array $data)
+    public function updateProduct($id, $data)
     {
-        return $this->productModel->updateProduct($data);
+        // $data puede incluir image_url si se subió nueva imagen
+        // Ajusta método si tu ProductController recibe distinto parámetro
+        // (en el endpoint usamos updateProduct($id, $data)).
+        return $this->productModel->updateProduct(array_merge(['product_id'=>$id], $data));
     }
 
-    // Eliminar un producto por su ID
-    public function deleteProduct(int $productID)
+    public function deleteProduct($id)
     {
-        return $this->productModel->deleteProduct($productID);
+        return $this->productModel->deleteProduct($id);
     }
 }
 

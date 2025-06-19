@@ -353,164 +353,187 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // AGREGAR NUEVO PRODUCTO
-  var addProductBtn = document.getElementById("addProductBtn");
-  if (addProductBtn) {
-    var addProductModalEl = document.getElementById("addProductModal");
-    var addProductModal = addProductModalEl && new bootstrap.Modal(addProductModalEl);
+  // AGREGAR NUEVO PRODUCTO
+var addProductBtn = document.getElementById("addProductBtn");
+if (addProductBtn) {
+  var addProductModalEl = document.getElementById("addProductModal");
+  var addProductModal = addProductModalEl && new bootstrap.Modal(addProductModalEl);
 
-    addProductBtn.addEventListener("click", function () {
-      // Limpiar formulario antes de mostrar
-      var newCodeEl = document.getElementById("new-product-code");
-      var newNameEl = document.getElementById("new-product-name");
-      var newLocationEl = document.getElementById("new-location");
-      var newPriceEl = document.getElementById("new-price");
-      var newStockEl = document.getElementById("new-stock");
-      var categoryEl = document.getElementById("new-category");
-      var supplierEl = document.getElementById("new-supplier");
-      var unitEl = document.getElementById("new-unit");
-      var currencyEl = document.getElementById("new-currency");
-      var subcategoryEl = document.getElementById("new-subcategory");
-      var desiredStockEl = document.getElementById("new-desired-stock");
-      var statusEl = document.getElementById("new-status");
+  addProductBtn.addEventListener("click", function () {
+    // Limpiar formulario
+    var newCodeEl = document.getElementById("new-product-code");
+    var newNameEl = document.getElementById("new-product-name");
+    var newLocationEl = document.getElementById("new-location");
+    var newPriceEl = document.getElementById("new-price");
+    var newStockEl = document.getElementById("new-stock");
+    var categoryEl = document.getElementById("new-category");
+    var supplierEl = document.getElementById("new-supplier");
+    var unitEl = document.getElementById("new-unit");
+    var currencyEl = document.getElementById("new-currency");
+    var subcategoryEl = document.getElementById("new-subcategory");
+    var desiredStockEl = document.getElementById("new-desired-stock");
+    var statusEl = document.getElementById("new-status");
+    var imageEl = document.getElementById("new-image");
 
-      if (newCodeEl) newCodeEl.value = "";
-      if (newNameEl) newNameEl.value = "";
-      if (newLocationEl) newLocationEl.value = "";
-      if (newPriceEl) newPriceEl.value = "";
-      if (newStockEl) newStockEl.value = "";
-      if (categoryEl) categoryEl.value = "";
-      if (supplierEl) supplierEl.value = "";
-      if (unitEl) unitEl.value = "";
-      if (currencyEl) currencyEl.value = "";
-      if (subcategoryEl) subcategoryEl.value = "";
-      if (desiredStockEl) desiredStockEl.value = "";
-      if (statusEl) statusEl.value = "1";
+    if (newCodeEl) newCodeEl.value = "";
+    if (newNameEl) newNameEl.value = "";
+    if (newLocationEl) newLocationEl.value = "";
+    if (newPriceEl) newPriceEl.value = "";
+    if (newStockEl) newStockEl.value = "";
+    if (categoryEl) categoryEl.value = "";
+    if (supplierEl) supplierEl.value = "";
+    if (unitEl) unitEl.value = "";
+    if (currencyEl) currencyEl.value = "";
+    if (subcategoryEl) subcategoryEl.value = "";
+    if (desiredStockEl) desiredStockEl.value = "";
+    if (statusEl) statusEl.value = "1";
+    if (imageEl) imageEl.value = "";
 
-      if (addProductModal) addProductModal.show();
-    });
-  }
+    if (addProductModal) addProductModal.show();
+  });
+}
 
-  var saveNewProductBtn = document.getElementById("saveNewProductBtn");
-  if (saveNewProductBtn) {
-    saveNewProductBtn.addEventListener("click", function () {
-      var newCodeEl = document.getElementById("new-product-code");
-      var newNameEl = document.getElementById("new-product-name");
-      var newLocationEl = document.getElementById("new-location");
-      var newPriceEl = document.getElementById("new-price");
-      var newStockEl = document.getElementById("new-stock");
-      var categoryEl = document.getElementById("new-category");
-      var supplierEl = document.getElementById("new-supplier");
-      var unitEl = document.getElementById("new-unit");
-      var currencyEl = document.getElementById("new-currency");
-      var subcategoryEl = document.getElementById("new-subcategory");
-      var desiredStockEl = document.getElementById("new-desired-stock");
-      var statusEl = document.getElementById("new-status");
+var saveNewProductBtn = document.getElementById("saveNewProductBtn");
+if (saveNewProductBtn) {
+  saveNewProductBtn.addEventListener("click", function () {
+    // Obtener referencias
+    var newCodeEl = document.getElementById("new-product-code");
+    var newNameEl = document.getElementById("new-product-name");
+    var newLocationEl = document.getElementById("new-location");
+    var newPriceEl = document.getElementById("new-price");
+    var newStockEl = document.getElementById("new-stock");
+    var categoryEl = document.getElementById("new-category");
+    var supplierEl = document.getElementById("new-supplier");
+    var unitEl = document.getElementById("new-unit");
+    var currencyEl = document.getElementById("new-currency");
+    var subcategoryEl = document.getElementById("new-subcategory");
+    var desiredStockEl = document.getElementById("new-desired-stock");
+    var statusEl = document.getElementById("new-status");
+    var imageEl = document.getElementById("new-image");
 
-      if (!(newCodeEl && newNameEl && newLocationEl && newPriceEl && newStockEl && categoryEl && supplierEl && unitEl && currencyEl && subcategoryEl && desiredStockEl && statusEl)) {
-        console.error("Faltan campos en formulario de creación");
+    if (!(newCodeEl && newNameEl && newLocationEl && newPriceEl && newStockEl &&
+          categoryEl && supplierEl && unitEl && currencyEl && subcategoryEl &&
+          desiredStockEl && statusEl && imageEl)) {
+      console.error("Faltan campos en formulario de creación");
+      return;
+    }
+
+    var code = newCodeEl.value.trim();
+    var name = newNameEl.value.trim();
+    var location = newLocationEl.value.trim();
+    var price = parseFloat(newPriceEl.value);
+    var stock = parseInt(newStockEl.value, 10);
+    var categoryId = categoryEl.value ? parseInt(categoryEl.value, 10) : null;
+    var supplierId = supplierEl.value ? parseInt(supplierEl.value, 10) : null;
+    var unitId = unitEl.value ? parseInt(unitEl.value, 10) : null;
+    var currencyId = currencyEl.value ? parseInt(currencyEl.value, 10) : null;
+    var subcategoryId = subcategoryEl.value ? parseInt(subcategoryEl.value, 10) : null;
+    var desiredStock = desiredStockEl.value ? parseInt(desiredStockEl.value, 10) : null;
+    var status = statusEl.value ? parseInt(statusEl.value, 10) : 1;
+
+    // Validaciones básicas
+    if (!code || !name) {
+      alert("Código y nombre son obligatorios.");
+      return;
+    }
+    if (isNaN(price) || isNaN(stock)) {
+      alert("Precio y stock deben ser números válidos.");
+      return;
+    }
+    if (categoryId === null) {
+      alert("Selecciona una categoría.");
+      return;
+    }
+    if (supplierId === null) {
+      alert("Selecciona un proveedor.");
+      return;
+    }
+    if (unitId === null) {
+      alert("Selecciona una unidad.");
+      return;
+    }
+    if (currencyId === null) {
+      alert("Selecciona una moneda.");
+      return;
+    }
+    if (subcategoryId === null) {
+      alert("Selecciona una subcategoría.");
+      return;
+    }
+    // Construir FormData
+    var formData = new FormData();
+    formData.append("product_code", code);
+    formData.append("product_name", name);
+    formData.append("location", location);
+    formData.append("price", price);
+    formData.append("stock", stock);
+    formData.append("category_id", categoryId);
+    formData.append("supplier_id", supplierId);
+    formData.append("unit_id", unitId);
+    formData.append("currency_id", currencyId);
+    formData.append("subcategory_id", subcategoryId);
+    if (desiredStock !== null) formData.append("desired_stock", desiredStock);
+    formData.append("status", status);
+
+    // Procesar imagen
+    if (imageEl.files && imageEl.files.length > 0) {
+      var file = imageEl.files[0];
+      var maxSize = 2 * 1024 * 1024; // 2MB
+      if (file.size > maxSize) {
+        alert("La imagen excede el tamaño máximo (2MB).");
         return;
       }
+      var ext = file.name.split('.').pop().toLowerCase();
+      var allowedExts = ['jpg','jpeg','png','gif'];
+      if (!allowedExts.includes(ext)) {
+        alert("Solo se permiten imágenes JPG, PNG o GIF.");
+        return;
+      }
+      formData.append("image_file", file);
+    }
 
-      var code = newCodeEl.value.trim();
-      var name = newNameEl.value.trim();
-      var location = newLocationEl.value.trim();
-      var price = parseFloat(newPriceEl.value);
-      var stock = parseInt(newStockEl.value, 10);
-      var categoryId = categoryEl.value ? parseInt(categoryEl.value,10) : null;
-      var supplierId = supplierEl.value ? parseInt(supplierEl.value,10) : null;
-      var unitId = unitEl.value ? parseInt(unitEl.value,10) : null;
-      var currencyId = currencyEl.value ? parseInt(currencyEl.value,10) : null;
-      var subcategoryId = subcategoryEl.value ? parseInt(subcategoryEl.value,10) : null;
-      var desiredStock = desiredStockEl.value ? parseInt(desiredStockEl.value,10) : null;
-      var status = statusEl.value ? parseInt(statusEl.value,10) : 1;
-
-      // Validaciones básicas antes de enviar
-      if (!code || !name) {
-        alert("Código y nombre son obligatorios.");
-        return;
-      }
-      if (isNaN(price) || isNaN(stock)) {
-        alert("Precio y stock deben ser números válidos.");
-        return;
-      }
-      // Validar FK obligatorios
-      if (categoryId === null) {
-        alert("Selecciona una categoría.");
-        return;
-      }
-      if (supplierId === null) {
-        alert("Selecciona un proveedor.");
-        return;
-      }
-      if (unitId === null) {
-        alert("Selecciona una unidad.");
-        return;
-      }
-      if (currencyId === null) {
-        alert("Selecciona una moneda.");
-        return;
-      }
-      if (subcategoryId === null) {
-        alert("Selecciona una subcategoría.");
-        return;
-      }
-
-      var productData = {
-        product_code: code,
-        product_name: name,
-        location: location,
-        price: price,
-        stock: stock,
-        category_id: categoryId,
-        supplier_id: supplierId,
-        unit_id: unitId,
-        currency_id: currencyId,
-        subcategory_id: subcategoryId,
-        desired_stock: desiredStock,
-        status: status
-      };
-
-      fetch(BASE_URL + "api/products.php?action=create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productData: productData }),
-      })
-        .then((res) => {
-          if (!res.ok) {
-            return res.text().then((text) => {
-              console.error("Respuesta no OK al crear producto. Status:", res.status, "Body:", text);
-              throw new Error("Error al crear producto. Revisa consola.");
-            });
-          }
-          return res.json().catch((err) => {
-            console.error("No se pudo parsear JSON en creación:", err);
-            throw new Error("Respuesta inválida del servidor.");
-          });
-        })
-        .then((data) => {
-          if (!data.success) {
-            alert("Error al crear producto: " + (data.message || ""));
-          } else {
-            if (data.product) {
-              table.addData([data.product]).then(() => {
-                // Cerrar modal
-                var modalEl = document.getElementById("addProductModal");
-                if (modalEl) {
-                  var modalInst = bootstrap.Modal.getInstance(modalEl);
-                  if (modalInst) modalInst.hide();
-                }
-              });
-            } else {
-              console.warn("No se devolvió data.product al crear.");
-            }
-          }
-        })
-        .catch((err) => {
-          console.error("Error en solicitud AJAX creación:", err);
-          alert(err.message);
+    fetch(BASE_URL + "api/products.php?action=create", {
+      method: "POST",
+      body: formData
+    })
+    .then(function(res) {
+      if (!res.ok) {
+        return res.text().then(function(text) {
+          console.error("Respuesta no OK al crear producto. Status:", res.status, "Body:", text);
+          throw new Error("Error al crear producto. Revisa consola.");
         });
+      }
+      return res.json().catch(function(err) {
+        console.error("No se pudo parsear JSON en creación:", err);
+        throw new Error("Respuesta inválida del servidor.");
+      });
+    })
+    .then(function(data) {
+      if (!data.success) {
+        alert("Error al crear producto: " + (data.message || ""));
+      } else {
+        if (data.product) {
+          table.addData([data.product]).then(function() {
+            // Cerrar modal
+            var modalEl = document.getElementById("addProductModal");
+            if (modalEl) {
+              var modalInst = bootstrap.Modal.getInstance(modalEl);
+              if (modalInst) modalInst.hide();
+            }
+          }).catch(function(err) {
+            console.error("Error al agregar fila en tabla:", err);
+          });
+        } else {
+          console.warn("No se devolvió data.product al crear.");
+        }
+      }
+    })
+    .catch(function(err) {
+      console.error("Error en solicitud AJAX creación:", err);
+      alert(err.message);
     });
-  }
+  });
+}
 
   // EXPORTAR CSV
   var exportCSVBtn = document.getElementById("exportCSVBtn");

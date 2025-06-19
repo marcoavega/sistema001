@@ -117,7 +117,9 @@ switch ($action) {
             }
             // Generar URL pública:
             // Asumimos que BASE_URL termina con slash: e.g. "http://localhost/sistema001/"
-            $data['image_url'] = rtrim(BASE_URL, '/') . '/assets/images/products/' . $newFilename;
+            //$data['image_url'] = rtrim(BASE_URL, '/') . '/assets/images/products/' . $newFilename;
+            $data['image_url'] = 'assets/images/products/' . $newFilename;
+
         }
 
         // Llamar al controlador
@@ -220,7 +222,10 @@ switch ($action) {
                 echo json_encode(['success'=>false,'message'=>'No se pudo mover la imagen subida.']);
                 exit;
             }
-            $payloadData['image_url'] = rtrim(BASE_URL, '/') . '/assets/images/products/' . $newFilename;
+            //$payloadData['image_url'] = rtrim(BASE_URL, '/') . '/assets/images/products/' . $newFilename;
+            // tras mover archivo...
+            $payloadData['image_url'] = 'assets/images/products/' . $newFilename;
+
         }
 
         // Llamar al controlador: suponemos que updateProduct acepta ($id, $data)

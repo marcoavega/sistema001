@@ -40,6 +40,9 @@
 <script src="<?php echo BASE_URL; ?>assets/js/xlsx.full.min.js"></script>
 <!-- XLSX.js: Biblioteca para exportar datos a Excel (formato .xlsx) -->
 
+<!-- SweetAlert2 CSS y JS desde CDN -->
+<script src="<?php echo BASE_URL; ?>assets/sweetalert/sweetalert2-11.js"></script>
+
 </body>
 
 </html>

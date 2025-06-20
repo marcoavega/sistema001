@@ -509,25 +509,31 @@ if (saveNewProductBtn) {
       });
     })
     .then(function(data) {
-      if (!data.success) {
-        alert("Error al crear producto: " + (data.message || ""));
-      } else {
-        if (data.product) {
-          table.addData([data.product]).then(function() {
-            // Cerrar modal
-            var modalEl = document.getElementById("addProductModal");
-            if (modalEl) {
-              var modalInst = bootstrap.Modal.getInstance(modalEl);
-              if (modalInst) modalInst.hide();
-            }
-          }).catch(function(err) {
-            console.error("Error al agregar fila en tabla:", err);
-          });
-        } else {
-          console.warn("No se devolvió data.product al crear.");
+  if (!data.success) {
+    alert("Error al crear producto: " + (data.message || ""));
+  } else {
+    if (data.product) {
+      // ✅ Agregar a la tabla
+      table.addData([data.product]).then(function() {
+        // ✅ Mostrar mensaje de éxito
+        alert("✅ Producto registrado con éxito");
+
+        // ✅ Cerrar el modal
+        var modalEl = document.getElementById("addProductModal");
+        if (modalEl) {
+          var modalInst = bootstrap.Modal.getInstance(modalEl);
+          if (modalInst) modalInst.hide();
         }
-      }
-    })
+
+        // ✅ Limpiar formulario
+        var form = document.getElementById("form-nuevo-producto");
+        if (form) form.reset();
+      });
+    } else {
+      console.warn("No se devolvió data.product al crear.");
+    }
+  }
+})
     .catch(function(err) {
       console.error("Error en solicitud AJAX creación:", err);
       alert(err.message);

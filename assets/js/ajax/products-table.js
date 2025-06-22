@@ -89,6 +89,21 @@ document.addEventListener("DOMContentLoaded", function () {
           );
         },
       },
+
+      {
+        title: "Imagen",
+        field: "image_url",
+        formatter: function (cell) {
+          var row = cell.getData();
+          if (!row.image_url) return "";
+          var version = row.image_version || Date.now();
+          var src = BASE_URL + row.image_url + "?v=" + version;
+          return "<img src='" + src + "' style='max-height:50px; max-width:50px;' alt='Imagen' />";
+        },
+        hozAlign: "center",
+        width: 80,
+      },
+
       {
         title: "Acciones",
         hozAlign: "center",
@@ -192,155 +207,155 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // GUARDAR EDICIÓN
-var saveEditBtn = document.getElementById("saveEditProductBtn");
-if (saveEditBtn) {
-  saveEditBtn.addEventListener("click", function () {
-    // Leer valores del formulario de edición
-    var idEl = document.getElementById("edit-product-id");
-    var codeEl = document.getElementById("edit-product-code");
-    var nameEl = document.getElementById("edit-product-name");
-    var locationEl = document.getElementById("edit-location");
-    var priceEl = document.getElementById("edit-price");
-    var stockEl = document.getElementById("edit-stock");
-    var categoryEl = document.getElementById("edit-category");
-    var supplierEl = document.getElementById("edit-supplier");
-    var unitEl = document.getElementById("edit-unit");
-    var currencyEl = document.getElementById("edit-currency");
-    var subcategoryEl = document.getElementById("edit-subcategory");
-    var desiredStockEl = document.getElementById("edit-desired-stock");
-    var statusEl = document.getElementById("edit-status");
-    var imageEl = document.getElementById("edit-image"); // input file
+  var saveEditBtn = document.getElementById("saveEditProductBtn");
+  if (saveEditBtn) {
+    saveEditBtn.addEventListener("click", function () {
+      // Leer valores del formulario de edición
+      var idEl = document.getElementById("edit-product-id");
+      var codeEl = document.getElementById("edit-product-code");
+      var nameEl = document.getElementById("edit-product-name");
+      var locationEl = document.getElementById("edit-location");
+      var priceEl = document.getElementById("edit-price");
+      var stockEl = document.getElementById("edit-stock");
+      var categoryEl = document.getElementById("edit-category");
+      var supplierEl = document.getElementById("edit-supplier");
+      var unitEl = document.getElementById("edit-unit");
+      var currencyEl = document.getElementById("edit-currency");
+      var subcategoryEl = document.getElementById("edit-subcategory");
+      var desiredStockEl = document.getElementById("edit-desired-stock");
+      var statusEl = document.getElementById("edit-status");
+      var imageEl = document.getElementById("edit-image"); // input file
 
-    if (!(idEl && codeEl && nameEl && locationEl && priceEl && stockEl &&
-          categoryEl && supplierEl && unitEl && currencyEl && subcategoryEl &&
-          desiredStockEl && statusEl && imageEl)) {
-      console.error("Faltan campos en el formulario de edición");
-      return;
-    }
-
-    var id = parseInt(idEl.value, 10);
-    var code = codeEl.value.trim();
-    var name = nameEl.value.trim();
-    var location = locationEl.value.trim();
-    var price = parseFloat(priceEl.value);
-    var stock = parseInt(stockEl.value, 10);
-    var categoryId = categoryEl.value ? parseInt(categoryEl.value, 10) : null;
-    var supplierId = supplierEl.value ? parseInt(supplierEl.value, 10) : null;
-    var unitId = unitEl.value ? parseInt(unitEl.value, 10) : null;
-    var currencyId = currencyEl.value ? parseInt(currencyEl.value, 10) : null;
-    var subcategoryId = subcategoryEl.value ? parseInt(subcategoryEl.value, 10) : null;
-    var desiredStock = desiredStockEl.value ? parseInt(desiredStockEl.value, 10) : null;
-    var status = statusEl.value ? parseInt(statusEl.value, 10) : 1;
-
-    // Validaciones básicas
-    if (!code || !name) {
-      Swal.fire({ icon: 'warning', title: 'Código y nombre obligatorios', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
-      return;
-    }
-    if (isNaN(price) || isNaN(stock)) {
-      Swal.fire({ icon: 'warning', title: 'Precio y stock inválidos', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
-      return;
-    }
-    // Validar FK obligatorios
-    if (categoryId === null) {
-      Swal.fire({ icon: 'warning', title: 'Selecciona una categoría', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
-      return;
-    }
-    if (supplierId === null) {
-      Swal.fire({ icon: 'warning', title: 'Selecciona un proveedor', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
-      return;
-    }
-    if (unitId === null) {
-      Swal.fire({ icon: 'warning', title: 'Selecciona una unidad', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
-      return;
-    }
-    if (currencyId === null) {
-      Swal.fire({ icon: 'warning', title: 'Selecciona una moneda', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
-      return;
-    }
-    if (subcategoryId === null) {
-      Swal.fire({ icon: 'warning', title: 'Selecciona una subcategoría', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
-      return;
-    }
-
-    // Construir FormData
-    var formData = new FormData();
-    formData.append("product_id", id);
-    formData.append("product_code", code);
-    formData.append("product_name", name);
-    formData.append("location", location);
-    formData.append("price", price);
-    formData.append("stock", stock);
-    formData.append("category_id", categoryId);
-    formData.append("supplier_id", supplierId);
-    formData.append("unit_id", unitId);
-    formData.append("currency_id", currencyId);
-    formData.append("subcategory_id", subcategoryId);
-    if (desiredStock !== null) formData.append("desired_stock", desiredStock);
-    formData.append("status", status);
-
-    // Procesar imagen nueva si hubo cambio
-    if (imageEl.files && imageEl.files.length > 0) {
-      var file = imageEl.files[0];
-      var maxSize = 2 * 1024 * 1024; // 2MB
-      if (file.size > maxSize) {
-        Swal.fire({ icon:'warning', title:'Imagen excede 2MB', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
+      if (!(idEl && codeEl && nameEl && locationEl && priceEl && stockEl &&
+        categoryEl && supplierEl && unitEl && currencyEl && subcategoryEl &&
+        desiredStockEl && statusEl && imageEl)) {
+        console.error("Faltan campos en el formulario de edición");
         return;
       }
-      var ext = file.name.split('.').pop().toLowerCase();
-      var allowedExts = ['jpg','jpeg','png','gif'];
-      if (!allowedExts.includes(ext)) {
-        Swal.fire({ icon:'warning', title:'Solo JPG/PNG/GIF', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
+
+      var id = parseInt(idEl.value, 10);
+      var code = codeEl.value.trim();
+      var name = nameEl.value.trim();
+      var location = locationEl.value.trim();
+      var price = parseFloat(priceEl.value);
+      var stock = parseInt(stockEl.value, 10);
+      var categoryId = categoryEl.value ? parseInt(categoryEl.value, 10) : null;
+      var supplierId = supplierEl.value ? parseInt(supplierEl.value, 10) : null;
+      var unitId = unitEl.value ? parseInt(unitEl.value, 10) : null;
+      var currencyId = currencyEl.value ? parseInt(currencyEl.value, 10) : null;
+      var subcategoryId = subcategoryEl.value ? parseInt(subcategoryEl.value, 10) : null;
+      var desiredStock = desiredStockEl.value ? parseInt(desiredStockEl.value, 10) : null;
+      var status = statusEl.value ? parseInt(statusEl.value, 10) : 1;
+
+      // Validaciones básicas
+      if (!code || !name) {
+        Swal.fire({ icon: 'warning', title: 'Código y nombre obligatorios', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
         return;
       }
-      formData.append("image_file", file);
-    }
-    // Llamada fetch con FormData (sin Content-Type explícito)
-    fetch(BASE_URL + "api/products.php?action=update", {
-      method: "POST",
-      body: formData
-    })
-      .then((res) => {
-        if (!res.ok) {
-          return res.text().then((text) => {
-            console.error("Error al actualizar producto. Status:", res.status, "Body:", text);
-            throw new Error("Error al actualizar producto. Ver consola.");
-          });
+      if (isNaN(price) || isNaN(stock)) {
+        Swal.fire({ icon: 'warning', title: 'Precio y stock inválidos', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
+        return;
+      }
+      // Validar FK obligatorios
+      if (categoryId === null) {
+        Swal.fire({ icon: 'warning', title: 'Selecciona una categoría', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
+        return;
+      }
+      if (supplierId === null) {
+        Swal.fire({ icon: 'warning', title: 'Selecciona un proveedor', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
+        return;
+      }
+      if (unitId === null) {
+        Swal.fire({ icon: 'warning', title: 'Selecciona una unidad', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
+        return;
+      }
+      if (currencyId === null) {
+        Swal.fire({ icon: 'warning', title: 'Selecciona una moneda', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
+        return;
+      }
+      if (subcategoryId === null) {
+        Swal.fire({ icon: 'warning', title: 'Selecciona una subcategoría', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
+        return;
+      }
+
+      // Construir FormData
+      var formData = new FormData();
+      formData.append("product_id", id);
+      formData.append("product_code", code);
+      formData.append("product_name", name);
+      formData.append("location", location);
+      formData.append("price", price);
+      formData.append("stock", stock);
+      formData.append("category_id", categoryId);
+      formData.append("supplier_id", supplierId);
+      formData.append("unit_id", unitId);
+      formData.append("currency_id", currencyId);
+      formData.append("subcategory_id", subcategoryId);
+      if (desiredStock !== null) formData.append("desired_stock", desiredStock);
+      formData.append("status", status);
+
+      // Procesar imagen nueva si hubo cambio
+      if (imageEl.files && imageEl.files.length > 0) {
+        var file = imageEl.files[0];
+        var maxSize = 2 * 1024 * 1024; // 2MB
+        if (file.size > maxSize) {
+          Swal.fire({ icon: 'warning', title: 'Imagen excede 2MB', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
+          return;
         }
-        return res.json().catch((err) => {
-          console.error("No se pudo parsear JSON en actualización:", err);
-          throw new Error("Respuesta inválida del servidor.");
-        });
+        var ext = file.name.split('.').pop().toLowerCase();
+        var allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
+        if (!allowedExts.includes(ext)) {
+          Swal.fire({ icon: 'warning', title: 'Solo JPG/PNG/GIF', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
+          return;
+        }
+        formData.append("image_file", file);
+      }
+      // Llamada fetch con FormData (sin Content-Type explícito)
+      fetch(BASE_URL + "api/products.php?action=update", {
+        method: "POST",
+        body: formData
       })
-      .then((data) => {
-        if (!data.success) {
-          Swal.fire({ icon:'error', title: 'Error: ' + (data.message || ''), toast:true, position:'top-end', timer:5000, showConfirmButton:false });
-        } else {
-          Swal.fire({ icon: "success", title: "Producto actualizado con éxito", toast:true, position:"top-end", timer:3000, showConfirmButton:false });
-          if (data.product) {
-            table.updateOrAddData([data.product]).catch((err) => {
-              console.error("Error actualizando fila en tabla:", err);
+        .then((res) => {
+          if (!res.ok) {
+            return res.text().then((text) => {
+              console.error("Error al actualizar producto. Status:", res.status, "Body:", text);
+              throw new Error("Error al actualizar producto. Ver consola.");
             });
           }
-          // Cerrar modal y reenfocar (usa tu función cerrarModalYReenfocar o inline):
-          var modalEl = document.getElementById("editProductModal");
-          if (modalEl) {
-            var modalInst = bootstrap.Modal.getInstance(modalEl);
-            if (modalInst) {
-              modalInst.hide();
-              setTimeout(() => {
-                document.getElementById("table-search")?.focus();
-              }, 300);
+          return res.json().catch((err) => {
+            console.error("No se pudo parsear JSON en actualización:", err);
+            throw new Error("Respuesta inválida del servidor.");
+          });
+        })
+        .then((data) => {
+          if (!data.success) {
+            Swal.fire({ icon: 'error', title: 'Error: ' + (data.message || ''), toast: true, position: 'top-end', timer: 5000, showConfirmButton: false });
+          } else {
+            Swal.fire({ icon: "success", title: "Producto actualizado con éxito", toast: true, position: "top-end", timer: 3000, showConfirmButton: false });
+            if (data.product) {
+              table.updateOrAddData([data.product]).catch((err) => {
+                console.error("Error actualizando fila en tabla:", err);
+              });
+            }
+            // Cerrar modal y reenfocar (usa tu función cerrarModalYReenfocar o inline):
+            var modalEl = document.getElementById("editProductModal");
+            if (modalEl) {
+              var modalInst = bootstrap.Modal.getInstance(modalEl);
+              if (modalInst) {
+                modalInst.hide();
+                setTimeout(() => {
+                  document.getElementById("table-search")?.focus();
+                }, 300);
+              }
             }
           }
-        }
-      })
-      .catch((err) => {
-        console.error("Error en solicitud AJAX edición:", err);
-        Swal.fire({ icon:'error', title: err.message, toast:true, position:'top-end', timer:5000, showConfirmButton:false });
-      });
-  });
-}
+        })
+        .catch((err) => {
+          console.error("Error en solicitud AJAX edición:", err);
+          Swal.fire({ icon: 'error', title: err.message, toast: true, position: 'top-end', timer: 5000, showConfirmButton: false });
+        });
+    });
+  }
 
 
   // CONFIRMAR ELIMINAR
@@ -393,199 +408,199 @@ if (saveEditBtn) {
 
   // AGREGAR NUEVO PRODUCTO
   // AGREGAR NUEVO PRODUCTO
-var addProductBtn = document.getElementById("addProductBtn");
-if (addProductBtn) {
-  var addProductModalEl = document.getElementById("addProductModal");
-  var addProductModal = addProductModalEl && new bootstrap.Modal(addProductModalEl);
+  var addProductBtn = document.getElementById("addProductBtn");
+  if (addProductBtn) {
+    var addProductModalEl = document.getElementById("addProductModal");
+    var addProductModal = addProductModalEl && new bootstrap.Modal(addProductModalEl);
 
-  addProductBtn.addEventListener("click", function () {
-    // Limpiar formulario
-    var newCodeEl = document.getElementById("new-product-code");
-    var newNameEl = document.getElementById("new-product-name");
-    var newLocationEl = document.getElementById("new-location");
-    var newPriceEl = document.getElementById("new-price");
-    var newStockEl = document.getElementById("new-stock");
-    var categoryEl = document.getElementById("new-category");
-    var supplierEl = document.getElementById("new-supplier");
-    var unitEl = document.getElementById("new-unit");
-    var currencyEl = document.getElementById("new-currency");
-    var subcategoryEl = document.getElementById("new-subcategory");
-    var desiredStockEl = document.getElementById("new-desired-stock");
-    var statusEl = document.getElementById("new-status");
-    var imageEl = document.getElementById("new-image");
+    addProductBtn.addEventListener("click", function () {
+      // Limpiar formulario
+      var newCodeEl = document.getElementById("new-product-code");
+      var newNameEl = document.getElementById("new-product-name");
+      var newLocationEl = document.getElementById("new-location");
+      var newPriceEl = document.getElementById("new-price");
+      var newStockEl = document.getElementById("new-stock");
+      var categoryEl = document.getElementById("new-category");
+      var supplierEl = document.getElementById("new-supplier");
+      var unitEl = document.getElementById("new-unit");
+      var currencyEl = document.getElementById("new-currency");
+      var subcategoryEl = document.getElementById("new-subcategory");
+      var desiredStockEl = document.getElementById("new-desired-stock");
+      var statusEl = document.getElementById("new-status");
+      var imageEl = document.getElementById("new-image");
 
-    if (newCodeEl) newCodeEl.value = "";
-    if (newNameEl) newNameEl.value = "";
-    if (newLocationEl) newLocationEl.value = "";
-    if (newPriceEl) newPriceEl.value = "";
-    if (newStockEl) newStockEl.value = "";
-    if (categoryEl) categoryEl.value = "";
-    if (supplierEl) supplierEl.value = "";
-    if (unitEl) unitEl.value = "";
-    if (currencyEl) currencyEl.value = "";
-    if (subcategoryEl) subcategoryEl.value = "";
-    if (desiredStockEl) desiredStockEl.value = "";
-    if (statusEl) statusEl.value = "1";
-    if (imageEl) imageEl.value = "";
+      if (newCodeEl) newCodeEl.value = "";
+      if (newNameEl) newNameEl.value = "";
+      if (newLocationEl) newLocationEl.value = "";
+      if (newPriceEl) newPriceEl.value = "";
+      if (newStockEl) newStockEl.value = "";
+      if (categoryEl) categoryEl.value = "";
+      if (supplierEl) supplierEl.value = "";
+      if (unitEl) unitEl.value = "";
+      if (currencyEl) currencyEl.value = "";
+      if (subcategoryEl) subcategoryEl.value = "";
+      if (desiredStockEl) desiredStockEl.value = "";
+      if (statusEl) statusEl.value = "1";
+      if (imageEl) imageEl.value = "";
 
-    if (addProductModal) addProductModal.show();
-  });
-}
-
-var saveNewProductBtn = document.getElementById("saveNewProductBtn");
-if (saveNewProductBtn) {
-  saveNewProductBtn.addEventListener("click", function () {
-    // Obtener referencias
-    var newCodeEl = document.getElementById("new-product-code");
-    var newNameEl = document.getElementById("new-product-name");
-    var newLocationEl = document.getElementById("new-location");
-    var newPriceEl = document.getElementById("new-price");
-    var newStockEl = document.getElementById("new-stock");
-    var categoryEl = document.getElementById("new-category");
-    var supplierEl = document.getElementById("new-supplier");
-    var unitEl = document.getElementById("new-unit");
-    var currencyEl = document.getElementById("new-currency");
-    var subcategoryEl = document.getElementById("new-subcategory");
-    var desiredStockEl = document.getElementById("new-desired-stock");
-    var statusEl = document.getElementById("new-status");
-    var imageEl = document.getElementById("new-image");
-
-    if (!(newCodeEl && newNameEl && newLocationEl && newPriceEl && newStockEl &&
-          categoryEl && supplierEl && unitEl && currencyEl && subcategoryEl &&
-          desiredStockEl && statusEl && imageEl)) {
-      console.error("Faltan campos en formulario de creación");
-      return;
-    }
-
-    // Leer valores
-    var code = newCodeEl.value.trim();
-    var name = newNameEl.value.trim();
-    var location = newLocationEl.value.trim();
-    var price = parseFloat(newPriceEl.value);
-    var stock = parseInt(newStockEl.value, 10);
-    var categoryId = categoryEl.value ? parseInt(categoryEl.value, 10) : null;
-    var supplierId = supplierEl.value ? parseInt(supplierEl.value, 10) : null;
-    var unitId = unitEl.value ? parseInt(unitEl.value, 10) : null;
-    var currencyId = currencyEl.value ? parseInt(currencyEl.value, 10) : null;
-    var subcategoryId = subcategoryEl.value ? parseInt(subcategoryEl.value, 10) : null;
-    var desiredStock = desiredStockEl.value ? parseInt(desiredStockEl.value, 10) : null;
-    var status = statusEl.value ? parseInt(statusEl.value, 10) : 1;
-
-    // Validaciones básicas
-    if (!code || !name) {
-      Swal.fire({ icon: 'warning', title: 'Código y nombre obligatorios' });
-      return;
-    }
-    if (isNaN(price) || isNaN(stock)) {
-      Swal.fire({ icon: 'warning', title: 'Precio y stock deben ser números válidos' });
-      return;
-    }
-    if (categoryId === null) {
-      Swal.fire({ icon: 'warning', title: 'Selecciona una categoría' });
-      return;
-    }
-    if (supplierId === null) {
-      Swal.fire({ icon: 'warning', title: 'Selecciona un proveedor' });
-      return;
-    }
-    if (unitId === null) {
-      Swal.fire({ icon: 'warning', title: 'Selecciona una unidad' });
-      return;
-    }
-    if (currencyId === null) {
-      Swal.fire({ icon: 'warning', title: 'Selecciona una moneda' });
-      return;
-    }
-    if (subcategoryId === null) {
-      Swal.fire({ icon: 'warning', title: 'Selecciona una subcategoría' });
-      return;
-    }
-
-    // Construir FormData
-    var formData = new FormData();
-    formData.append("product_code", code);
-    formData.append("product_name", name);
-    formData.append("location", location);
-    formData.append("price", price);
-    formData.append("stock", stock);
-    formData.append("category_id", categoryId);
-    formData.append("supplier_id", supplierId);
-    formData.append("unit_id", unitId);
-    formData.append("currency_id", currencyId);
-    formData.append("subcategory_id", subcategoryId);
-    if (desiredStock !== null) formData.append("desired_stock", desiredStock);
-    formData.append("status", status);
-
-    // Procesar imagen si se seleccionó
-    if (imageEl.files && imageEl.files.length > 0) {
-      var file = imageEl.files[0];
-      var maxSize = 2 * 1024 * 1024; // 2MB
-      if (file.size > maxSize) {
-        Swal.fire({ icon: 'warning', title: 'La imagen excede 2MB.' });
-        return;
-      }
-      var ext = file.name.split('.').pop().toLowerCase();
-      var allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
-      if (!allowedExts.includes(ext)) {
-        Swal.fire({ icon: 'warning', title: 'Solo se permiten JPG, PNG o GIF.' });
-        return;
-      }
-      formData.append("image_file", file);
-    }
-
-    // Realizar petición
-    fetch(BASE_URL + "api/products.php?action=create", {
-      method: "POST",
-      body: formData
-    })
-    .then(function (res) {
-      if (!res.ok) {
-        return res.text().then(function (text) {
-          console.error("Respuesta no OK al crear producto. Status:", res.status, "Body:", text);
-          throw new Error("Error al crear producto. Revisa consola.");
-        });
-      }
-      return res.json().catch(function (err) {
-        console.error("No se pudo parsear JSON en creación:", err);
-        throw new Error("Respuesta inválida del servidor.");
-      });
-    })
-    .then(function (data) {
-      if (!data.success) {
-        Swal.fire({ icon: 'error', title: 'Error al crear producto', text: data.message || '' });
-      } else {
-        if (data.product) {
-          // Añadir a la tabla (table es la instancia de Tabulator)
-          table.addData([data.product], true).then(function () {
-            // Mostrar toast de éxito
-            Swal.fire({
-              toast: true,
-              position: 'top-end',
-              icon: 'success',
-              title: 'Producto registrado con éxito',
-              showConfirmButton: false,
-              timer: 3000,
-              timerProgressBar: true
-            });
-            // Cerrar modal y reenfocar
-            cerrarModalYReenfocar("addProductModal", "addProductBtn");
-            // Limpiar formulario
-            var form = document.getElementById("addProductForm"); // Asegúrate que tu <form> tenga este id
-            if (form) form.reset();
-          }).catch(function (err) {
-            console.error("Error al agregar producto a la tabla:", err);
-          });
-        } else {
-          console.warn("No se devolvió data.product al crear.");
-        }
-      }
-    })
-    .catch(function (err) {
-      console.error("Error en solicitud AJAX creación:", err);
-      Swal.fire({ icon: 'error', title: 'Error', text: err.message });
+      if (addProductModal) addProductModal.show();
     });
-  });
-}
+  }
+
+  var saveNewProductBtn = document.getElementById("saveNewProductBtn");
+  if (saveNewProductBtn) {
+    saveNewProductBtn.addEventListener("click", function () {
+      // Obtener referencias
+      var newCodeEl = document.getElementById("new-product-code");
+      var newNameEl = document.getElementById("new-product-name");
+      var newLocationEl = document.getElementById("new-location");
+      var newPriceEl = document.getElementById("new-price");
+      var newStockEl = document.getElementById("new-stock");
+      var categoryEl = document.getElementById("new-category");
+      var supplierEl = document.getElementById("new-supplier");
+      var unitEl = document.getElementById("new-unit");
+      var currencyEl = document.getElementById("new-currency");
+      var subcategoryEl = document.getElementById("new-subcategory");
+      var desiredStockEl = document.getElementById("new-desired-stock");
+      var statusEl = document.getElementById("new-status");
+      var imageEl = document.getElementById("new-image");
+
+      if (!(newCodeEl && newNameEl && newLocationEl && newPriceEl && newStockEl &&
+        categoryEl && supplierEl && unitEl && currencyEl && subcategoryEl &&
+        desiredStockEl && statusEl && imageEl)) {
+        console.error("Faltan campos en formulario de creación");
+        return;
+      }
+
+      // Leer valores
+      var code = newCodeEl.value.trim();
+      var name = newNameEl.value.trim();
+      var location = newLocationEl.value.trim();
+      var price = parseFloat(newPriceEl.value);
+      var stock = parseInt(newStockEl.value, 10);
+      var categoryId = categoryEl.value ? parseInt(categoryEl.value, 10) : null;
+      var supplierId = supplierEl.value ? parseInt(supplierEl.value, 10) : null;
+      var unitId = unitEl.value ? parseInt(unitEl.value, 10) : null;
+      var currencyId = currencyEl.value ? parseInt(currencyEl.value, 10) : null;
+      var subcategoryId = subcategoryEl.value ? parseInt(subcategoryEl.value, 10) : null;
+      var desiredStock = desiredStockEl.value ? parseInt(desiredStockEl.value, 10) : null;
+      var status = statusEl.value ? parseInt(statusEl.value, 10) : 1;
+
+      // Validaciones básicas
+      if (!code || !name) {
+        Swal.fire({ icon: 'warning', title: 'Código y nombre obligatorios' });
+        return;
+      }
+      if (isNaN(price) || isNaN(stock)) {
+        Swal.fire({ icon: 'warning', title: 'Precio y stock deben ser números válidos' });
+        return;
+      }
+      if (categoryId === null) {
+        Swal.fire({ icon: 'warning', title: 'Selecciona una categoría' });
+        return;
+      }
+      if (supplierId === null) {
+        Swal.fire({ icon: 'warning', title: 'Selecciona un proveedor' });
+        return;
+      }
+      if (unitId === null) {
+        Swal.fire({ icon: 'warning', title: 'Selecciona una unidad' });
+        return;
+      }
+      if (currencyId === null) {
+        Swal.fire({ icon: 'warning', title: 'Selecciona una moneda' });
+        return;
+      }
+      if (subcategoryId === null) {
+        Swal.fire({ icon: 'warning', title: 'Selecciona una subcategoría' });
+        return;
+      }
+
+      // Construir FormData
+      var formData = new FormData();
+      formData.append("product_code", code);
+      formData.append("product_name", name);
+      formData.append("location", location);
+      formData.append("price", price);
+      formData.append("stock", stock);
+      formData.append("category_id", categoryId);
+      formData.append("supplier_id", supplierId);
+      formData.append("unit_id", unitId);
+      formData.append("currency_id", currencyId);
+      formData.append("subcategory_id", subcategoryId);
+      if (desiredStock !== null) formData.append("desired_stock", desiredStock);
+      formData.append("status", status);
+
+      // Procesar imagen si se seleccionó
+      if (imageEl.files && imageEl.files.length > 0) {
+        var file = imageEl.files[0];
+        var maxSize = 2 * 1024 * 1024; // 2MB
+        if (file.size > maxSize) {
+          Swal.fire({ icon: 'warning', title: 'La imagen excede 2MB.' });
+          return;
+        }
+        var ext = file.name.split('.').pop().toLowerCase();
+        var allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
+        if (!allowedExts.includes(ext)) {
+          Swal.fire({ icon: 'warning', title: 'Solo se permiten JPG, PNG o GIF.' });
+          return;
+        }
+        formData.append("image_file", file);
+      }
+
+      // Realizar petición
+      fetch(BASE_URL + "api/products.php?action=create", {
+        method: "POST",
+        body: formData
+      })
+        .then(function (res) {
+          if (!res.ok) {
+            return res.text().then(function (text) {
+              console.error("Respuesta no OK al crear producto. Status:", res.status, "Body:", text);
+              throw new Error("Error al crear producto. Revisa consola.");
+            });
+          }
+          return res.json().catch(function (err) {
+            console.error("No se pudo parsear JSON en creación:", err);
+            throw new Error("Respuesta inválida del servidor.");
+          });
+        })
+        .then(function (data) {
+          if (!data.success) {
+            Swal.fire({ icon: 'error', title: 'Error al crear producto', text: data.message || '' });
+          } else {
+            if (data.product) {
+              // Añadir a la tabla (table es la instancia de Tabulator)
+              table.addData([data.product], true).then(function () {
+                // Mostrar toast de éxito
+                Swal.fire({
+                  toast: true,
+                  position: 'top-end',
+                  icon: 'success',
+                  title: 'Producto registrado con éxito',
+                  showConfirmButton: false,
+                  timer: 3000,
+                  timerProgressBar: true
+                });
+                // Cerrar modal y reenfocar
+                cerrarModalYReenfocar("addProductModal", "addProductBtn");
+                // Limpiar formulario
+                var form = document.getElementById("addProductForm"); // Asegúrate que tu <form> tenga este id
+                if (form) form.reset();
+              }).catch(function (err) {
+                console.error("Error al agregar producto a la tabla:", err);
+              });
+            } else {
+              console.warn("No se devolvió data.product al crear.");
+            }
+          }
+        })
+        .catch(function (err) {
+          console.error("Error en solicitud AJAX creación:", err);
+          Swal.fire({ icon: 'error', title: 'Error', text: err.message });
+        });
+    });
+  }
 
   // EXPORTAR CSV
   var exportCSVBtn = document.getElementById("exportCSVBtn");

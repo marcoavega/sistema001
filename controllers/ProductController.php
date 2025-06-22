@@ -13,25 +13,50 @@ class ProductController
         $this->productModel = new Product();
     }
 
+    /**
+     * Devuelve todos los productos, y añade en cada uno:
+     *   - image_version: timestamp de última modificación del archivo, o null si no hay imagen.
+     */
     public function getAllProducts()
     {
-        // Si quieres hacer JOINs para mostrar nombres de categoría, etc,
-        // puedes extender este método. Por simplicidad devolvemos todo.
-        return $this->productModel->getAllProducts();
+        $rows = $this->productModel->getAllProducts(); // array de assoc arrays
+        foreach ($rows as &$row) {
+            if (!empty($row['image_url'])) {
+                // Construir ruta física: 
+                // Si image_url es 'assets/images/products/product_12.jpg',
+                // la ruta en disco es __DIR__ . '/../' . image_url
+                $filePath = __DIR__ . '/../' . $row['image_url'];
+                if (file_exists($filePath)) {
+                    $row['image_version'] = filemtime($filePath);
+                } else {
+                    $row['image_version'] = null;
+                }
+            } else {
+                $row['image_version'] = null;
+            }
+        }
+        unset($row);
+        return $rows;
     }
 
+    /**
+     * Crea un producto; aquí delegas al modelo. 
+     * El endpoint (api/products.php) se encargará de procesar imagen y
+     * luego llamar a este método, o directamente devolverá el resultado con version.
+     */
     public function createProduct($data)
     {
-        // $data incluye image_url si vino imagen
         return $this->productModel->createProduct($data);
     }
 
+    /**
+     * Actualiza un producto. Se espera que $data incluya image_url si ya se procesó imagen
+     * en el endpoint. Luego el modelo actualiza y este método devuelve el producto actualizado.
+     */
     public function updateProduct($id, $data)
     {
-        // $data puede incluir image_url si se subió nueva imagen
-        // Ajusta método si tu ProductController recibe distinto parámetro
-        // (en el endpoint usamos updateProduct($id, $data)).
-        return $this->productModel->updateProduct(array_merge(['product_id'=>$id], $data));
+        // Nota: tu modelo updateProduct firma espera array con 'product_id' clave:
+        return $this->productModel->updateProduct(array_merge(['product_id' => $id], $data));
     }
 
     public function deleteProduct($id)
@@ -39,6 +64,7 @@ class ProductController
         return $this->productModel->deleteProduct($id);
     }
 }
+
 
 
 

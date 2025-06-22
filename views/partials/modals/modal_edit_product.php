@@ -113,11 +113,14 @@ try {
                 <option value="0">No</option>
               </select>
             </div>
-            <div class="col-md-4">
-              <label for="edit-image" class="form-label">Imagen del Producto</label>
-              <input type="file" class="form-control" id="edit-image" name="image_file" accept="image/*">
-              <small class="text-muted">Si no seleccionas archivo, se mantiene la anterior.</small>
-            </div>
+            <!-- Dentro del form de edición, en modal_edit_product.php -->
+<div class="col-md-6">
+  <label for="edit-image" class="form-label">Imagen del Producto (opcional, reemplaza la anterior)</label>
+  <input type="file" class="form-control" id="edit-image" name="image_file" accept="image/*">
+  <!-- Muestra la imagen actual quizás en un <img> si lo deseas -->
+  <!-- <img id="current-image-preview" src="..." alt="Imagen actual" class="img-thumbnail mt-2" style="max-width:150px;"> -->
+</div>
+
             <!-- Otros campos opcionales si los manejes -->
           </div>
         </form>

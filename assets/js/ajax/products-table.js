@@ -1,6 +1,23 @@
 // Archivo: assets/js/ajax/products-table.js
 
 document.addEventListener("DOMContentLoaded", function () {
+
+
+  // 🟡 Función reutilizable para cerrar modal y mover foco
+  function cerrarModalYReenfocar(modalId, focusTargetId) {
+    const modalEl = document.getElementById(modalId);
+    if (!modalEl) return;
+    const modalInst = bootstrap.Modal.getInstance(modalEl);
+    if (modalInst) {
+      modalInst.hide();
+      setTimeout(() => {
+        document.getElementById(focusTargetId)?.focus();
+      }, 300);
+    }
+  }
+
+
+
   // Contenedor de la tabla
   var productsTableElement = document.getElementById("products-table");
   if (!productsTableElement) return; // No cargamos nada si no existe el contenedor
@@ -175,144 +192,156 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // GUARDAR EDICIÓN
-  var saveEditBtn = document.getElementById("saveEditProductBtn");
-  if (saveEditBtn) {
-    saveEditBtn.addEventListener("click", function () {
-      // Leer valores del formulario de edición
-      var idEl = document.getElementById("edit-product-id");
-      var codeEl = document.getElementById("edit-product-code");
-      var nameEl = document.getElementById("edit-product-name");
-      var locationEl = document.getElementById("edit-location");
-      var priceEl = document.getElementById("edit-price");
-      var stockEl = document.getElementById("edit-stock");
-      var categoryEl = document.getElementById("edit-category");
-      var supplierEl = document.getElementById("edit-supplier");
-      var unitEl = document.getElementById("edit-unit");
-      var currencyEl = document.getElementById("edit-currency");
-      var subcategoryEl = document.getElementById("edit-subcategory");
-      var desiredStockEl = document.getElementById("edit-desired-stock");
-      var statusEl = document.getElementById("edit-status");
+var saveEditBtn = document.getElementById("saveEditProductBtn");
+if (saveEditBtn) {
+  saveEditBtn.addEventListener("click", function () {
+    // Leer valores del formulario de edición
+    var idEl = document.getElementById("edit-product-id");
+    var codeEl = document.getElementById("edit-product-code");
+    var nameEl = document.getElementById("edit-product-name");
+    var locationEl = document.getElementById("edit-location");
+    var priceEl = document.getElementById("edit-price");
+    var stockEl = document.getElementById("edit-stock");
+    var categoryEl = document.getElementById("edit-category");
+    var supplierEl = document.getElementById("edit-supplier");
+    var unitEl = document.getElementById("edit-unit");
+    var currencyEl = document.getElementById("edit-currency");
+    var subcategoryEl = document.getElementById("edit-subcategory");
+    var desiredStockEl = document.getElementById("edit-desired-stock");
+    var statusEl = document.getElementById("edit-status");
+    var imageEl = document.getElementById("edit-image"); // input file
 
-      if (!(idEl && codeEl && nameEl && locationEl && priceEl && stockEl && categoryEl && supplierEl && unitEl && currencyEl && subcategoryEl && desiredStockEl && statusEl)) {
-        console.error("Faltan campos en el formulario de edición");
-        return;
-      }
+    if (!(idEl && codeEl && nameEl && locationEl && priceEl && stockEl &&
+          categoryEl && supplierEl && unitEl && currencyEl && subcategoryEl &&
+          desiredStockEl && statusEl && imageEl)) {
+      console.error("Faltan campos en el formulario de edición");
+      return;
+    }
 
-      var id = parseInt(idEl.value, 10);
-      var code = codeEl.value.trim();
-      var name = nameEl.value.trim();
-      var location = locationEl.value.trim();
-      var price = parseFloat(priceEl.value);
-      var stock = parseInt(stockEl.value, 10);
-      var categoryId = categoryEl.value ? parseInt(categoryEl.value, 10) : null;
-      var supplierId = supplierEl.value ? parseInt(supplierEl.value, 10) : null;
-      var unitId = unitEl.value ? parseInt(unitEl.value, 10) : null;
-      var currencyId = currencyEl.value ? parseInt(currencyEl.value, 10) : null;
-      var subcategoryId = subcategoryEl.value ? parseInt(subcategoryEl.value, 10) : null;
-      var desiredStock = desiredStockEl.value ? parseInt(desiredStockEl.value, 10) : null;
-      var status = statusEl.value ? parseInt(statusEl.value, 10) : 1;
+    var id = parseInt(idEl.value, 10);
+    var code = codeEl.value.trim();
+    var name = nameEl.value.trim();
+    var location = locationEl.value.trim();
+    var price = parseFloat(priceEl.value);
+    var stock = parseInt(stockEl.value, 10);
+    var categoryId = categoryEl.value ? parseInt(categoryEl.value, 10) : null;
+    var supplierId = supplierEl.value ? parseInt(supplierEl.value, 10) : null;
+    var unitId = unitEl.value ? parseInt(unitEl.value, 10) : null;
+    var currencyId = currencyEl.value ? parseInt(currencyEl.value, 10) : null;
+    var subcategoryId = subcategoryEl.value ? parseInt(subcategoryEl.value, 10) : null;
+    var desiredStock = desiredStockEl.value ? parseInt(desiredStockEl.value, 10) : null;
+    var status = statusEl.value ? parseInt(statusEl.value, 10) : 1;
 
-      // Validaciones básicas
-      if (!code || !name) {
-        alert("Código y nombre son obligatorios.");
-        return;
-      }
-      if (isNaN(price) || isNaN(stock)) {
-        alert("Precio y stock deben ser números válidos.");
-        return;
-      }
-      // Validar FK obligatorios
-      if (categoryId === null) {
-        alert("Selecciona una categoría.");
-        return;
-      }
-      if (supplierId === null) {
-        alert("Selecciona un proveedor.");
-        return;
-      }
-      if (unitId === null) {
-        alert("Selecciona una unidad.");
-        return;
-      }
-      if (currencyId === null) {
-        alert("Selecciona una moneda.");
-        return;
-      }
-      if (subcategoryId === null) {
-        alert("Selecciona una subcategoría.");
-        return;
-      }
+    // Validaciones básicas
+    if (!code || !name) {
+      Swal.fire({ icon: 'warning', title: 'Código y nombre obligatorios', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
+      return;
+    }
+    if (isNaN(price) || isNaN(stock)) {
+      Swal.fire({ icon: 'warning', title: 'Precio y stock inválidos', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
+      return;
+    }
+    // Validar FK obligatorios
+    if (categoryId === null) {
+      Swal.fire({ icon: 'warning', title: 'Selecciona una categoría', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
+      return;
+    }
+    if (supplierId === null) {
+      Swal.fire({ icon: 'warning', title: 'Selecciona un proveedor', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
+      return;
+    }
+    if (unitId === null) {
+      Swal.fire({ icon: 'warning', title: 'Selecciona una unidad', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
+      return;
+    }
+    if (currencyId === null) {
+      Swal.fire({ icon: 'warning', title: 'Selecciona una moneda', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
+      return;
+    }
+    if (subcategoryId === null) {
+      Swal.fire({ icon: 'warning', title: 'Selecciona una subcategoría', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
+      return;
+    }
 
-      var productData = {
-        product_id: id,
-        product_code: code,
-        product_name: name,
-        location: location,
-        price: price,
-        stock: stock,
-        category_id: categoryId,
-        supplier_id: supplierId,
-        unit_id: unitId,
-        currency_id: currencyId,
-        subcategory_id: subcategoryId,
-        desired_stock: desiredStock,
-        status: status
-        // Otros opcionales que quieras manejar
-      };
+    // Construir FormData
+    var formData = new FormData();
+    formData.append("product_id", id);
+    formData.append("product_code", code);
+    formData.append("product_name", name);
+    formData.append("location", location);
+    formData.append("price", price);
+    formData.append("stock", stock);
+    formData.append("category_id", categoryId);
+    formData.append("supplier_id", supplierId);
+    formData.append("unit_id", unitId);
+    formData.append("currency_id", currencyId);
+    formData.append("subcategory_id", subcategoryId);
+    if (desiredStock !== null) formData.append("desired_stock", desiredStock);
+    formData.append("status", status);
 
-      fetch(BASE_URL + "api/products.php?action=update", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          product_id: id,
-          productData: productData,
-        }),
-      })
-        .then((res) => {
-          if (!res.ok) {
-            return res.text().then((text) => {
-              console.error("Error al actualizar producto. Status:", res.status, "Body:", text);
-              throw new Error("Error al actualizar producto. Revisa consola.");
-            });
-          }
-          return res.json().catch((err) => {
-            console.error("No se pudo parsear JSON en actualización:", err);
-            throw new Error("Respuesta inválida del servidor.");
+    // Procesar imagen nueva si hubo cambio
+    if (imageEl.files && imageEl.files.length > 0) {
+      var file = imageEl.files[0];
+      var maxSize = 2 * 1024 * 1024; // 2MB
+      if (file.size > maxSize) {
+        Swal.fire({ icon:'warning', title:'Imagen excede 2MB', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
+        return;
+      }
+      var ext = file.name.split('.').pop().toLowerCase();
+      var allowedExts = ['jpg','jpeg','png','gif'];
+      if (!allowedExts.includes(ext)) {
+        Swal.fire({ icon:'warning', title:'Solo JPG/PNG/GIF', toast:true, position:'top-end', timer:3000, showConfirmButton:false });
+        return;
+      }
+      formData.append("image_file", file);
+    }
+    // Llamada fetch con FormData (sin Content-Type explícito)
+    fetch(BASE_URL + "api/products.php?action=update", {
+      method: "POST",
+      body: formData
+    })
+      .then((res) => {
+        if (!res.ok) {
+          return res.text().then((text) => {
+            console.error("Error al actualizar producto. Status:", res.status, "Body:", text);
+            throw new Error("Error al actualizar producto. Ver consola.");
           });
-        })
-        .then((data) => {
-          if (!data.success) {
-            alert("Error al actualizar producto: " + (data.message || ""));
-          } else {
-            Swal.fire({
-              icon: "success",
-              title: "Producto actualizado con éxito",
-              showConfirmButton: false,
-              timer: 5000,
-              toast: true,
-              position: "top-end",
+        }
+        return res.json().catch((err) => {
+          console.error("No se pudo parsear JSON en actualización:", err);
+          throw new Error("Respuesta inválida del servidor.");
+        });
+      })
+      .then((data) => {
+        if (!data.success) {
+          Swal.fire({ icon:'error', title: 'Error: ' + (data.message || ''), toast:true, position:'top-end', timer:5000, showConfirmButton:false });
+        } else {
+          Swal.fire({ icon: "success", title: "Producto actualizado con éxito", toast:true, position:"top-end", timer:3000, showConfirmButton:false });
+          if (data.product) {
+            table.updateOrAddData([data.product]).catch((err) => {
+              console.error("Error actualizando fila en tabla:", err);
             });
-            if (data.product) {
-              table.updateOrAddData([data.product]).catch((err) => {
-                console.error("Error actualizando fila en tabla:", err);
-              });
-            } else {
-              console.warn("No se devolvió data.product al actualizar.");
-            }
-            // Cerrar modal
-            var modalEl = document.getElementById("editProductModal");
-            if (modalEl) {
-              var modalInst = bootstrap.Modal.getInstance(modalEl);
-              if (modalInst) modalInst.hide();
+          }
+          // Cerrar modal y reenfocar (usa tu función cerrarModalYReenfocar o inline):
+          var modalEl = document.getElementById("editProductModal");
+          if (modalEl) {
+            var modalInst = bootstrap.Modal.getInstance(modalEl);
+            if (modalInst) {
+              modalInst.hide();
+              setTimeout(() => {
+                document.getElementById("table-search")?.focus();
+              }, 300);
             }
           }
-        })
-        .catch((err) => {
-          console.error("Error en solicitud AJAX edición:", err);
-          alert(err.message);
-        });
-    });
-  }
+        }
+      })
+      .catch((err) => {
+        console.error("Error en solicitud AJAX edición:", err);
+        Swal.fire({ icon:'error', title: err.message, toast:true, position:'top-end', timer:5000, showConfirmButton:false });
+      });
+  });
+}
+
 
   // CONFIRMAR ELIMINAR
   var confirmDeleteBtn = document.getElementById("confirmDeleteProductBtn");
@@ -352,11 +381,7 @@ document.addEventListener("DOMContentLoaded", function () {
               .deleteRow(deleteProductID)
               .catch((err) => console.error("Error eliminando fila:", err));
             deleteProductID = null;
-            var modalEl = document.getElementById("deleteProductModal");
-            if (modalEl) {
-              var modalInstance = bootstrap.Modal.getInstance(modalEl);
-              if (modalInstance) modalInstance.hide();
-            }
+            cerrarModalYReenfocar("deleteProductModal", "table-search");
           }
         })
         .catch((err) => {
@@ -541,12 +566,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     timerProgressBar: true
                   });
 
-                  // Cerrar modal
-                  var modalEl = document.getElementById("addProductModal");
-                  if (modalEl) {
-                    var modalInst = bootstrap.Modal.getInstance(modalEl);
-                    if (modalInst) modalInst.hide();
-                  }
+                  cerrarModalYReenfocar("addProductModal", "addProductBtn");
+
 
                   // Limpiar formulario
                   var form = document.getElementById("form-nuevo-producto");

@@ -132,111 +132,104 @@ switch ($action) {
         }
         break;
 
-    case 'update':
-        // Similar a create: detectar JSON o multipart/form-data:
-        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
-        $payloadData = [];
-        $imageUploaded = false;
-        $imageTempPath = null;
-        $originalFilename = null;
-        $id = null;
+   case 'update':
+    // No usamos json_decode sino $_POST y $_FILES
+    header('Content-Type: application/json');
 
-        if (stripos($contentType, 'application/json') !== false) {
-            $raw = file_get_contents('php://input');
-            $payload = json_decode($raw, true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                http_response_code(400);
-                echo json_encode(['success'=>false,'message'=>'JSON inválido']);
-                exit;
-            }
-            if (!isset($payload['product_id']) || !isset($payload['productData'])) {
-                http_response_code(400);
-                echo json_encode(['success'=>false,'message'=>'Faltan parámetros para actualización']);
-                exit;
-            }
-            $id = (int)$payload['product_id'];
-            $payloadData = $payload['productData'];
-        }
-        elseif (stripos($contentType, 'multipart/form-data') !== false) {
-            // En este caso, el formulario debe incluir un campo hidden con product_id
-            if (!isset($_POST['product_id'])) {
-                http_response_code(400);
-                echo json_encode(['success'=>false,'message'=>'Falta product_id en formulario']);
-                exit;
-            }
-            $id = (int)$_POST['product_id'];
-            // Recoger campos a actualizar: por ejemplo si vienen en inputs con name
-            // Ejemplo:
-            $payloadData = [];
-            if (isset($_POST['product_code']))   $payloadData['product_code']   = $_POST['product_code'];
-            if (isset($_POST['product_name']))   $payloadData['product_name']   = $_POST['product_name'];
-            if (isset($_POST['location']))       $payloadData['location']       = $_POST['location'];
-            if (isset($_POST['price']))          $payloadData['price']          = $_POST['price'];
-            if (isset($_POST['stock']))          $payloadData['stock']          = $_POST['stock'];
-            if (isset($_POST['category_id']))    $payloadData['category_id']    = $_POST['category_id'];
-            if (isset($_POST['supplier_id']))    $payloadData['supplier_id']    = $_POST['supplier_id'];
-            if (isset($_POST['unit_id']))        $payloadData['unit_id']        = $_POST['unit_id'];
-            if (isset($_POST['currency_id']))    $payloadData['currency_id']    = $_POST['currency_id'];
-            if (isset($_POST['subcategory_id'])) $payloadData['subcategory_id'] = $_POST['subcategory_id'];
-            if (isset($_POST['desired_stock']))  $payloadData['desired_stock']  = $_POST['desired_stock'];
-            if (isset($_POST['status']))         $payloadData['status']         = $_POST['status'];
-            // Procesar imagen subida:
-            if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] !== UPLOAD_ERR_NO_FILE) {
-                if ($_FILES['image_file']['error'] === UPLOAD_ERR_OK) {
-                    $imageUploaded = true;
-                    $imageTempPath = $_FILES['image_file']['tmp_name'];
-                    $originalFilename = $_FILES['image_file']['name'];
-                } else {
-                    http_response_code(400);
-                    echo json_encode(['success'=>false,'message'=>'Error al subir la imagen.']);
-                    exit;
-                }
-            }
-        }
-        else {
+    // Verificar que venga product_id
+    $product_id = $_POST['product_id'] ?? null;
+    if (!$product_id || !is_numeric($product_id)) {
+        http_response_code(400);
+        echo json_encode(['success'=>false,'message'=>'product_id inválido']);
+        exit;
+    }
+    $product_id = (int)$product_id;
+
+    // Recoger campos
+    $data = [];
+    if (isset($_POST['product_code']))    $data['product_code'] = trim($_POST['product_code']);
+    if (isset($_POST['product_name']))    $data['product_name'] = trim($_POST['product_name']);
+    if (isset($_POST['location']))        $data['location'] = trim($_POST['location']);
+    if (isset($_POST['price']))           $data['price'] = $_POST['price'];
+    if (isset($_POST['stock']))           $data['stock'] = $_POST['stock'];
+    if (isset($_POST['category_id']))     $data['category_id'] = $_POST['category_id'];
+    if (isset($_POST['supplier_id']))     $data['supplier_id'] = $_POST['supplier_id'];
+    if (isset($_POST['unit_id']))         $data['unit_id'] = $_POST['unit_id'];
+    if (isset($_POST['currency_id']))     $data['currency_id'] = $_POST['currency_id'];
+    if (isset($_POST['subcategory_id']))  $data['subcategory_id'] = $_POST['subcategory_id'];
+    if (isset($_POST['desired_stock']))   $data['desired_stock'] = $_POST['desired_stock'];
+    if (isset($_POST['status']))          $data['status'] = $_POST['status'];
+    // Si añades más campos opcionales (sale_price, weight, etc.) captúralos aquí
+
+    // Conexión para posible uso de eliminación previa
+    require_once __DIR__ . '/../models/Database.php';
+    $db = (new Database())->getConnection();
+
+    // Manejar imagen si se subió
+    if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK) {
+        $tmp_name = $_FILES['image_file']['tmp_name'];
+        $originalName = basename($_FILES['image_file']['name']);
+        $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+        $allowedExt = ['jpg','jpeg','png','gif'];
+        if (!in_array($ext, $allowedExt)) {
             http_response_code(400);
-            echo json_encode(['success'=>false,'message'=>'Content-Type no soportado para update.']);
+            echo json_encode(['success'=>false,'message'=>'Extensión de imagen no permitida.']);
             exit;
         }
 
-        // Si hay imagen nueva:
-        if (!empty($imageUploaded) && $imageTempPath !== null) {
-            $baseRaw = $payloadData['product_code'] ?? $payloadData['product_name'] ?? 'product';
-            $baseName = preg_replace('/[^A-Za-z0-9_-]/', '_', substr($baseRaw, 0, 50));
-            $ext = pathinfo($originalFilename, PATHINFO_EXTENSION);
-            $ext = strtolower($ext);
-            $allowedExts = ['jpg','jpeg','png','gif'];
-            if (!in_array($ext, $allowedExts)) {
-                http_response_code(400);
-                echo json_encode(['success'=>false,'message'=>'Extensión de imagen no permitida.']);
-                exit;
-            }
-            $uploadDir = __DIR__ . '/../assets/images/products/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-            $newFilename = $baseName . '_' . time() . '.' . $ext;
-            $destinationPath = $uploadDir . $newFilename;
-            if (!move_uploaded_file($imageTempPath, $destinationPath)) {
-                http_response_code(500);
-                echo json_encode(['success'=>false,'message'=>'No se pudo mover la imagen subida.']);
-                exit;
-            }
-            //$payloadData['image_url'] = rtrim(BASE_URL, '/') . '/assets/images/products/' . $newFilename;
-            // tras mover archivo...
-            $payloadData['image_url'] = 'assets/images/products/' . $newFilename;
-
+        // Directorio absoluto donde se guardan las imágenes
+        $uploadDir = __DIR__ . '/../assets/images/products/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
         }
 
-        // Llamar al controlador: suponemos que updateProduct acepta ($id, $data)
-        $result = $productController->updateProduct($id, $payloadData);
-        if ($result['success']) {
-            echo json_encode(['success'=>true, 'product'=>$result['product']]);
-        } else {
-            http_response_code(400);
-            echo json_encode(['success'=>false,'message'=>$result['message']]);
+        // Antes de subir la nueva, eliminar la anterior (si existe)
+        // Obtener la ruta previa desde BD:
+        try {
+            $stmtOld = $db->prepare("SELECT image_url FROM products WHERE product_id = :id");
+            $stmtOld->bindParam(':id', $product_id, PDO::PARAM_INT);
+            $stmtOld->execute();
+            $old = $stmtOld->fetch(PDO::FETCH_ASSOC);
+            if ($old && !empty($old['image_url'])) {
+                // image_url en BD es ruta relativa, ej. 'assets/images/products/product_12.jpg'
+                $oldPath = __DIR__ . '/../' . $old['image_url'];
+                if (file_exists($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
+        } catch (PDOException $e) {
+            // Si falla la consulta, continuamos: no letal
+            error_log("Error obteniendo imagen previa: " . $e->getMessage());
         }
-        break;
+
+        // Nombrar la nueva imagen con un nombre fijo: product_{id}.ext
+        $newName = "product_{$product_id}.{$ext}";
+        $fullPath = $uploadDir . $newName;
+
+        if (!move_uploaded_file($tmp_name, $fullPath)) {
+            http_response_code(500);
+            echo json_encode(['success'=>false,'message'=>'Error al guardar imagen.']);
+            exit;
+        }
+        // Guardamos en $data la ruta relativa para BD
+        // Guardamos sin BASE_URL, solo ruta relativa desde la raíz pública, por ejemplo:
+        $data['image_url'] = 'assets/images/products/' . $newName;
+    }
+
+    // Llamar al controlador para actualizar
+    require_once __DIR__ . '/../controllers/ProductController.php';
+    $productController = new ProductController();
+
+    // Ajustar el método updateProduct para aceptar signature: updateProduct($id, $data)
+    $result = $productController->updateProduct($product_id, $data);
+    if ($result['success']) {
+        echo json_encode(['success'=>true, 'product'=>$result['product']]);
+    } else {
+        http_response_code(400);
+        echo json_encode(['success'=>false, 'message'=>$result['message']]);
+    }
+    break;
+
 
     case 'delete':
         $raw = file_get_contents('php://input');

@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: localhost
--- Tiempo de generación: 22-06-2025 a las 20:51:26
--- Versión del servidor: 10.4.28-MariaDB
--- Versión de PHP: 8.2.4
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 23-06-2025 a las 19:25:18
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -376,7 +376,7 @@ INSERT INTO `products` (`product_id`, `product_code`, `product_name`, `location`
 (306, 'DELT-6M', 'TORNILLO SUJECION 2, (TORNILLO PARA PORTA PLATINA Y BASE DE CALIBRACION).', '', 10.00, 415, '2024-01-08 00:00:00', 9, 3, 1, 1, 'IMG_20231003_085415_568_hdr.jpg', 2, 2, 1, 10.0000, NULL, NULL, NULL, NULL, NULL, '2025-06-22 11:11:48'),
 (307, 'DELT-6G', 'SOPORTE DE PANTALLA CENTRAL', '', 25.00, 124, '2024-01-08 00:00:00', 9, 3, 1, 1, 'IMG_20231027_075910_962_hdr.jpg', 3, 2, 1, 25.0000, NULL, NULL, NULL, NULL, NULL, '2025-06-22 11:11:48'),
 (308, 'DELT-5J', 'PANTALLA DE REGISTRO DERECHA', '', 15.00, 109, '2024-01-08 00:00:00', 9, 3, 1, 1, 'IMG_20231010_075948_466.jpg', 3, 2, 1, 15.0000, NULL, NULL, NULL, NULL, NULL, '2025-06-22 11:11:48'),
-(309, 'DELT-5H', 'PANTALLA DE REGISTRO IZQUIERDA', '', 15.00, 108, '2024-01-08 00:00:00', 9, 3, 1, 1, 'pantallas derechas.jpg', 3, 2, 1, 15.0000, NULL, NULL, NULL, NULL, NULL, '2025-06-22 11:11:48'),
+(309, 'DELT-5H', 'PANTALLA DE REGISTRO IZQUIERDA', '', 15.00, 108, '2024-01-08 00:00:00', 9, 3, 1, 1, NULL, 3, 2, 1, 15.0000, NULL, NULL, NULL, NULL, NULL, '2025-06-22 19:13:34'),
 (310, 'DELT-5A', 'MESA INCISAL', '', 25.00, 455, '2024-01-08 00:00:00', 9, 3, 1, 1, 'IMG_20230913_083850_991_hdr.jpg', 3, 2, 1, 25.0000, NULL, NULL, NULL, NULL, NULL, '2025-06-22 11:11:48'),
 (311, 'DELT-5T', 'Varilla para Sujeción Central', 'GABETA-G3', 25.00, 122, '2024-01-08 00:00:00', 9, 3, 1, 1, 'varillacentral.jpg', 3, 2, 1, 25.0000, NULL, NULL, NULL, NULL, NULL, '2025-06-22 11:11:48'),
 (315, 'H-0149', 'Boquilla ER40 1/8\"(4-3) Boquilla ER40 1/8\"(4-3)', 'HM3-8', 580.00, 0, '2024-01-08 00:00:00', 3, 2, 1, 1, 'IMG20231122115247.jpg', 5, 2, 0, 580.0000, NULL, NULL, NULL, NULL, NULL, '2025-06-22 11:11:48'),
@@ -384,8 +384,8 @@ INSERT INTO `products` (`product_id`, `product_code`, `product_name`, `location`
 (317, 'H-0151', 'Llave allen bola 3/32\" en L Llave allen bola 3/32\" en L', 'LOCKER FILA 3', 38.00, 10, '2024-01-08 00:00:00', 1, 2, 1, 1, 'IMG20231122115332.jpg', 5, 2, 1, 38.0000, NULL, NULL, NULL, NULL, NULL, '2025-06-22 11:11:48'),
 (318, 'H-0152', 'Broca HSS 1/8\" larga Broca HSS 1/8\" larga', '', 50.75, 0, '2024-01-08 00:00:00', 3, 2, 1, 1, 'IMG20231122115411.jpg', 5, 2, 0, 50.7500, NULL, NULL, NULL, NULL, NULL, '2025-06-22 11:11:48'),
 (319, 'I-0044', 'PELICULA ESTIRABLE DE 5\" C80, Playo para empaque rollo chico', 'ALMACEN GENERAL', 37.00, 37, '2024-01-08 00:00:00', 2, 4, 1, 1, 'IMG20231114130404.jpg', 5, 2, 1, 37.0000, NULL, NULL, NULL, NULL, NULL, '2025-06-22 11:11:48'),
-(321, 'DELT-4K', 'VARILLA PARA NIVEL (articulador)', 'GABETA G7', 25.00, 100, '2024-01-08 00:00:00', 9, 3, 1, 1, 'Captura de pantalla 2023-11-23 140637.png', 3, 2, 1, 25.0000, NULL, NULL, NULL, NULL, NULL, '2025-06-22 11:11:48'),
-(322, 'DELT-5R', 'Pin de Marca Central', 'GABETA-G2', 10.00, 100, '2024-01-08 00:00:00', 9, 3, 1, 1, 'Captura de pantalla 2023-11-23 141330.png', 3, 2, 1, 10.0000, NULL, NULL, NULL, NULL, NULL, '2025-06-22 11:11:48'),
+(321, 'DELT-4K', 'VARILLA PARA NIVEL (articulador)', 'GABETA G7', 25.00, 100, '2024-01-08 00:00:00', 9, 3, 1, 1, NULL, 3, 2, 1, 25.0000, NULL, NULL, NULL, NULL, NULL, '2025-06-22 19:14:15'),
+(322, 'DELT-5R', 'Pin de Marca Central', 'GABETA-G2', 10.00, 100, '2024-01-08 00:00:00', 9, 3, 1, 1, NULL, 3, 2, 1, 10.0000, NULL, NULL, NULL, NULL, NULL, '2025-06-22 19:14:03'),
 (323, 'I-0045', 'Cuchillas, Navajas de repuesto de 18mm Cuchillas, Navajas de repuesto de 18mm', 'LOCKER FILA 3', 3.14, 17, '2024-01-08 00:00:00', 1, 4, 1, 1, '.trashed-1703363215-IMG20231123142433.jpg', 5, 2, 1, 3.1400, NULL, NULL, NULL, NULL, NULL, '2025-06-22 11:11:48'),
 (324, 'H-0153', 'Lima Plana Muza de 8\" con mango Lima Plana Muza de 8\" con mango', 'LOCKER FILA 4', 65.52, 2, '2024-01-08 00:00:00', 1, 4, 1, 1, 'IMG20231123143139.jpg', 5, 2, 1, 65.5200, NULL, NULL, NULL, NULL, NULL, '2025-06-22 11:11:48'),
 (325, 'H-0154', 'Juego de 11 Brocas para Metal y concreto Juego de 11 Brocas para Metal y concreto', '', 176.00, 0, '2024-01-08 00:00:00', 1, 4, 1, 1, 'IMG20231123142325.jpg', 5, 2, 1, 176.0000, NULL, NULL, NULL, NULL, NULL, '2025-06-22 11:11:48'),
@@ -703,9 +703,7 @@ INSERT INTO `products` (`product_id`, `product_code`, `product_name`, `location`
 (692, 'MPM-015', 'BARRA REDONDA DE ALUMINIO 6061 DE 5/8 INCH X 3.66 MTS.', 'MAQUINADOS', 285.00, 8, '2024-11-20 12:03:36', 6, 1, 1, 1, '', 5, 2, 1, 0.0000, 0.0000, 0.0000, 3.6600, 0.0000, 0.0158, '2025-06-22 11:11:48'),
 (693, 'MPM-017', 'BARRA REDONDA ALUMINIO 6061 DE 5/16 INCH X 3.66 MTS.', 'MAQUINADOS', 80.00, 12, '2024-11-20 12:09:57', 6, 1, 1, 1, '', 5, 2, 1, 0.0000, 0.0000, 0.0000, 3.6600, 0.0000, 0.0079, '2025-06-22 11:11:48'),
 (694, 'MPM-018', 'BARRA REDONDA DE ALUMINIO 6061 1/4 INCH X 3.66 MTS.', 'MAQUINADO', 48.00, 2, '2024-11-20 12:18:11', 6, 1, 1, 1, '', 5, 2, 1, 0.0000, 0.0000, 0.0000, 3.6600, 0.0000, 0.0063, '2025-06-22 11:11:48'),
-(695, 'MPM-020', 'BARRA ACERO INOXIDABLE T-304 DE 3/8 INCH X 3.66 MTS.', 'MAQUINADO', 198.00, 2, '2024-11-20 12:24:20', 6, 1, 1, 1, '', 5, 2, 1, 0.0000, 0.0000, 0.0000, 3.6600, 0.0000, 0.0095, '2025-06-22 11:11:48'),
-(702, 'producto2', 'producto2', 'producto2', 20.00, 20, '2025-06-21 20:23:32', 1, 24, 14, 2, 'assets/images/products/product_702.jpg', 3, 20, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2025-06-22 12:37:24'),
-(703, 'producto3', 'producto3', 'producto3', 21.00, 21, '2025-06-21 22:29:35', 3, 13, 7, 1, 'assets/images/products/product_703.jpg', 5, 21, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2025-06-22 11:11:48');
+(705, 'producto1', 'producto1', 'producto1', 12.00, 12, '2025-06-22 19:37:19', 1, 2, 1, 1, 'assets/images/products/product_705.jpeg', 5, 12, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2025-06-22 19:37:19');
 
 -- --------------------------------------------------------
 
@@ -897,7 +895,8 @@ INSERT INTO `user_logs` (`id`, `user_id`, `action`, `timestamp`) VALUES
 (39, 27, 'login', '2025-06-21 22:21:23'),
 (40, 27, 'login', '2025-06-22 07:42:58'),
 (41, 27, 'login', '2025-06-22 09:34:07'),
-(42, 27, 'login', '2025-06-22 11:45:27');
+(42, 27, 'login', '2025-06-22 11:45:27'),
+(43, 27, 'login', '2025-06-22 18:30:54');
 
 --
 -- Índices para tablas volcadas
@@ -1004,7 +1003,7 @@ ALTER TABLE `levels_users`
 -- AUTO_INCREMENT de la tabla `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=704;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=706;
 
 --
 -- AUTO_INCREMENT de la tabla `subcategories`
@@ -1028,7 +1027,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de la tabla `user_logs`
 --
 ALTER TABLE `user_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- Restricciones para tablas volcadas

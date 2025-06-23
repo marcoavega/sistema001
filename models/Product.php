@@ -208,18 +208,37 @@ class Product {
     }
 
     public function deleteProduct(int $id): array {
-        try {
-            $stmt = $this->db->prepare("DELETE FROM products WHERE product_id = :id");
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $executed = $stmt->execute();
-            if ($executed) {
-                return ['success' => true];
+    try {
+        // 1) Obtener ruta de la imagen
+        $stmtImg = $this->db->prepare("SELECT image_url FROM products WHERE product_id = :id");
+        $stmtImg->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmtImg->execute();
+        $row = $stmtImg->fetch(PDO::FETCH_ASSOC);
+        if ($row && !empty($row['image_url'])) {
+            $imageUrl = $row['image_url']; // e.g. 'assets/images/products/product_12.jpg'
+            // Construir ruta absoluta: asumiendo que este archivo está en project_root/models/Product.php
+            $absolutePath = __DIR__ . '/../' . $imageUrl;
+            if (file_exists($absolutePath) && is_writable($absolutePath)) {
+                if (!@unlink($absolutePath)) {
+                    error_log("Product::deleteProduct: fallo al eliminar imagen: $absolutePath");
+                }
             } else {
-                return ['success' => false, 'message' => 'No se pudo eliminar el producto.'];
+                error_log("Product::deleteProduct: imagen no encontrada o no escribible: $absolutePath");
             }
-        } catch (PDOException $e) {
-            error_log("Product::deleteProduct Error: " . $e->getMessage());
-            return ['success' => false, 'message' => 'Error al eliminar producto: ' . $e->getMessage()];
         }
+        // 2) Borrar registro
+        $stmt = $this->db->prepare("DELETE FROM products WHERE product_id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $executed = $stmt->execute();
+        if ($executed) {
+            return ['success' => true];
+        } else {
+            return ['success' => false, 'message' => 'No se pudo eliminar el producto de la BD.'];
+        }
+    } catch (PDOException $e) {
+        error_log("Product::deleteProduct Error: " . $e->getMessage());
+        return ['success' => false, 'message' => 'Error al eliminar producto: ' . $e->getMessage()];
     }
+}
+
 }

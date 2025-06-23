@@ -221,29 +221,28 @@ switch ($action) {
     break;
 
 
-
-    case 'delete':
-        $raw = file_get_contents('php://input');
-        $payload = json_decode($raw, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            http_response_code(400);
-            echo json_encode(['success'=>false,'message'=>'JSON inválido']);
-            exit;
-        }
-        if (!isset($payload['product_id'])) {
-            http_response_code(400);
-            echo json_encode(['success'=>false,'message'=>'Falta product_id']);
-            exit;
-        }
-        $id = (int)$payload['product_id'];
-        $result = $productController->deleteProduct($id);
-        if ($result['success']) {
-            echo json_encode(['success'=>true]);
-        } else {
-            http_response_code(400);
-            echo json_encode(['success'=>false,'message'=>$result['message']]);
-        }
-        break;
+case 'delete':
+    $raw = file_get_contents('php://input');
+    $payload = json_decode($raw, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        http_response_code(400);
+        echo json_encode(['success'=>false,'message'=>'JSON inválido']);
+        exit;
+    }
+    if (!isset($payload['product_id'])) {
+        http_response_code(400);
+        echo json_encode(['success'=>false,'message'=>'Falta product_id']);
+        exit;
+    }
+    $id = (int)$payload['product_id'];
+    $result = $productController->deleteProduct($id);
+    if ($result['success']) {
+        echo json_encode(['success'=>true]);
+    } else {
+        http_response_code(400);
+        echo json_encode(['success'=>false,'message'=>$result['message']]);
+    }
+    break;
 
     default:
         http_response_code(400);

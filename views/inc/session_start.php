@@ -17,7 +17,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // **Control de tiempo de sesión**
-$expirationTime = 3600; // Se define el tiempo de vida de la sesión en segundos (1 hora).
+$expirationTime = 36000; // Se define el tiempo de vida de la sesión en segundos (1 hora).
 
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY']) > $expirationTime) {
     // `$_SESSION['LAST_ACTIVITY']` almacena el tiempo de la última actividad del usuario.

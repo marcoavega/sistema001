@@ -3,18 +3,46 @@
 document.addEventListener("DOMContentLoaded", function () {
 
 
+  
   // 🟡 Función reutilizable para cerrar modal y mover foco
+  // 1) Función reutilizable (ya la tienes)
   function cerrarModalYReenfocar(modalId, focusTargetId) {
     const modalEl = document.getElementById(modalId);
     if (!modalEl) return;
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     const modalInst = bootstrap.Modal.getInstance(modalEl);
     if (modalInst) {
       modalInst.hide();
+    }
+    if (focusTargetId) {
       setTimeout(() => {
         document.getElementById(focusTargetId)?.focus();
       }, 300);
     }
   }
+
+  // 2) Blur en todos los botones data-bs-dismiss
+  document.querySelectorAll('[data-bs-dismiss="modal"]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      this.blur();
+    });
+  });
+
+  // 3) Setup evento hide.bs.modal para cada modal
+  ["addProductModal", "editProductModal", "deleteProductModal"].forEach(modalId => {
+    const modalEl = document.getElementById(modalId);
+    if (modalEl) {
+      modalEl.addEventListener('hide.bs.modal', function () {
+        const active = document.activeElement;
+        if (active && modalEl.contains(active)) {
+          active.blur();
+        }
+      });
+    }
+  });
+
 
 
 
@@ -408,13 +436,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // AGREGAR NUEVO PRODUCTO
   // AGREGAR NUEVO PRODUCTO
-  var addProductBtn = document.getElementById("addProductBtn");
+ var addProductBtn = document.getElementById("addProductBtn");
   if (addProductBtn) {
     var addProductModalEl = document.getElementById("addProductModal");
     var addProductModal = addProductModalEl && new bootstrap.Modal(addProductModalEl);
 
     addProductBtn.addEventListener("click", function () {
-      // Limpiar formulario
+      // Limpiar formulario antes de abrir
       var newCodeEl = document.getElementById("new-product-code");
       var newNameEl = document.getElementById("new-product-name");
       var newLocationEl = document.getElementById("new-location");
@@ -441,16 +469,18 @@ document.addEventListener("DOMContentLoaded", function () {
       if (subcategoryEl) subcategoryEl.value = "";
       if (desiredStockEl) desiredStockEl.value = "";
       if (statusEl) statusEl.value = "1";
-      if (imageEl) imageEl.value = "";
+      if (imageEl) imageEl.value = ""; // limpia selección de archivo
 
-      if (addProductModal) addProductModal.show();
+      if (addProductModal) {
+        addProductModal.show();
+      }
     });
   }
 
   var saveNewProductBtn = document.getElementById("saveNewProductBtn");
   if (saveNewProductBtn) {
     saveNewProductBtn.addEventListener("click", function () {
-      // Obtener referencias
+      // Obtener referencias de los inputs
       var newCodeEl = document.getElementById("new-product-code");
       var newNameEl = document.getElementById("new-product-name");
       var newLocationEl = document.getElementById("new-location");
@@ -466,8 +496,8 @@ document.addEventListener("DOMContentLoaded", function () {
       var imageEl = document.getElementById("new-image");
 
       if (!(newCodeEl && newNameEl && newLocationEl && newPriceEl && newStockEl &&
-        categoryEl && supplierEl && unitEl && currencyEl && subcategoryEl &&
-        desiredStockEl && statusEl && imageEl)) {
+            categoryEl && supplierEl && unitEl && currencyEl && subcategoryEl &&
+            desiredStockEl && statusEl && imageEl)) {
         console.error("Faltan campos en formulario de creación");
         return;
       }
@@ -486,33 +516,33 @@ document.addEventListener("DOMContentLoaded", function () {
       var desiredStock = desiredStockEl.value ? parseInt(desiredStockEl.value, 10) : null;
       var status = statusEl.value ? parseInt(statusEl.value, 10) : 1;
 
-      // Validaciones básicas
+      // Validaciones
       if (!code || !name) {
-        Swal.fire({ icon: 'warning', title: 'Código y nombre obligatorios' });
+        Swal.fire({ icon: 'warning', title: 'Código y nombre obligatorios', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
         return;
       }
       if (isNaN(price) || isNaN(stock)) {
-        Swal.fire({ icon: 'warning', title: 'Precio y stock deben ser números válidos' });
+        Swal.fire({ icon: 'warning', title: 'Precio y stock deben ser números válidos', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
         return;
       }
       if (categoryId === null) {
-        Swal.fire({ icon: 'warning', title: 'Selecciona una categoría' });
+        Swal.fire({ icon: 'warning', title: 'Selecciona una categoría', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
         return;
       }
       if (supplierId === null) {
-        Swal.fire({ icon: 'warning', title: 'Selecciona un proveedor' });
+        Swal.fire({ icon: 'warning', title: 'Selecciona un proveedor', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
         return;
       }
       if (unitId === null) {
-        Swal.fire({ icon: 'warning', title: 'Selecciona una unidad' });
+        Swal.fire({ icon: 'warning', title: 'Selecciona una unidad', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
         return;
       }
       if (currencyId === null) {
-        Swal.fire({ icon: 'warning', title: 'Selecciona una moneda' });
+        Swal.fire({ icon: 'warning', title: 'Selecciona una moneda', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
         return;
       }
       if (subcategoryId === null) {
-        Swal.fire({ icon: 'warning', title: 'Selecciona una subcategoría' });
+        Swal.fire({ icon: 'warning', title: 'Selecciona una subcategoría', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
         return;
       }
 
@@ -548,57 +578,56 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.append("image_file", file);
       }
 
-      // Realizar petición
+      // Petición al backend
       fetch(BASE_URL + "api/products.php?action=create", {
         method: "POST",
         body: formData
       })
-        .then(function (res) {
-          if (!res.ok) {
-            return res.text().then(function (text) {
-              console.error("Respuesta no OK al crear producto. Status:", res.status, "Body:", text);
-              throw new Error("Error al crear producto. Revisa consola.");
-            });
-          }
-          return res.json().catch(function (err) {
-            console.error("No se pudo parsear JSON en creación:", err);
-            throw new Error("Respuesta inválida del servidor.");
+      .then(function (res) {
+        if (!res.ok) {
+          return res.text().then(function (text) {
+            console.error("Respuesta no OK al crear producto. Status:", res.status, "Body:", text);
+            throw new Error("Error al crear producto. Revisa consola.");
           });
-        })
-        .then(function (data) {
-          if (!data.success) {
-            Swal.fire({ icon: 'error', title: 'Error al crear producto', text: data.message || '' });
-          } else {
-            if (data.product) {
-              // Añadir a la tabla (table es la instancia de Tabulator)
-              table.addData([data.product], true).then(function () {
-                // Mostrar toast de éxito
-                Swal.fire({
-                  toast: true,
-                  position: 'top-end',
-                  icon: 'success',
-                  title: 'Producto registrado con éxito',
-                  showConfirmButton: false,
-                  timer: 3000,
-                  timerProgressBar: true
-                });
-                // Cerrar modal y reenfocar
-                cerrarModalYReenfocar("addProductModal", "addProductBtn");
-                // Limpiar formulario
-                var form = document.getElementById("addProductForm"); // Asegúrate que tu <form> tenga este id
-                if (form) form.reset();
-              }).catch(function (err) {
-                console.error("Error al agregar producto a la tabla:", err);
-              });
-            } else {
-              console.warn("No se devolvió data.product al crear.");
-            }
-          }
-        })
-        .catch(function (err) {
-          console.error("Error en solicitud AJAX creación:", err);
-          Swal.fire({ icon: 'error', title: 'Error', text: err.message });
+        }
+        return res.json().catch(function (err) {
+          console.error("No se pudo parsear JSON en creación:", err);
+          throw new Error("Respuesta inválida del servidor.");
         });
+      })
+      .then(function (data) {
+        if (!data.success) {
+          Swal.fire({ icon: 'error', title: 'Error al crear producto', text: data.message || '' });
+        } else {
+          if (data.product) {
+            // Añadir a la tabla
+            table.addData([data.product], true).then(function () {
+              Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Producto registrado con éxito',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+              });
+              // Cerrar modal y reenfocar
+              cerrarModalYReenfocar("addProductModal", "addProductBtn");
+              // Limpiar formulario
+              var form = document.getElementById("addProductForm");
+              if (form) form.reset();
+            }).catch(function (err) {
+              console.error("Error al agregar producto a la tabla:", err);
+            });
+          } else {
+            console.warn("No se devolvió data.product al crear.");
+          }
+        }
+      })
+      .catch(function (err) {
+        console.error("Error en solicitud AJAX creación:", err);
+        Swal.fire({ icon: 'error', title: 'Error', text: err.message });
+      });
     });
   }
 

@@ -14,8 +14,53 @@ require_once __DIR__ . '/../controllers/ProductController.php';
 $action = $_GET['action'] ?? '';
 $productController = new ProductController();
 
+
+
+// == Caso paginación remota ==
+if ($action === 'list') {
+    require_once __DIR__ . '/../models/Database.php';
+    $db = (new Database())->getConnection();
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $size = isset($_GET['size']) ? (int)$_GET['size'] : 20;
+    if ($page < 1) $page = 1;
+    if ($size < 1) $size = 20;
+    $offset = ($page - 1) * $size;
+    try {
+        $totalStmt = $db->query("SELECT COUNT(*) FROM products");
+        $total = (int)$totalStmt->fetchColumn();
+        $stmt = $db->prepare("
+            SELECT product_id, product_code, product_name, location, price, stock, registration_date,
+                   category_id, supplier_id, unit_id, currency_id, image_url, subcategory_id,
+                   desired_stock, status, sale_price, weight, height, length, width, diameter
+            FROM products
+            ORDER BY product_id DESC
+            LIMIT :offset, :size
+        ");
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->bindValue(':size', $size, PDO::PARAM_INT);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode([
+            "last_page" => ceil($total / $size),
+            "data"      => $rows
+        ]);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode([
+            "last_page" => 0,
+            "data"      => [],
+            "error"     => $e->getMessage(),
+        ]);
+    }
+    exit;
+}
+
+
+
+
 switch ($action) {
 
+    
    case 'get':
     $products = $productController->getAllProducts();
     echo json_encode($products);

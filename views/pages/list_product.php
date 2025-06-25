@@ -77,7 +77,10 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
         <!-- Botones de acción -->
         <div class="row mb-3 g-2">
           <div class="col-12 col-md-auto">
-            <button id="addProductBtn" class="btn btn-primary">Agregar Producto</button>
+            <button id="addProductBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+  Agregar producto
+</button>
+
           </div>
           <div class="col-12 col-md-auto">
             <button id="exportCSVBtn" class="btn btn-outline-primary">Exportar a CSV</button>
@@ -110,6 +113,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
         ?>
       <?php endif; ?>
 
+      
     </main>
   </div>
 </div>

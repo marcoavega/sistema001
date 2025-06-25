@@ -1,7 +1,7 @@
-/// Archivo: assets/js/ajax/products-table.js
+// Archivo: assets/js/ajax/products-table.js
 
 document.addEventListener("DOMContentLoaded", function () {
-  // 🟡 Función reutilizable para cerrar modal y mover foco
+  // Función reutilizable para cerrar modal y reenfocar
   function cerrarModalYReenfocar(modalId, focusTargetId) {
     const modalEl = document.getElementById(modalId);
     if (!modalEl) return;
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Blur en botones data-bs-dismiss para evitar warnings de aria-hidden
+  // Evitar warnings aria-hidden al cerrar modal
   document.querySelectorAll('[data-bs-dismiss="modal"]').forEach(btn => {
     btn.addEventListener('click', () => btn.blur());
   });
@@ -37,83 +37,72 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Contenedor de la tabla
   var productsTableElement = document.getElementById("products-table");
-  if (!productsTableElement) return; // No inicializamos si no existe
+  if (!productsTableElement) return;
 
-  // Variable temporal para ID de producto a eliminar/editar
   var deleteProductID = null;
 
-  // Inicializa Tabulator con paginación remota
   console.log("Inicializando Tabulator con paginación remota...");
   var table = new Tabulator("#products-table", {
     layout: "fitColumns",
     responsiveLayout: "collapse",
     placeholder: "Cargando productos...",
-    pagination: "remote",            // activa paginación remota
+    pagination: "remote",            // paginación remota
     paginationSize: 20,              // filas por página inicial
-    paginationSizeSelector: [10, 20, 50, 100], // selector opcional
+    paginationSizeSelector: [10, 20, 50, 100],
     ajaxURL: BASE_URL + "api/products.php?action=list", // endpoint paginado
     ajaxConfig: "GET",
-    ajaxParams: {},                  // si quieres filtros iniciales, déjalo {}
-    ajaxResponse: function (url, params, response) {
-      return response.data;
-    },
-    paginationDataReceived: {
-      "last_page": "last_page",      // clave de la respuesta JSON con total de páginas
-      "data": "data"                 // clave de la respuesta JSON con el array de filas
+    ajaxParams: {},                  // filtros iniciales, si los hubiera
+    paginationDataSent: {
+      "page": "page",    // Tabulator enviará ?page=... 
+      "size": "size",    // ?size=...
+      // Si tu API necesitara otros nombres, cámbialos aquí.
     },
     ajaxRequesting: function (url, params) {
       console.log("Tabulator request:", url, params);
+      // params.page, params.size, etc.
+    },
+    // Extraer el array de filas para Tabulator
+    ajaxResponse: function (url, params, response) {
+      // response es el objeto devuelto: { last_page: X, data: [...] }
+      // Retornamos el array de filas para Tabulator
+      if (response && Array.isArray(response.data)) {
+        return response.data;
+      } else {
+        console.warn("Respuesta inesperada para ajaxResponse:", response);
+        return [];
+      }
+    },
+    // Mapear los campos de la respuesta para que Tabulator sepa total de páginas y datos
+    paginationDataReceived: {
+      "last_page": "last_page",   // nombre de campo con número de páginas totales
+      "data": "data"              // campo con el array de filas
+      // Si tu endpoint devolviera "total" o "lastPage", cámbialo aquí.
     },
     columns: [
+      { title: "ID", field: "product_id", width: 70, sorter: "number", hozAlign: "center" },
+      { title: "Código", field: "product_code" },
+      { title: "Nombre", field: "product_name" },
+      { title: "Ubicación", field: "location" },
       {
-        title: "ID",
-        field: "product_id",
-        width: 70,
-        sorter: "number",
-        hozAlign: "center",
-      },
-      {
-        title: "Código",
-        field: "product_code",
-      },
-      {
-        title: "Nombre",
-        field: "product_name",
-      },
-      {
-        title: "Ubicación",
-        field: "location",
-      },
-      {
-        title: "Precio",
-        field: "price",
-        hozAlign: "right",
+        title: "Precio", field: "price", hozAlign: "right",
         formatter: "money",
-        formatterParams: {
-          symbol: "",
-          precision: 2,
-        },
+        formatterParams: { symbol: "", precision: 2 },
       },
+      { title: "Stock", field: "stock", sorter: "number", hozAlign: "center" },
       {
-        title: "Stock",
-        field: "stock",
-        sorter: "number",
-        hozAlign: "center",
-      },
-      {
-        title: "Registrado",
-        field: "registration_date",
+        title: "Registrado", field: "registration_date",
         formatter: function (cell) {
           var value = cell.getValue();
           var date = new Date(value);
           if (isNaN(date.getTime())) return "";
-          var day = date.getDate(), month = date.getMonth() + 1, year = date.getFullYear();
-          return (day < 10 ? "0" + day : day) + "/" + (month < 10 ? "0" + month : month) + "/" + year;
+          var day = String(date.getDate()).padStart(2, "0");
+          var month = String(date.getMonth() + 1).padStart(2, "0");
+          var year = date.getFullYear();
+          return day + "/" + month + "/" + year;
         },
       },
       {
-        title: "Imagen",
-        field: "image_url",
+        title: "Imagen", field: "image_url",
         formatter: function (cell) {
           var row = cell.getData();
           if (!row.image_url) return "";
@@ -138,38 +127,27 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         cellClick: function (e, cell) {
           var rowData = cell.getRow().getData();
+          // EDITAR
           if (e.target.classList.contains("edit-btn")) {
-            // Rellenar formulario de edición con rowData
-            var editIdEl = document.getElementById("edit-product-id");
-            if (editIdEl) editIdEl.value = rowData.product_id;
-            var editCodeEl = document.getElementById("edit-product-code");
-            if (editCodeEl) editCodeEl.value = rowData.product_code || "";
-            var editNameEl = document.getElementById("edit-product-name");
-            if (editNameEl) editNameEl.value = rowData.product_name || "";
-            var editLocationEl = document.getElementById("edit-location");
-            if (editLocationEl) editLocationEl.value = rowData.location || "";
-            var editPriceEl = document.getElementById("edit-price");
-            if (editPriceEl) editPriceEl.value = rowData.price ?? "";
-            var editStockEl = document.getElementById("edit-stock");
-            if (editStockEl) editStockEl.value = rowData.stock ?? "";
-            var editCategoryEl = document.getElementById("edit-category");
-            if (editCategoryEl) editCategoryEl.value = rowData.category_id ?? "";
-            var editSupplierEl = document.getElementById("edit-supplier");
-            if (editSupplierEl) editSupplierEl.value = rowData.supplier_id ?? "";
-            var editUnitEl = document.getElementById("edit-unit");
-            if (editUnitEl) editUnitEl.value = rowData.unit_id ?? "";
-            var editCurrencyEl = document.getElementById("edit-currency");
-            if (editCurrencyEl) editCurrencyEl.value = rowData.currency_id ?? "";
-            var editSubcategoryEl = document.getElementById("edit-subcategory");
-            if (editSubcategoryEl) editSubcategoryEl.value = rowData.subcategory_id ?? "";
-            var editDesiredStockEl = document.getElementById("edit-desired-stock");
-            if (editDesiredStockEl) editDesiredStockEl.value = rowData.desired_stock ?? "";
-            var editStatusEl = document.getElementById("edit-status");
-            if (editStatusEl) editStatusEl.value = rowData.status != null ? rowData.status : "1";
+            // Rellenar form de edición con rowData...
+            document.getElementById("edit-product-id").value = rowData.product_id;
+            document.getElementById("edit-product-code").value = rowData.product_code || "";
+            document.getElementById("edit-product-name").value = rowData.product_name || "";
+            document.getElementById("edit-location").value = rowData.location || "";
+            document.getElementById("edit-price").value = rowData.price ?? "";
+            document.getElementById("edit-stock").value = rowData.stock ?? "";
+            document.getElementById("edit-category").value = rowData.category_id ?? "";
+            document.getElementById("edit-supplier").value = rowData.supplier_id ?? "";
+            document.getElementById("edit-unit").value = rowData.unit_id ?? "";
+            document.getElementById("edit-currency").value = rowData.currency_id ?? "";
+            document.getElementById("edit-subcategory").value = rowData.subcategory_id ?? "";
+            document.getElementById("edit-desired-stock").value = rowData.desired_stock ?? "";
+            document.getElementById("edit-status").value = rowData.status != null ? rowData.status : "1";
             // Mostrar modal edición
             var editModalEl = document.getElementById("editProductModal");
             if (editModalEl) new bootstrap.Modal(editModalEl).show();
           }
+          // ELIMINAR
           if (e.target.classList.contains("delete-btn")) {
             deleteProductID = rowData.product_id;
             var deleteModalEl = document.getElementById("deleteProductModal");
@@ -180,7 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ],
   });
 
-  // BÚSQUEDA local en la página actual (si deseas búsqueda remota, cambia la lógica)
+  // Búsqueda local en página actual
   var searchInput = document.getElementById("table-search");
   if (searchInput) {
     searchInput.addEventListener("input", function () {
@@ -194,12 +172,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // CRUD: crear nuevo producto
+  // === CRUD: crear nuevo producto ===
   var saveNewProductBtn = document.getElementById("saveNewProductBtn");
   if (saveNewProductBtn) {
     saveNewProductBtn.addEventListener("click", function () {
       var formData = new FormData();
-      // Recoge valores de inputs del modal "addProductModal"
+      // Recoger valores de inputs del modal
       var newCodeEl = document.getElementById("new-product-code");
       if (newCodeEl) formData.append("product_code", newCodeEl.value.trim());
       var newNameEl = document.getElementById("new-product-name");
@@ -228,58 +206,54 @@ document.addEventListener("DOMContentLoaded", function () {
       if (imageEl && imageEl.files && imageEl.files.length > 0) {
         formData.append("image_file", imageEl.files[0]);
       }
-
-      // Validaciones básicas antes de enviar (Código y nombre obligatorios, etc.)
+      // Validación mínima
       if (!formData.get("product_code") || !formData.get("product_name")) {
         Swal.fire({ icon: 'warning', title: 'Código y nombre obligatorios', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
         return;
       }
-      // Puedes añadir más validaciones aquí...
-
       fetch(BASE_URL + "api/products.php?action=create", {
         method: "POST",
         body: formData
       })
-        .then(res => {
-          if (!res.ok) {
-            return res.text().then(text => {
-              console.error("Error al crear producto. Status:", res.status, "Body:", text);
-              throw new Error("Error al crear producto");
-            });
-          }
-          return res.json();
-        })
-        .then(data => {
-          if (data.success) {
-            Swal.fire({
-              icon: "success",
-              title: "Producto registrado con éxito",
-              toast: true,
-              position: "top-end",
-              timer: 2000,
-              showConfirmButton: false
-            });
-            cerrarModalYReenfocar("addProductModal", "addProductBtn");
-
-            // ✅ Recargar datos desde el servidor
-            table.replaceData();
-          } else {
-            Swal.fire({ icon: 'error', title: 'Error al crear producto', text: data.message || '' });
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          Swal.fire({ icon: 'error', title: 'Error en creación' });
-        });
+      .then(res => {
+        if (!res.ok) {
+          return res.text().then(text => {
+            console.error("Error al crear producto. Status:", res.status, "Body:", text);
+            throw new Error("Error al crear producto");
+          });
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (data.success) {
+          Swal.fire({
+            icon: "success",
+            title: "Producto registrado con éxito",
+            toast: true,
+            position: "top-end",
+            timer: 2000,
+            showConfirmButton: false
+          });
+          cerrarModalYReenfocar("addProductModal", "addProductBtn");
+          // Recargar página 1 para ver el nuevo registro
+          table.setPage(1);
+        } else {
+          Swal.fire({ icon: 'error', title: 'Error al crear producto', text: data.message || '' });
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        Swal.fire({ icon: 'error', title: 'Error en creación' });
+      });
     });
   }
 
-  // CRUD: editar producto
+  // === CRUD: editar producto ===
   var saveEditProductBtn = document.getElementById("saveEditProductBtn");
   if (saveEditProductBtn) {
     saveEditProductBtn.addEventListener("click", function () {
       var formData = new FormData();
-      // Recoge valores de inputs del modal "editProductModal"
+      // Recoger valores de inputs del modal
       var idEl = document.getElementById("edit-product-id");
       if (idEl) formData.append("product_id", idEl.value);
       var codeEl = document.getElementById("edit-product-code");
@@ -310,51 +284,49 @@ document.addEventListener("DOMContentLoaded", function () {
       if (imageEl2 && imageEl2.files && imageEl2.files.length > 0) {
         formData.append("image_file", imageEl2.files[0]);
       }
-
-      // Validaciones básicas antes de enviar
+      // Validación mínima
       if (!formData.get("product_id") || !formData.get("product_code") || !formData.get("product_name")) {
         Swal.fire({ icon: 'warning', title: 'Código y nombre obligatorios', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
         return;
       }
-
       fetch(BASE_URL + "api/products.php?action=update", {
         method: "POST",
         body: formData
       })
-        .then(res => {
-          if (!res.ok) {
-            return res.text().then(text => {
-              console.error("Error al actualizar producto. Status:", res.status, "Body:", text);
-              throw new Error("Error al actualizar producto");
-            });
-          }
-          return res.json();
-        })
-        .then(data => {
-          if (data.success) {
-            Swal.fire({
-              icon: "success",
-              title: "Producto actualizado con éxito",
-              toast: true,
-              position: "top-end",
-              timer: 2000,
-              showConfirmButton: false
-            });
-            cerrarModalYReenfocar("editProductModal", "table-search");
-            // Recarga la página actual para reflejar cambios
-           table.replaceData(); // ✅ Recarga datos desde el servidor
-          } else {
-            Swal.fire({ icon: 'error', title: 'Error al actualizar', text: data.message || '' });
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          Swal.fire({ icon: 'error', title: 'Error en edición' });
-        });
+      .then(res => {
+        if (!res.ok) {
+          return res.text().then(text => {
+            console.error("Error al actualizar producto. Status:", res.status, "Body:", text);
+            throw new Error("Error al actualizar producto");
+          });
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (data.success) {
+          Swal.fire({
+            icon: "success",
+            title: "Producto actualizado con éxito",
+            toast: true,
+            position: "top-end",
+            timer: 2000,
+            showConfirmButton: false
+          });
+          cerrarModalYReenfocar("editProductModal", "table-search");
+          // Recarga la misma página para reflejar cambios
+          table.setPage(table.getPage());
+        } else {
+          Swal.fire({ icon: 'error', title: 'Error al actualizar', text: data.message || '' });
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        Swal.fire({ icon: 'error', title: 'Error en edición' });
+      });
     });
   }
 
-  // CRUD: eliminar producto
+  // === CRUD: eliminar producto ===
   var confirmDeleteBtn = document.getElementById("confirmDeleteProductBtn");
   if (confirmDeleteBtn) {
     confirmDeleteBtn.addEventListener("click", function () {
@@ -364,37 +336,37 @@ document.addEventListener("DOMContentLoaded", function () {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ product_id: deleteProductID }),
       })
-        .then(res => {
-          if (!res.ok) {
-            return res.text().then(text => {
-              console.error("Error al eliminar producto. Status:", res.status, "Body:", text);
-              throw new Error("Error al eliminar producto");
-            });
-          }
-          return res.json();
-        })
-        .then(data => {
-          if (data.success) {
-            Swal.fire({
-              icon: "success",
-              title: "Producto eliminado con éxito",
-              toast: true,
-              position: "top-end",
-              timer: 2000,
-              showConfirmButton: false
-            });
-            // Recarga la página actual para reflejar la eliminación
-            table.replaceData();
-            deleteProductID = null;
-            cerrarModalYReenfocar("deleteProductModal", "table-search");
-          } else {
-            Swal.fire({ icon: 'error', title: 'Error al eliminar', text: data.message || '' });
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          Swal.fire({ icon: 'error', title: 'Error en eliminación' });
-        });
+      .then(res => {
+        if (!res.ok) {
+          return res.text().then(text => {
+            console.error("Error al eliminar producto. Status:", res.status, "Body:", text);
+            throw new Error("Error al eliminar producto");
+          });
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (data.success) {
+          Swal.fire({
+            icon: "success",
+            title: "Producto eliminado con éxito",
+            toast: true,
+            position: "top-end",
+            timer: 2000,
+            showConfirmButton: false
+          });
+          // Recarga la misma página para reflejar eliminación
+          table.setPage(table.getPage());
+          deleteProductID = null;
+          cerrarModalYReenfocar("deleteProductModal", "table-search");
+        } else {
+          Swal.fire({ icon: 'error', title: 'Error al eliminar', text: data.message || '' });
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        Swal.fire({ icon: 'error', title: 'Error en eliminación' });
+      });
     });
   }
 
@@ -402,6 +374,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var exportCSVBtn = document.getElementById("exportCSVBtn");
   if (exportCSVBtn) {
     exportCSVBtn.addEventListener("click", function () {
+      // Obtiene los datos de la página actualmente cargada en memoria
       var datos = table.getData();
       let csvContent = "";
       csvContent += `"REPORTE DE LISTA DE PRODUCTOS"\n`;
@@ -542,4 +515,5 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+
 });

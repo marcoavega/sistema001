@@ -8,30 +8,29 @@ error_reporting(E_ALL);
 
 header('Content-Type: application/json');
 
-require_once __DIR__ . '/../config/config.php';            // Debe definir BASE_URL, etc.
+require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../controllers/ProductController.php';
 
 $action = $_GET['action'] ?? '';
 $productController = new ProductController();
 
-
-
-// == Caso paginación remota ==
+// Caso paginación remota:
 if ($action === 'list') {
     require_once __DIR__ . '/../models/Database.php';
     $db = (new Database())->getConnection();
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $size = isset($_GET['size']) ? (int)$_GET['size'] : 20;
+    $size = isset($_GET['size']) ? (int)$_GET['size'] : 2000;
     if ($page < 1) $page = 1;
-    if ($size < 1) $size = 20;
+    if ($size < 1) $size = 2000;
     $offset = ($page - 1) * $size;
     try {
         $totalStmt = $db->query("SELECT COUNT(*) FROM products");
         $total = (int)$totalStmt->fetchColumn();
         $stmt = $db->prepare("
-            SELECT product_id, product_code, product_name, location, price, stock, registration_date,
-                   category_id, supplier_id, unit_id, currency_id, image_url, subcategory_id,
-                   desired_stock, status, sale_price, weight, height, length, width, diameter
+            SELECT 
+                product_id, product_code, product_name, location, price, stock, registration_date,
+                category_id, supplier_id, unit_id, currency_id, image_url, subcategory_id,
+                desired_stock, status
             FROM products
             ORDER BY product_id DESC
             LIMIT :offset, :size
@@ -41,7 +40,9 @@ if ($action === 'list') {
         $stmt->execute();
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode([
+            // `last_page` es el número total de páginas:
             "last_page" => ceil($total / $size),
+            // `data` es el array de registros de esta página
             "data"      => $rows
         ]);
     } catch (PDOException $e) {
@@ -54,8 +55,6 @@ if ($action === 'list') {
     }
     exit;
 }
-
-
 
 
 switch ($action) {

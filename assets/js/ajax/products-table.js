@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
     placeholder: "Cargando productos...",
     pagination: "remote",            // paginación remota
     paginationSize: 20,              // filas por página inicial
-    paginationSizeSelector: [10, 20, 50, 100],
+    paginationSizeSelector: [10, 20,30, 50, 100, 200, 500, 1000, 2000, 3000, 4000, 5000, 10000], // opciones de tamaño de página
     ajaxURL: BASE_URL + "api/products.php?action=list", // endpoint paginado
     ajaxConfig: "GET",
     ajaxParams: {},                  // filtros iniciales, si los hubiera

@@ -20,8 +20,12 @@
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
     <!-- Carga los íconos de Bootstrap (por ejemplo, para botones y elementos gráficos) -->
 
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/tabulator/css/tabulator_site_dark.min.css">
-    <!-- Incluye los estilos de Tabulator, que se usan para la gestión y presentación de tablas dinámicas -->
+    <!--<link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/tabulator/css/tabulator_site_dark.min.css">
+     Incluye los estilos de Tabulator, que se usan para la gestión y presentación de tablas dinámicas -->
+
+   <!-- Solo uno: el que cambia dinámicamente -->
+    <link id="tabulator-theme" rel="stylesheet" href="<?php echo BASE_URL; ?>assets/tabulator/css/tabulator.min.css">
+
 
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/style.css">
     <!-- Enlace a la hoja de estilos personalizada de la aplicación (style.css) -->

@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
           });
           cerrarModalYReenfocar("addProductModal", "addProductBtn");
           // Recargar página 1 para ver el nuevo registro
-          table.setPage(1);
+          table.setData("api/products.php?action=list"); // Recargar la tabla aquí
         } else {
           Swal.fire({ icon: 'error', title: 'Error al crear producto', text: data.message || '' });
         }
@@ -314,7 +314,7 @@ document.addEventListener("DOMContentLoaded", function () {
           });
           cerrarModalYReenfocar("editProductModal", "table-search");
           // Recarga la misma página para reflejar cambios
-          table.setPage(table.getPage());
+    table.setData("api/products.php?action=list"); // Recargar aquí también
         } else {
           Swal.fire({ icon: 'error', title: 'Error al actualizar', text: data.message || '' });
         }
@@ -356,7 +356,7 @@ document.addEventListener("DOMContentLoaded", function () {
             showConfirmButton: false
           });
           // Recarga la misma página para reflejar eliminación
-          table.setPage(table.getPage());
+    table.setData("api/products.php?action=list"); // Recarga
           deleteProductID = null;
           cerrarModalYReenfocar("deleteProductModal", "table-search");
         } else {

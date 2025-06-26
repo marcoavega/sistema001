@@ -19,7 +19,7 @@ if ($action === 'list') {
     require_once __DIR__ . '/../models/Database.php';
     $db = (new Database())->getConnection();
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $size = isset($_GET['size']) ? (int)$_GET['size'] : 2000;
+    $size = isset($_GET['size']) ? (int)$_GET['size'] : 20000;
     if ($page < 1) $page = 1;
     if ($size < 1) $size = 2000;
     $offset = ($page - 1) * $size;

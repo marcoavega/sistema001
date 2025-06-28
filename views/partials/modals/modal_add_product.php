@@ -1,4 +1,4 @@
-<?php 
+<?php
 // views/partials/modals/modal_add_product.php
 
 require_once __DIR__ . '/../../../models/Database.php';
@@ -29,6 +29,10 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
               <label for="new-product-name" class="form-label">Nombre de Producto</label>
               <input type="text" class="form-control" id="new-product-name" name="product_name" required>
             </div>
+            <div class="col-12">
+              <label for="product_description" class="form-label">Descripción del Producto</label>
+              <textarea name="product_description" id="product_description" rows="4" class="form-control"></textarea>
+            </div>
             <div class="col-md-6">
               <label for="new-location" class="form-label">Ubicación</label>
               <input type="text" class="form-control" id="new-location" name="location">
@@ -45,7 +49,7 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
               <label for="new-category" class="form-label">Categoría</label>
               <select id="new-category" name="category_id" class="form-select" required>
                 <option value="">-- Selecciona categoría --</option>
-                <?php foreach($categories as $cat): ?>
+                <?php foreach ($categories as $cat): ?>
                   <option value="<?= htmlspecialchars($cat['category_id']) ?>">
                     <?= htmlspecialchars($cat['category_name']) ?>
                   </option>

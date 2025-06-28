@@ -28,7 +28,7 @@ if ($action === 'list') {
         $total = (int)$totalStmt->fetchColumn();
         $stmt = $db->prepare("
             SELECT 
-                product_id, product_code, product_name, location, price, stock, registration_date,
+                product_id, product_code, product_name, product_description, location, price, stock, registration_date,
                 category_id, supplier_id, unit_id, currency_id, image_url, subcategory_id,
                 desired_stock, status
             FROM products
@@ -78,6 +78,7 @@ switch ($action) {
     $data = [];
     if (isset($_POST['product_code']))   $data['product_code'] = trim($_POST['product_code']);
     if (isset($_POST['product_name']))   $data['product_name'] = trim($_POST['product_name']);
+    if (isset($_POST['product_description'])) $data['product_description'] = trim($_POST['product_description']);
     if (isset($_POST['location']))       $data['location'] = trim($_POST['location']);
     if (isset($_POST['price']))          $data['price'] = $_POST['price'];
     if (isset($_POST['stock']))          $data['stock'] = $_POST['stock'];
@@ -96,12 +97,13 @@ switch ($action) {
     }
     // 2) Insert inicial sin imagen
     try {
-        $fields = ['product_code','product_name','location','price','stock','category_id','supplier_id','unit_id','currency_id','subcategory_id','desired_stock','status'];
-        $placeholders = [':product_code',':product_name',':location',':price',':stock',':category_id',':supplier_id',':unit_id',':currency_id',':subcategory_id',':desired_stock',':status'];
+        $fields = ['product_code','product_name','product_description','location','price','stock','category_id','supplier_id','unit_id','currency_id','subcategory_id','desired_stock','status'];
+        $placeholders = [':product_code',':product_name',':product_description',':location',':price',':stock',':category_id',':supplier_id',':unit_id',':currency_id',':subcategory_id',':desired_stock',':status'];
         $sql = "INSERT INTO products (".implode(',', $fields).") VALUES (".implode(',', $placeholders).")";
         $stmt = $db->prepare($sql);
         $stmt->bindValue(':product_code', $data['product_code'], PDO::PARAM_STR);
         $stmt->bindValue(':product_name', $data['product_name'], PDO::PARAM_STR);
+        $stmt->bindValue(':product_description', isset($data['product_description']) ? $data['product_description'] : null, isset($data['product_description']) ? PDO::PARAM_STR : PDO::PARAM_NULL);
         $stmt->bindValue(':location', isset($data['location']) ? $data['location'] : null, isset($data['location'])?PDO::PARAM_STR:PDO::PARAM_NULL);
         $stmt->bindValue(':price', isset($data['price']) ? $data['price'] : null, isset($data['price'])?PDO::PARAM_STR:PDO::PARAM_NULL);
         $stmt->bindValue(':stock', isset($data['stock']) ? (int)$data['stock'] : null, isset($data['stock'])?PDO::PARAM_INT:PDO::PARAM_NULL);
@@ -198,6 +200,8 @@ switch ($action) {
     if (isset($_POST['subcategory_id'])) $data['subcategory_id'] = $_POST['subcategory_id'];
     if (isset($_POST['desired_stock']))  $data['desired_stock'] = $_POST['desired_stock'];
     if (isset($_POST['status']))         $data['status'] = $_POST['status'];
+    if (isset($_POST['product_description'])) $data['product_description'] = trim($_POST['product_description']);
+
     // Otros opcionales...
 
     // Procesar imagen subida

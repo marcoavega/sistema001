@@ -6,7 +6,6 @@ $uri = $_GET['url'] ?? 'dashboard';
 $segment = explode('/', trim($uri, '/'))[0];
 ?>
 
-
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar shadow-sm bg-dark-subtle m-0 p-0">
     <!-- 'navbar-expand-lg' permite que el menú se expanda en pantallas grandes y se colapse en móviles.

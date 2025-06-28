@@ -19,6 +19,7 @@ class Product {
                     product_id,
                     product_code,
                     product_name,
+                    product_description,
                     location,
                     price,
                     stock,
@@ -54,6 +55,7 @@ class Product {
                     product_id,
                     product_code,
                     product_name,
+                    product_description,
                     location,
                     price,
                     stock,
@@ -88,7 +90,7 @@ class Product {
 
     public function createProduct(array $data): array {
         // Validaciones básicas
-        $required = ['product_code', 'product_name', 'location', 'price', 'stock', 'category_id', 'supplier_id', 'unit_id', 'currency_id', 'subcategory_id'];
+        $required = ['product_code', 'product_name', 'product_description', 'location', 'price', 'stock', 'category_id', 'supplier_id', 'unit_id', 'currency_id', 'subcategory_id'];
         foreach ($required as $field) {
             if (!isset($data[$field]) || $data[$field] === '') {
                 return ['success' => false, 'message' => "El campo '$field' es obligatorio."];
@@ -97,12 +99,12 @@ class Product {
         try {
             $sql = "
                 INSERT INTO products (
-                    product_code, product_name, location, price, stock,
+                    product_code, product_name, product_description, location, price, stock,
                     registration_date, category_id, supplier_id, unit_id, currency_id,
                     image_url, subcategory_id, desired_stock, status, sale_price,
                     weight, height, length, width, diameter
                 ) VALUES (
-                    :product_code, :product_name, :location, :price, :stock,
+                    :product_code, :product_name, :product_description, :location, :price, :stock,
                     NOW(), :category_id, :supplier_id, :unit_id, :currency_id,
                     :image_url, :subcategory_id, :desired_stock, :status, :sale_price,
                     :weight, :height, :length, :width, :diameter
@@ -112,7 +114,8 @@ class Product {
 
             // Bind requeridos
             $stmt->bindParam(':product_code', $data['product_code'], PDO::PARAM_STR);
-            $stmt->bindParam(':product_name', $data['product_name'], PDO::PARAM_STR);
+            $stmt->bindParam(':product_name', $data['product_name'], PDO::PARAM_STR); 
+            $stmt->bindParam(':product_description', $data['product_description'], PDO::PARAM_STR);
             $stmt->bindParam(':location', $data['location'], PDO::PARAM_STR);
             $stmt->bindParam(':price', $data['price']);
             $stmt->bindParam(':stock', $data['stock'], PDO::PARAM_INT);
@@ -169,7 +172,7 @@ class Product {
         // Construir dinámicamente campos a actualizar
         $fields = [];
         $allowed = [
-            'product_code', 'product_name', 'location', 'price', 'stock',
+            'product_code', 'product_name', 'product_description', 'location', 'price', 'stock',
             'category_id', 'supplier_id', 'unit_id', 'currency_id',
             'image_url', 'subcategory_id', 'desired_stock', 'status',
             'sale_price', 'weight', 'height', 'length', 'width', 'diameter'

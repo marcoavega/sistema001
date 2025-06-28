@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
     placeholder: "Cargando productos...",
     pagination: "remote",            // paginación remota
     paginationSize: 20,              // filas por página inicial
-    paginationSizeSelector: [10, 20,30, 50, 100, 200, 500, 1000, 2000, 3000, 4000, 5000, 10000], // opciones de tamaño de página
+    paginationSizeSelector: [10, 20, 30, 50, 100, 200, 500, 1000, 2000, 3000, 4000, 5000, 10000], // opciones de tamaño de página
     ajaxURL: BASE_URL + "api/products.php?action=list", // endpoint paginado
     ajaxConfig: "GET",
     ajaxParams: {},                  // filtros iniciales, si los hubiera
@@ -81,7 +81,17 @@ document.addEventListener("DOMContentLoaded", function () {
     columns: [
       { title: "ID", field: "product_id", width: 70, sorter: "number", hozAlign: "center" },
       { title: "Código", field: "product_code" },
-      { title: "Nombre", field: "product_name" },
+      {
+        title: "Name",
+        field: "product_name",
+        formatter: function (cell) {
+          const data = cell.getData();
+          const productId = data.product_id;
+          const name = cell.getValue();
+          const link = BASE_URL + "product_detail?id=" + encodeURIComponent(productId);
+          return `<a href="${link}" class="text-decoration-none fw-semibold">${name}</a>`;
+        }
+      },
       { title: "Ubicación", field: "location" },
       {
         title: "Precio", field: "price", hozAlign: "right",
@@ -133,6 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("edit-product-id").value = rowData.product_id;
             document.getElementById("edit-product-code").value = rowData.product_code || "";
             document.getElementById("edit-product-name").value = rowData.product_name || "";
+            document.getElementById("edit-product-description").value = rowData.product_description || "";
             document.getElementById("edit-location").value = rowData.location || "";
             document.getElementById("edit-price").value = rowData.price ?? "";
             document.getElementById("edit-stock").value = rowData.stock ?? "";
@@ -143,6 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("edit-subcategory").value = rowData.subcategory_id ?? "";
             document.getElementById("edit-desired-stock").value = rowData.desired_stock ?? "";
             document.getElementById("edit-status").value = rowData.status != null ? rowData.status : "1";
+            
             // Mostrar modal edición
             var editModalEl = document.getElementById("editProductModal");
             if (editModalEl) new bootstrap.Modal(editModalEl).show();
@@ -182,6 +194,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (newCodeEl) formData.append("product_code", newCodeEl.value.trim());
       var newNameEl = document.getElementById("new-product-name");
       if (newNameEl) formData.append("product_name", newNameEl.value.trim());
+      var newDescriptionEl = document.getElementById("product_description");
+      if (newDescriptionEl) formData.append("product_description", newDescriptionEl.value.trim());
       var newLocationEl = document.getElementById("new-location");
       if (newLocationEl) formData.append("location", newLocationEl.value.trim());
       var newPriceEl = document.getElementById("new-price");
@@ -215,36 +229,36 @@ document.addEventListener("DOMContentLoaded", function () {
         method: "POST",
         body: formData
       })
-      .then(res => {
-        if (!res.ok) {
-          return res.text().then(text => {
-            console.error("Error al crear producto. Status:", res.status, "Body:", text);
-            throw new Error("Error al crear producto");
-          });
-        }
-        return res.json();
-      })
-      .then(data => {
-        if (data.success) {
-          Swal.fire({
-            icon: "success",
-            title: "Producto registrado con éxito",
-            toast: true,
-            position: "top-end",
-            timer: 2000,
-            showConfirmButton: false
-          });
-          cerrarModalYReenfocar("addProductModal", "addProductBtn");
-          // Recargar página 1 para ver el nuevo registro
-          table.setData("api/products.php?action=list"); // Recargar la tabla aquí
-        } else {
-          Swal.fire({ icon: 'error', title: 'Error al crear producto', text: data.message || '' });
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        Swal.fire({ icon: 'error', title: 'Error en creación' });
-      });
+        .then(res => {
+          if (!res.ok) {
+            return res.text().then(text => {
+              console.error("Error al crear producto. Status:", res.status, "Body:", text);
+              throw new Error("Error al crear producto");
+            });
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (data.success) {
+            Swal.fire({
+              icon: "success",
+              title: "Producto registrado con éxito",
+              toast: true,
+              position: "top-end",
+              timer: 2000,
+              showConfirmButton: false
+            });
+            cerrarModalYReenfocar("addProductModal", "addProductBtn");
+            // Recargar página 1 para ver el nuevo registro
+            table.setData("api/products.php?action=list"); // Recargar la tabla aquí
+          } else {
+            Swal.fire({ icon: 'error', title: 'Error al crear producto', text: data.message || '' });
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          Swal.fire({ icon: 'error', title: 'Error en creación' });
+        });
     });
   }
 
@@ -260,6 +274,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (codeEl) formData.append("product_code", codeEl.value.trim());
       var nameEl = document.getElementById("edit-product-name");
       if (nameEl) formData.append("product_name", nameEl.value.trim());
+      var descEl = document.getElementById("edit-product-description");
+      if (descEl) formData.append("product_description", descEl.value.trim());
       var locationEl = document.getElementById("edit-location");
       if (locationEl) formData.append("location", locationEl.value.trim());
       var priceEl = document.getElementById("edit-price");
@@ -293,36 +309,36 @@ document.addEventListener("DOMContentLoaded", function () {
         method: "POST",
         body: formData
       })
-      .then(res => {
-        if (!res.ok) {
-          return res.text().then(text => {
-            console.error("Error al actualizar producto. Status:", res.status, "Body:", text);
-            throw new Error("Error al actualizar producto");
-          });
-        }
-        return res.json();
-      })
-      .then(data => {
-        if (data.success) {
-          Swal.fire({
-            icon: "success",
-            title: "Producto actualizado con éxito",
-            toast: true,
-            position: "top-end",
-            timer: 2000,
-            showConfirmButton: false
-          });
-          cerrarModalYReenfocar("editProductModal", "table-search");
-          // Recarga la misma página para reflejar cambios
-    table.setData("api/products.php?action=list"); // Recargar aquí también
-        } else {
-          Swal.fire({ icon: 'error', title: 'Error al actualizar', text: data.message || '' });
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        Swal.fire({ icon: 'error', title: 'Error en edición' });
-      });
+        .then(res => {
+          if (!res.ok) {
+            return res.text().then(text => {
+              console.error("Error al actualizar producto. Status:", res.status, "Body:", text);
+              throw new Error("Error al actualizar producto");
+            });
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (data.success) {
+            Swal.fire({
+              icon: "success",
+              title: "Producto actualizado con éxito",
+              toast: true,
+              position: "top-end",
+              timer: 2000,
+              showConfirmButton: false
+            });
+            cerrarModalYReenfocar("editProductModal", "table-search");
+            // Recarga la misma página para reflejar cambios
+            table.setData("api/products.php?action=list"); // Recargar aquí también
+          } else {
+            Swal.fire({ icon: 'error', title: 'Error al actualizar', text: data.message || '' });
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          Swal.fire({ icon: 'error', title: 'Error en edición' });
+        });
     });
   }
 
@@ -336,37 +352,37 @@ document.addEventListener("DOMContentLoaded", function () {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ product_id: deleteProductID }),
       })
-      .then(res => {
-        if (!res.ok) {
-          return res.text().then(text => {
-            console.error("Error al eliminar producto. Status:", res.status, "Body:", text);
-            throw new Error("Error al eliminar producto");
-          });
-        }
-        return res.json();
-      })
-      .then(data => {
-        if (data.success) {
-          Swal.fire({
-            icon: "success",
-            title: "Producto eliminado con éxito",
-            toast: true,
-            position: "top-end",
-            timer: 2000,
-            showConfirmButton: false
-          });
-          // Recarga la misma página para reflejar eliminación
-    table.setData("api/products.php?action=list"); // Recarga
-          deleteProductID = null;
-          cerrarModalYReenfocar("deleteProductModal", "table-search");
-        } else {
-          Swal.fire({ icon: 'error', title: 'Error al eliminar', text: data.message || '' });
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        Swal.fire({ icon: 'error', title: 'Error en eliminación' });
-      });
+        .then(res => {
+          if (!res.ok) {
+            return res.text().then(text => {
+              console.error("Error al eliminar producto. Status:", res.status, "Body:", text);
+              throw new Error("Error al eliminar producto");
+            });
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (data.success) {
+            Swal.fire({
+              icon: "success",
+              title: "Producto eliminado con éxito",
+              toast: true,
+              position: "top-end",
+              timer: 2000,
+              showConfirmButton: false
+            });
+            // Recarga la misma página para reflejar eliminación
+            table.setData("api/products.php?action=list"); // Recarga
+            deleteProductID = null;
+            cerrarModalYReenfocar("deleteProductModal", "table-search");
+          } else {
+            Swal.fire({ icon: 'error', title: 'Error al eliminar', text: data.message || '' });
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          Swal.fire({ icon: 'error', title: 'Error en eliminación' });
+        });
     });
   }
 

@@ -48,6 +48,10 @@ try {
               <label for="edit-product-code" class="form-label">Código de Producto</label>
               <input type="text" class="form-control" id="edit-product-code" name="product_code" required>
             </div>
+            <div class="mb-3">
+              <label for="edit-barcode" class="form-label">Código de barras</label>
+              <input type="text" class="form-control" id="edit-barcode" placeholder="Ej. 7501234567890">
+            </div>
             <div class="col-md-6">
               <label for="edit-product-name" class="form-label">Nombre de Producto</label>
               <input type="text" class="form-control" id="edit-product-name" name="product_name" required>

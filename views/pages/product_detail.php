@@ -16,7 +16,6 @@ $product_id = (int) $_GET['id'];
 
 ob_start();
 
-
 require_once __DIR__ . '/../../models/Database.php';
 
 try {
@@ -26,6 +25,7 @@ try {
     SELECT 
         product_id,
         product_code,
+        barcode,
         product_name,
         product_description,
         location,
@@ -64,46 +64,82 @@ try {
   exit();
 }
 
-
-
 $username = htmlspecialchars($_SESSION['user']['username']);
 
-$menuItems = [
-  'inventory' => ['icon' => 'box-seam', 'label' => 'Inventario'],
-  'list_product' => ['icon' => 'list-ul', 'label' => 'Listado de Productos'],
-];
+// Incluir menú lateral de productos/inventario
+require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 ?>
 
-<div class="container-fluid m-0 p-0">
+<div class="container-fluid m-0 p-0 min-vh-100" data-bs-theme="auto">
   <div class="row g-0">
 
-    <!-- Barra lateral -->
-    <nav class="col-md-2 d-none d-md-block sidebar min-vh-100">
-      <ul class="nav flex-column pt-3">
-        <?php foreach ($menuItems as $route => $item): ?>
-          <li class="nav-item mb-2">
-            <a class="nav-link text-body d-flex align-items-center <?= $segment === $route ? 'active fw-bold' : '' ?>"
-              href="<?= BASE_URL . $route ?>">
-              <i class="bi bi-<?= $item['icon'] ?> me-2"></i> <?= $item['label'] ?>
-            </a>
-          </li>
-        <?php endforeach; ?>
-      </ul>
+    <!-- Barra lateral con gradiente moderno -->
+    <nav class="col-md-2 d-none d-md-block sidebar min-vh-100" >
+      <div class="pt-4 px-3">
+        <div class="text-center mb-4">
+          <div class=" rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+            <i class="bi bi-box-seam text-primary fs-3"></i>
+          </div>
+          <h6 class=" mt-2 mb-0">Inventario</h6>
+        </div>
+        
+        <ul class="nav flex-column">
+          <?php foreach ($menuItems as $route => $item): ?>
+            <li class="nav-item mb-2">
+              <a class="nav-link d-flex align-items-center px-3 py-2 rounded-3 transition-all <?= $segment === $route ? 'active  bg-opacity-20' : 'hover-bg-white-10' ?>"
+                href="<?= BASE_URL . $route ?>" style="transition: all 0.3s ease;">
+                <i class="bi bi-<?= $item['icon'] ?> me-3 fs-5"></i>
+                <span class="fw-medium"><?= $item['label'] ?></span>
+              </a>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
     </nav>
 
     <!-- Contenido principal -->
-    <main class="col-12 col-md-10 px-4 py-3">
-      <!-- Menú móvil -->
-      <div class="d-md-none mb-3">
-        <div class="dropdown">
-          <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start" type="button" data-bs-toggle="dropdown">
-            <i class="bi bi-list me-1"></i> Menú
-          </button>
-          <ul class="dropdown-menu w-100">
+    <main class="col-12 col-md-10">
+      
+      <!-- Header con breadcrumb moderno -->
+      <div class="bg-body shadow-sm border-bottom">
+        <div class="container-fluid px-4 py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                  <li class="breadcrumb-item"><a href="<?= BASE_URL ?>dashboard" class="text-decoration-none">Dashboard</a></li>
+                  <li class="breadcrumb-item"><a href="<?= BASE_URL ?>list_product" class="text-decoration-none">Inventario</a></li>
+                  <li class="breadcrumb-item active">Detalle del Producto</li>
+                </ol>
+              </nav>
+              <h4 class="mb-0 fw-bold">Detalle del Producto</h4>
+            </div>
+            
+            <!-- Menú móvil mejorado -->
+            <div class="d-md-none">
+              <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+                <i class="bi bi-list"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Menú móvil offcanvas -->
+      <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="mobileMenu">
+        <div class="offcanvas-header bg-primary-subtle">
+          <h5 class="offcanvas-title">
+            <i class="bi bi-box-seam me-2"></i>Inventario
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body bg-body">
+          <ul class="nav flex-column">
             <?php foreach ($menuItems as $route => $item): ?>
-              <li>
-                <a class="dropdown-item <?= $segment === $route ? 'active fw-bold' : '' ?>" href="<?= BASE_URL . $route ?>">
-                  <i class="bi bi-<?= $item['icon'] ?> me-1"></i> <?= $item['label'] ?>
+              <li class="nav-item mb-2">
+                <a class="nav-link text-body d-flex align-items-center px-3 py-2 rounded-3 <?= $segment === $route ? 'active bg-primary text-white' : '' ?>"
+                  href="<?= BASE_URL . $route ?>">
+                  <i class="bi bi-<?= $item['icon'] ?> me-3"></i> <?= $item['label'] ?>
                 </a>
               </li>
             <?php endforeach; ?>
@@ -111,88 +147,330 @@ $menuItems = [
         </div>
       </div>
 
-      <!-- Detalles del producto -->
-      <h1 class="mb-2"><?= htmlspecialchars($product['product_name']) ?></h1>
+      <!-- Contenido del producto -->
+      <div class="container-fluid px-4 py-4">
+        
+        <!-- Tarjeta principal del producto -->
+        <div class="card shadow-lg border-0 rounded-4 overflow-hidden mb-4">
+          <div class="card-header bg-gradient p-4" >
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h2 class="mb-1 fw-bold"><?= htmlspecialchars($product['product_name']) ?></h2>
+                <p class="mb-0 opacity-75">
+                  <i class="bi bi-upc-scan me-2"></i>
+                  Código: <?= htmlspecialchars($product['product_code']) ?>
+                </p>
+              </div>
+              <div class="text-end">
+                <span class="badge <?= $product['status'] ? 'bg-success' : 'bg-warning' ?> fs-6 px-3 py-2 rounded-pill">
+                  <i class="bi bi-<?= $product['status'] ? 'check-circle' : 'exclamation-triangle' ?> me-1"></i>
+                  <?= $product['status'] ? 'Activo' : 'Inactivo' ?>
+                </span>
+              </div>
+            </div>
+          </div>
 
-      <?php if (!empty($product['product_description'])): ?>
-        <p class="text-muted"><?= nl2br(htmlspecialchars($product['product_description'])) ?></p>
-      <?php endif; ?>
+          <div class="card-body p-0">
+            <div class="row g-0">
+              
+              <!-- Imagen del producto -->
+              <div class="col-md-5 p-4 bg-body-secondary d-flex align-items-center justify-content-center">
+                <div class="text-center">
+                  <?php if (!empty($product['image_url'])): ?>
+                    <img src="<?= BASE_URL . htmlspecialchars($product['image_url']) ?>"
+                      alt="Imagen del producto"
+                      class="img-fluid rounded-3 shadow-sm border"
+                      style="max-height: 300px; max-width: 100%; object-fit: contain;">
+                  <?php else: ?>
+                    <div class="bg-body rounded-3 shadow-sm border d-flex align-items-center justify-content-center" style="height: 300px; width: 100%; max-width: 300px;">
+                      <div class="text-center text-muted">
+                        <i class="bi bi-image fs-1 mb-3"></i>
+                        <p class="mb-0">Sin imagen</p>
+                      </div>
+                    </div>
+                  <?php endif; ?>
+                </div>
+              </div>
 
-      <div class="row">
-        <div class="col-md-4">
-          <?php if (!empty($product['image_url'])): ?>
-            <img src="<?= BASE_URL . htmlspecialchars($product['image_url']) ?>"
-              alt="Imagen del producto"
-              class="img-fluid rounded shadow-sm"
-              style="max-height:200px; object-fit:contain;">
-          <?php else: ?>
-            <img src="<?= BASE_URL ?>assets/images/no-image.png"
-              alt="No Image"
-              class="img-fluid rounded shadow-sm"
-              style="max-height:200px; object-fit:contain;">
-          <?php endif; ?>
+              <!-- Información principal -->
+              <div class="col-md-7 p-4">
+                
+                <?php if (!empty($product['product_description'])): ?>
+                  <div class="mb-4">
+                    <h5 class="text-primary mb-2">
+                      <i class="bi bi-file-text me-2"></i>Descripción
+                    </h5>
+                    <p class="text-muted lh-lg"><?= nl2br(htmlspecialchars($product['product_description'])) ?></p>
+                  </div>
+                <?php endif; ?>
+
+                <!-- Información clave en cards -->
+                <div class="row g-3 mb-4">
+                  <div class="col-sm-6">
+                    <div class="card bg-primary bg-opacity-10 border-0 h-100">
+                      <div class="card-body text-center">
+                        <i class="bi bi-currency-dollar text-primary fs-2 mb-2"></i>
+                        <h6 class="text-primary mb-1">Precio</h6>
+                        <h4 class="fw-bold mb-0">$<?= number_format($product['price'], 2) ?></h4>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="card bg-success bg-opacity-10 border-0 h-100">
+                      <div class="card-body text-center">
+                        <i class="bi bi-boxes text-success fs-2 mb-2"></i>
+                        <h6 class="text-success mb-1">Stock</h6>
+                        <h4 class="fw-bold mb-0"><?= intval($product['stock']) ?></h4>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="d-flex gap-2 flex-wrap">
+                  <a href="<?= BASE_URL ?>list_product" class="btn btn-outline-secondary px-4">
+                    <i class="bi bi-arrow-left me-2"></i>Volver al Inventario
+                  </a>
+                  <button class="btn btn-primary px-4">
+                    <i class="bi bi-pencil me-2"></i>Editar Producto
+                  </button>
+                  <button class="btn btn-outline-primary px-4">
+                    <i class="bi bi-printer me-2"></i>Imprimir
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="col-md-8">
-          <table class="table table-bordered">
-            <tbody>
-              <tr>
-                <th>Código</th>
-                <td><?= $product['product_code'] ?></td>
-              </tr>
-              <tr>
-                <th>Ubicación</th>
-                <td><?= $product['location'] ?></td>
-              </tr>
-              <tr>
-                <th>Precio</th>
-                <td>$<?= number_format($product['price'], 2) ?></td>
-              </tr>
-              <tr>
-                <th>Stock</th>
-                <td><?= intval($product['stock']) ?></td>
-              </tr>
-              <tr>
-                <th>Registrado</th>
-                <td><?= date("d/m/Y H:i", strtotime($product['registration_date'])) ?></td>
-              </tr>
-              <tr>
-                <th>Estado</th>
-                <td><?= $product['status'] ? 'Activo' : 'Inactivo' ?></td>
-              </tr>
-              <tr>
-                <th>Precio Venta</th>
-                <td><?= $product['sale_price'] !== null ? '$' . number_format($product['sale_price'], 4) : 'N/A' ?></td>
-              </tr>
-              <tr>
-                <th>Peso</th>
-                <td><?= $product['weight'] !== null ? $product['weight'] . ' kg' : 'N/A' ?></td>
-              </tr>
-              <tr>
-                <th>Dimensiones</th>
-                <td>
-                  <?= $product['height'] ?? 'N/A' ?> x <?= $product['length'] ?? 'N/A' ?> x <?= $product['width'] ?? 'N/A' ?> cm
-                </td>
-              </tr>
-              <tr>
-                <th>Diámetro</th>
-                <td><?= $product['diameter'] ?? 'N/A' ?> cm</td>
-              </tr>
-              <tr>
-                <th>Actualizado</th>
-                <td><?= date("d/m/Y H:i", strtotime($product['updated_at'])) ?></td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Detalles técnicos en accordion -->
+        <div class="card shadow-sm border-0 rounded-4">
+          <div class="card-header bg-body py-3">
+            <h5 class="mb-0 fw-bold">
+              <i class="bi bi-info-circle text-primary me-2"></i>
+              Información Detallada
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="accordion accordion-flush" id="productDetails">
+              
+              <!-- Información básica -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#basicInfo">
+                    <i class="bi bi-info-square me-2 text-primary"></i>
+                    Información Básica
+                  </button>
+                </h2>
+                <div id="basicInfo" class="accordion-collapse collapse show" data-bs-parent="#productDetails">
+                  <div class="accordion-body">
+                    <div class="row g-4">
+                      <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-3">
+                          <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                            <i class="bi bi-upc text-primary"></i>
+                          </div>
+                          <div>
+                            <small class="text-muted d-block">Código de Barras</small>
+                            <span class="fw-semibold"><?= htmlspecialchars($product['barcode']) ?></span>
+                          </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                          <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                            <i class="bi bi-geo-alt text-success"></i>
+                          </div>
+                          <div>
+                            <small class="text-muted d-block">Ubicación</small>
+                            <span class="fw-semibold"><?= htmlspecialchars($product['location']) ?></span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-3">
+                          <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                            <i class="bi bi-calendar text-info"></i>
+                          </div>
+                          <div>
+                            <small class="text-muted d-block">Fecha de Registro</small>
+                            <span class="fw-semibold"><?= date("d/m/Y H:i", strtotime($product['registration_date'])) ?></span>
+                          </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                          <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
+                            <i class="bi bi-clock text-warning"></i>
+                          </div>
+                          <div>
+                            <small class="text-muted d-block">Última Actualización</small>
+                            <span class="fw-semibold"><?= date("d/m/Y H:i", strtotime($product['updated_at'])) ?></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-          <a href="<?= BASE_URL ?>list_product" class="btn btn-secondary mt-3">
-            <i class="bi bi-arrow-left"></i> Volver al Inventario
-          </a>
+              <!-- Precios y ventas -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#priceInfo">
+                    <i class="bi bi-currency-exchange me-2 text-success"></i>
+                    Precios y Ventas
+                  </button>
+                </h2>
+                <div id="priceInfo" class="accordion-collapse collapse" data-bs-parent="#productDetails">
+                  <div class="accordion-body">
+                    <div class="row g-4">
+                      <div class="col-md-4">
+                        <div class="text-center p-3 bg-primary bg-opacity-10 rounded-3">
+                          <i class="bi bi-tag text-primary fs-3 mb-2"></i>
+                          <h6 class="text-primary mb-1">Precio Base</h6>
+                          <h4 class="fw-bold mb-0">$<?= number_format($product['price'], 2) ?></h4>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="text-center p-3 bg-success bg-opacity-10 rounded-3">
+                          <i class="bi bi-cash text-success fs-3 mb-2"></i>
+                          <h6 class="text-success mb-1">Precio Venta</h6>
+                          <h4 class="fw-bold mb-0">
+                            <?= $product['sale_price'] !== null ? '$' . number_format($product['sale_price'], 2) : 'N/A' ?>
+                          </h4>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="text-center p-3 bg-info bg-opacity-10 rounded-3">
+                          <i class="bi bi-percent text-info fs-3 mb-2"></i>
+                          <h6 class="text-info mb-1">Margen</h6>
+                          <h4 class="fw-bold mb-0">
+                            <?php 
+                            if ($product['sale_price'] !== null && $product['price'] > 0) {
+                              $margin = (($product['sale_price'] - $product['price']) / $product['price']) * 100;
+                              echo number_format($margin, 1) . '%';
+                            } else {
+                              echo 'N/A';
+                            }
+                            ?>
+                          </h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dimensiones y peso -->
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#dimensions">
+                    <i class="bi bi-rulers me-2 text-warning"></i>
+                    Dimensiones y Peso
+                  </button>
+                </h2>
+                <div id="dimensions" class="accordion-collapse collapse" data-bs-parent="#productDetails">
+                  <div class="accordion-body">
+                    <div class="row g-4">
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                          <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
+                            <i class="bi bi-arrow-up text-warning"></i>
+                          </div>
+                          <div>
+                            <small class="text-muted d-block">Alto</small>
+                            <span class="fw-semibold"><?= $product['height'] ?? 'N/A' ?> cm</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                          <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                            <i class="bi bi-arrow-right text-info"></i>
+                          </div>
+                          <div>
+                            <small class="text-muted d-block">Largo</small>
+                            <span class="fw-semibold"><?= $product['length'] ?? 'N/A' ?> cm</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                          <div class="bg-secondary bg-opacity-10 rounded-circle p-2 me-3">
+                            <i class="bi bi-arrows text-secondary"></i>
+                          </div>
+                          <div>
+                            <small class="text-muted d-block">Ancho</small>
+                            <span class="fw-semibold"><?= $product['width'] ?? 'N/A' ?> cm</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                          <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                            <i class="bi bi-circle text-success"></i>
+                          </div>
+                          <div>
+                            <small class="text-muted d-block">Diámetro</small>
+                            <span class="fw-semibold"><?= $product['diameter'] ?? 'N/A' ?> cm</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-12 mt-4">
+                        <div class="d-flex align-items-center justify-content-center">
+                          <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                            <i class="bi bi-speedometer text-primary fs-5"></i>
+                          </div>
+                          <div>
+                            <small class="text-muted d-block">Peso</small>
+                            <h5 class="fw-bold mb-0"><?= $product['weight'] !== null ? $product['weight'] . ' kg' : 'N/A' ?></h5>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </main>
   </div>
 </div>
+
+<style>
+.sidebar .nav-link:hover {
+  transform: translateX(5px);
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+
+
+/* Asegurar que los textos sean legibles en ambos temas */
+.text-body {
+  color: var(--bs-body-color) !important;
+}
+
+.bg-body {
+  background-color: var(--bs-body-bg) !important;
+}
+
+.bg-body-secondary {
+  background-color: var(--bs-secondary-bg) !important;
+}
+</style>
 
 <?php
 $content = ob_get_clean();

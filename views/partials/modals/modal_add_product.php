@@ -25,6 +25,10 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
               <label for="new-product-code" class="form-label">Código de Producto</label>
               <input type="text" class="form-control" id="new-product-code" name="product_code" required>
             </div>
+            <div class="mb-3">
+              <label for="new-barcode" class="form-label">Código de barras</label>
+              <input type="text" class="form-control" id="new-barcode" placeholder="Ej. 7501234567890">
+            </div>
             <div class="col-md-6">
               <label for="new-product-name" class="form-label">Nombre de Producto</label>
               <input type="text" class="form-control" id="new-product-name" name="product_name" required>

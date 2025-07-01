@@ -81,6 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
     columns: [
       { title: "ID", field: "product_id", width: 70, sorter: "number", hozAlign: "center" },
       { title: "Código", field: "product_code" },
+      { title: "Código Barras", field: "barcode" },
       {
         title: "Name",
         field: "product_name",
@@ -142,6 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Rellenar form de edición con rowData...
             document.getElementById("edit-product-id").value = rowData.product_id;
             document.getElementById("edit-product-code").value = rowData.product_code || "";
+            document.getElementById("edit-barcode").value = rowData.barcode || "";
             document.getElementById("edit-product-name").value = rowData.product_name || "";
             document.getElementById("edit-product-description").value = rowData.product_description || "";
             document.getElementById("edit-location").value = rowData.location || "";
@@ -154,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("edit-subcategory").value = rowData.subcategory_id ?? "";
             document.getElementById("edit-desired-stock").value = rowData.desired_stock ?? "";
             document.getElementById("edit-status").value = rowData.status != null ? rowData.status : "1";
-            
+
             // Mostrar modal edición
             var editModalEl = document.getElementById("editProductModal");
             if (editModalEl) new bootstrap.Modal(editModalEl).show();
@@ -192,6 +194,8 @@ document.addEventListener("DOMContentLoaded", function () {
       // Recoger valores de inputs del modal
       var newCodeEl = document.getElementById("new-product-code");
       if (newCodeEl) formData.append("product_code", newCodeEl.value.trim());
+      var newBarcodeEl = document.getElementById("new-barcode");
+      if (newBarcodeEl) formData.append("barcode", newBarcodeEl.value.trim());
       var newNameEl = document.getElementById("new-product-name");
       if (newNameEl) formData.append("product_name", newNameEl.value.trim());
       var newDescriptionEl = document.getElementById("product_description");
@@ -272,6 +276,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (idEl) formData.append("product_id", idEl.value);
       var codeEl = document.getElementById("edit-product-code");
       if (codeEl) formData.append("product_code", codeEl.value.trim());
+      var barcodeEl2 = document.getElementById("edit-barcode");
+      if (barcodeEl2) formData.append("barcode", barcodeEl2.value.trim());
       var nameEl = document.getElementById("edit-product-name");
       if (nameEl) formData.append("product_name", nameEl.value.trim());
       var descEl = document.getElementById("edit-product-description");
@@ -399,6 +405,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const headers = [
         "ID",
         "Código",
+        "Barcode",
         "Nombre",
         "Ubicación",
         "Precio",
@@ -421,6 +428,7 @@ document.addEventListener("DOMContentLoaded", function () {
           [
             row.product_id,
             `"${row.product_code}"`,
+            `"${row.barcode || ''}"`,
             `"${row.product_name}"`,
             `"${row.location}"`,
             row.price,
@@ -500,6 +508,7 @@ document.addEventListener("DOMContentLoaded", function () {
             columns: [
               { header: "ID", dataKey: "product_id" },
               { header: "Código", dataKey: "product_code" },
+              { header: "Código Barras", dataKey: "barcode" },
               { header: "Nombre", dataKey: "product_name" },
               { header: "Ubicación", dataKey: "location" },
               { header: "Precio", dataKey: "price" },

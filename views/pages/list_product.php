@@ -28,23 +28,27 @@ $username = htmlspecialchars($_SESSION['user']['username']);
 require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 ?>
 
+
+
 <div class="container-fluid m-0 p-0 min-vh-100" data-bs-theme="auto">
   <div class="row g-0">
     
-    <!-- Barra lateral con gradiente moderno -->
-    <nav class="col-md-2 d-none d-md-block sidebar min-vh-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+  <!-- Barra lateral con gradiente moderno -->
+    <nav class="col-md-2 d-none d-md-block sidebar min-vh-100" >
       <div class="pt-4 px-3">
         <div class="text-center mb-4">
-          <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-            <i class="bi bi-boxes text-primary fs-3"></i>
+          <div class=" rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+            <i class="bi bi-box-seam text-primary fs-3"></i>
           </div>
-          <h6 class="text-white mt-2 mb-0">Inventario</h6>
+          <h6 class=" mt-2 mb-0">Inventario</h6>
         </div>
         
         <ul class="nav flex-column">
           <?php foreach ($menuItems as $route => $item): ?>
             <li class="nav-item mb-2">
-              <a class="nav-link text-white-50 d-flex align-items-center px-3 py-2 rounded-3 transition-all <?= $segment === $route ? 'active text-white bg-white bg-opacity-20' : 'hover-bg-white-10' ?>"
+              <a class="nav-link d-flex align-items-center px-3 py-2 rounded-3 
+   <?= $segment === $route ? 'bg-primary text-white fw-bold' : 'text-body' ?>"
+
                 href="<?= BASE_URL . $route ?>" style="transition: all 0.3s ease;">
                 <i class="bi bi-<?= $item['icon'] ?> me-3 fs-5"></i>
                 <span class="fw-medium"><?= $item['label'] ?></span>
@@ -84,12 +88,12 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
       </div>
 
       <!-- Menú móvil offcanvas -->
-      <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="mobileMenu" data-bs-theme="dark">
-        <div class="offcanvas-header bg-primary text-white">
+      <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="mobileMenu">
+        <div class="offcanvas-header bg-primary-subtle">
           <h5 class="offcanvas-title">
-            <i class="bi bi-boxes me-2"></i>Inventario
+            <i class="bi bi-box-seam me-2"></i>Inventario
           </h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body bg-body">
           <ul class="nav flex-column">
@@ -171,14 +175,14 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 
           <!-- Panel de control principal -->
           <div class="card shadow-lg border-0 rounded-4">
-            <div class="card-header bg-gradient text-white p-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="card-header bg-gradient p-4">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
                   <h3 class="mb-1 fw-bold">Listado de Productos</h3>
                   <p class="mb-0 opacity-75">Gestiona tu inventario completo desde aquí</p>
                 </div>
                 <div>
-                  <button id="addProductBtn" class="btn btn-light btn-lg px-4" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                  <button id="addProductBtn" class="btn btn-info btn-lg px-4" data-bs-toggle="modal" data-bs-target="#addProductModal">
                     <i class="bi bi-plus-circle me-2"></i>Nuevo Producto
                   </button>
                 </div>
@@ -192,7 +196,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
                 <div class="col-md-6">
                   <div class="position-relative">
                     <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                    <input type="text" id="table-search" class="form-control form-control-lg ps-5 rounded-pill border-0 bg-light" 
+                    <input type="text" id="table-search" class="form-control form-control-lg ps-5 rounded-pill border-2" 
                            placeholder="Buscar productos por código, nombre o categoría...">
                   </div>
                 </div>
@@ -320,7 +324,6 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 
 <style>
 .sidebar .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
   transform: translateX(5px);
 }
 
@@ -355,38 +358,6 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
   background-color: rgba(13, 110, 253, 0.2) !important;
 }
 
-/* Tema oscuro específico */
-[data-bs-theme="dark"] .bg-primary.bg-opacity-10 {
-  background-color: rgba(13, 110, 253, 0.2) !important;
-}
-
-[data-bs-theme="dark"] .bg-success.bg-opacity-10 {
-  background-color: rgba(25, 135, 84, 0.2) !important;
-}
-
-[data-bs-theme="dark"] .bg-info.bg-opacity-10 {
-  background-color: rgba(13, 202, 240, 0.2) !important;
-}
-
-[data-bs-theme="dark"] .bg-warning.bg-opacity-10 {
-  background-color: rgba(255, 193, 7, 0.2) !important;
-}
-
-[data-bs-theme="dark"] .form-control:focus {
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-/* Gradiente del sidebar compatible con tema oscuro */
-@media (prefers-color-scheme: dark) {
-  .sidebar {
-    background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
-  }
-  
-  .tabulator-header {
-    background: linear-gradient(135deg, #343a40 0%, #495057 100%) !important;
-  }
-}
 
 /* Asegurar que los textos sean legibles en ambos temas */
 .text-body {

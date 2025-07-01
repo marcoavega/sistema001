@@ -74,7 +74,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
   <div class="row g-0">
 
     <!-- Barra lateral con gradiente moderno -->
-    <nav class="col-md-2 d-none d-md-block sidebar min-vh-100" >
+    <nav class="col-md-2 d-none d-md-block sidebar min-vh-100">
       <div class="pt-4 px-3">
         <div class="text-center mb-4">
           <div class=" rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
@@ -82,7 +82,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
           </div>
           <h6 class=" mt-2 mb-0">Inventario</h6>
         </div>
-        
+
         <ul class="nav flex-column">
           <?php foreach ($menuItems as $route => $item): ?>
             <li class="nav-item mb-2">
@@ -99,7 +99,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 
     <!-- Contenido principal -->
     <main class="col-12 col-md-10">
-      
+
       <!-- Header con breadcrumb moderno -->
       <div class="bg-body shadow-sm border-bottom">
         <div class="container-fluid px-4 py-3">
@@ -114,7 +114,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
               </nav>
               <h4 class="mb-0 fw-bold">Detalle del Producto</h4>
             </div>
-            
+
             <!-- Menú móvil mejorado -->
             <div class="d-md-none">
               <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
@@ -149,10 +149,10 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 
       <!-- Contenido del producto -->
       <div class="container-fluid px-4 py-4">
-        
+
         <!-- Tarjeta principal del producto -->
         <div class="card shadow-lg border-0 rounded-4 overflow-hidden mb-4">
-          <div class="card-header bg-gradient p-4" >
+          <div class="card-header bg-gradient p-4">
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <h2 class="mb-1 fw-bold"><?= htmlspecialchars($product['product_name']) ?></h2>
@@ -172,7 +172,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 
           <div class="card-body p-0">
             <div class="row g-0">
-              
+
               <!-- Imagen del producto -->
               <div class="col-md-5 p-4 bg-body-secondary d-flex align-items-center justify-content-center">
                 <div class="text-center">
@@ -194,7 +194,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 
               <!-- Información principal -->
               <div class="col-md-7 p-4">
-                
+
                 <?php if (!empty($product['product_description'])): ?>
                   <div class="mb-4">
                     <h5 class="text-primary mb-2">
@@ -253,7 +253,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
           </div>
           <div class="card-body p-0">
             <div class="accordion accordion-flush" id="productDetails">
-              
+
               <!-- Información básica -->
               <div class="accordion-item">
                 <h2 class="accordion-header">
@@ -275,7 +275,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
                             <span class="fw-semibold"><?= htmlspecialchars($product['barcode']) ?></span>
                           </div>
                         </div>
-                        
+
                         <div class="d-flex align-items-center mb-3">
                           <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
                             <i class="bi bi-geo-alt text-success"></i>
@@ -286,7 +286,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
                           </div>
                         </div>
                       </div>
-                      
+
                       <div class="col-md-6">
                         <div class="d-flex align-items-center mb-3">
                           <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
@@ -297,7 +297,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
                             <span class="fw-semibold"><?= date("d/m/Y H:i", strtotime($product['registration_date'])) ?></span>
                           </div>
                         </div>
-                        
+
                         <div class="d-flex align-items-center mb-3">
                           <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
                             <i class="bi bi-clock text-warning"></i>
@@ -345,7 +345,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
                           <i class="bi bi-percent text-info fs-3 mb-2"></i>
                           <h6 class="text-info mb-1">Margen</h6>
                           <h4 class="fw-bold mb-0">
-                            <?php 
+                            <?php
                             if ($product['sale_price'] !== null && $product['price'] > 0) {
                               $margin = (($product['sale_price'] - $product['price']) / $product['price']) * 100;
                               echo number_format($margin, 1) . '%';
@@ -440,36 +440,36 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 </div>
 
 <style>
-.sidebar .nav-link:hover {
-  transform: translateX(5px);
-}
+  .sidebar .nav-link:hover {
+    transform: translateX(5px);
+  }
 
-.transition-all {
-  transition: all 0.3s ease;
-}
+  .transition-all {
+    transition: all 0.3s ease;
+  }
 
-.card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+  .card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
 
-.card:hover {
-  transform: translateY(-2px);
-}
+  .card:hover {
+    transform: translateY(-2px);
+  }
 
 
 
-/* Asegurar que los textos sean legibles en ambos temas */
-.text-body {
-  color: var(--bs-body-color) !important;
-}
+  /* Asegurar que los textos sean legibles en ambos temas */
+  .text-body {
+    color: var(--bs-body-color) !important;
+  }
 
-.bg-body {
-  background-color: var(--bs-body-bg) !important;
-}
+  .bg-body {
+    background-color: var(--bs-body-bg) !important;
+  }
 
-.bg-body-secondary {
-  background-color: var(--bs-secondary-bg) !important;
-}
+  .bg-body-secondary {
+    background-color: var(--bs-secondary-bg) !important;
+  }
 </style>
 
 <?php

@@ -7,6 +7,8 @@ if (!isset($_SESSION['user'])) {
 $uri = $_GET['url'] ?? 'product_detail';
 $segment = explode('/', trim($uri, '/'))[0];
 
+$currentPage = basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '.php');
+
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
   header("Location: " . BASE_URL . "product_not_found");
   exit();
@@ -15,6 +17,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $product_id = (int) $_GET['id'];
 
 ob_start();
+
 
 require_once __DIR__ . '/../../models/Database.php';
 
@@ -66,6 +69,7 @@ try {
 
 $username = htmlspecialchars($_SESSION['user']['username']);
 
+$activeMenu = 'list_product'; // o 'list_product' si prefieres
 // Incluir menú lateral de productos/inventario
 require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 ?>
@@ -73,7 +77,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 <div class="container-fluid m-0 p-0 min-vh-100" data-bs-theme="auto">
   <div class="row g-0">
 
-    <!-- Barra lateral con gradiente moderno -->
+    <!-- Barra lateral -->
     <nav class="col-md-2 d-none d-md-block sidebar min-vh-100">
       <div class="pt-4 px-3">
         <div class="text-center mb-4">
@@ -86,7 +90,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
         <ul class="nav flex-column">
           <?php foreach ($menuItems as $route => $item): ?>
             <li class="nav-item mb-2">
-              <a class="nav-link d-flex align-items-center px-3 py-2 rounded-3 transition-all <?= $segment === $route ? 'active  bg-opacity-20' : 'hover-bg-white-10' ?>"
+              <a class="nav-link d-flex align-items-center px-3 py-2 rounded-3 <?= isset($activeMenu) && $activeMenu === $route ? 'bg-primary text-white fw-bold' : 'text-body' ?>"
                 href="<?= BASE_URL . $route ?>" style="transition: all 0.3s ease;">
                 <i class="bi bi-<?= $item['icon'] ?> me-3 fs-5"></i>
                 <span class="fw-medium"><?= $item['label'] ?></span>
@@ -94,6 +98,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
             </li>
           <?php endforeach; ?>
         </ul>
+
       </div>
     </nav>
 
@@ -455,8 +460,6 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
   .card:hover {
     transform: translateY(-2px);
   }
-
-
 
   /* Asegurar que los textos sean legibles en ambos temas */
   .text-body {

@@ -3,11 +3,11 @@
 
 // Verificación de sesión
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+  session_start();
 }
 if (!isset($_SESSION['user'])) {
-    header("Location: " . BASE_URL . "auth/login/");
-    exit();
+  header("Location: " . BASE_URL . "auth/login/");
+  exit();
 }
 
 // Obtener segmento de URL para destacar menú activo
@@ -32,9 +32,9 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 
 <div class="container-fluid m-0 p-0 min-vh-100" data-bs-theme="auto">
   <div class="row g-0">
-    
-  <!-- Barra lateral con gradiente moderno -->
-    <nav class="col-md-2 d-none d-md-block sidebar min-vh-100" >
+
+    <!-- Barra lateral con gradiente moderno -->
+    <nav class="col-md-2 d-none d-md-block sidebar min-vh-100">
       <div class="pt-4 px-3">
         <div class="text-center mb-4">
           <div class=" rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
@@ -42,14 +42,12 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
           </div>
           <h6 class=" mt-2 mb-0">Inventario</h6>
         </div>
-        
+
         <ul class="nav flex-column">
           <?php foreach ($menuItems as $route => $item): ?>
             <li class="nav-item mb-2">
-              <a class="nav-link d-flex align-items-center px-3 py-2 rounded-3 
-   <?= $segment === $route ? 'bg-primary text-white fw-bold' : 'text-body' ?>"
-
-                href="<?= BASE_URL . $route ?>" style="transition: all 0.3s ease;">
+              <a class="nav-link d-flex align-items-center px-3 py-2 rounded-3 <?= $segment === $route ? 'bg-primary text-white fw-bold' : 'text-body' ?>"
+              href="<?= BASE_URL . $route ?>" style="transition: all 0.3s ease;">
                 <i class="bi bi-<?= $item['icon'] ?> me-3 fs-5"></i>
                 <span class="fw-medium"><?= $item['label'] ?></span>
               </a>
@@ -61,7 +59,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 
     <!-- Contenido principal -->
     <main class="col-12 col-md-10">
-      
+
       <!-- Header con breadcrumb moderno -->
       <div class="bg-body shadow-sm border-bottom">
         <div class="container-fluid px-4 py-3">
@@ -76,7 +74,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
               <h4 class="mb-0 fw-bold">Gestión de Inventario</h4>
               <small class="text-muted">Bienvenido, <?= $username ?></small>
             </div>
-            
+
             <!-- Menú móvil mejorado -->
             <div class="d-md-none">
               <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
@@ -130,9 +128,9 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
           </div>
         </div>
       <?php else: ?>
-        
+
         <div class="container-fluid px-4 py-4">
-          
+
           <!-- Panel de estadísticas rápidas -->
           <div class="row g-3 mb-4">
             <div class="col-md-3">
@@ -190,14 +188,14 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
             </div>
 
             <div class="card-body p-4">
-              
+
               <!-- Barra de herramientas -->
               <div class="row g-3 mb-4">
                 <div class="col-md-6">
                   <div class="position-relative">
                     <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                    <input type="text" id="table-search" class="form-control form-control-lg ps-5 rounded-pill border-2" 
-                           placeholder="Buscar productos por código, nombre o categoría...">
+                    <input type="text" id="table-search" class="form-control form-control-lg ps-5 rounded-pill border-2"
+                      placeholder="Buscar productos por código, nombre o categoría...">
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -207,7 +205,9 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
                         <i class="bi bi-download me-2"></i>Exportar
                       </button>
                       <ul class="dropdown-menu shadow-lg border-0 rounded-3">
-                        <li><h6 class="dropdown-header fw-bold">Formatos disponibles</h6></li>
+                        <li>
+                          <h6 class="dropdown-header fw-bold">Formatos disponibles</h6>
+                        </li>
                         <li>
                           <button id="exportCSVBtn" class="dropdown-item d-flex align-items-center">
                             <i class="bi bi-filetype-csv text-success me-2"></i>Exportar a CSV
@@ -230,7 +230,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
                         </li>
                       </ul>
                     </div>
-                    
+
                     <button class="btn btn-outline-secondary rounded-pill px-4" id="refreshTable">
                       <i class="bi bi-arrow-clockwise me-2"></i>Actualizar
                     </button>
@@ -313,9 +313,9 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 
         <!-- Incluir modales -->
         <?php
-          include __DIR__ . '/../partials/modals/modal_add_product.php';
-          include __DIR__ . '/../partials/modals/modal_edit_product.php';
-          include __DIR__ . '/../partials/modals/modal_delete_product.php';
+        include __DIR__ . '/../partials/modals/modal_add_product.php';
+        include __DIR__ . '/../partials/modals/modal_edit_product.php';
+        include __DIR__ . '/../partials/modals/modal_delete_product.php';
         ?>
       <?php endif; ?>
     </main>
@@ -323,86 +323,87 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 </div>
 
 <style>
-.sidebar .nav-link:hover {
-  transform: translateX(5px);
-}
-
-.transition-all {
-  transition: all 0.3s ease;
-}
-
-.card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-2px);
-}
-
-/* Estilos para tabla Tabulator */
-.tabulator {
-  border: none !important;
-  background: transparent !important;
-}
-
-.tabulator-header {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
-  border: none !important;
-}
-
-.tabulator-row:hover {
-  background-color: rgba(13, 110, 253, 0.1) !important;
-}
-
-.tabulator-selected {
-  background-color: rgba(13, 110, 253, 0.2) !important;
-}
-
-
-/* Asegurar que los textos sean legibles en ambos temas */
-.text-body {
-  color: var(--bs-body-color) !important;
-}
-
-.bg-body {
-  background-color: var(--bs-body-bg) !important;
-}
-
-.bg-body-secondary {
-  background-color: var(--bs-secondary-bg) !important;
-}
-
-/* Animaciones sutiles */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+  .sidebar .nav-link:hover {
+    transform: translateX(5px);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .transition-all {
+    transition: all 0.3s ease;
   }
-}
 
-.card {
-  animation: fadeInUp 0.5s ease-out;
-}
+  .card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
 
-/* Botones con efectos */
-.btn {
-  transition: all 0.3s ease;
-}
+  .card:hover {
+    transform: translateY(-2px);
+  }
 
-.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
+  /* Estilos para tabla Tabulator */
+  .tabulator {
+    border: none !important;
+    background: transparent !important;
+  }
 
-/* Efectos para inputs */
-.form-control:focus {
-  transform: scale(1.02);
-  transition: transform 0.2s ease;
-}
+  .tabulator-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+    border: none !important;
+  }
+
+  .tabulator-row:hover {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+  }
+
+  .tabulator-selected {
+    background-color: rgba(13, 110, 253, 0.2) !important;
+  }
+
+
+  /* Asegurar que los textos sean legibles en ambos temas */
+  .text-body {
+    color: var(--bs-body-color) !important;
+  }
+
+  .bg-body {
+    background-color: var(--bs-body-bg) !important;
+  }
+
+  .bg-body-secondary {
+    background-color: var(--bs-secondary-bg) !important;
+  }
+
+  /* Animaciones sutiles */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .card {
+    animation: fadeInUp 0.5s ease-out;
+  }
+
+  /* Botones con efectos */
+  .btn {
+    transition: all 0.3s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Efectos para inputs */
+  .form-control:focus {
+    transform: scale(1.02);
+    transition: transform 0.2s ease;
+  }
 </style>
 
 <?php
@@ -414,17 +415,17 @@ include __DIR__ . '/../partials/layouts/navbar.php';
 <script src="<?php echo BASE_URL; ?>assets/js/ajax/products-table.js"></script>
 
 <script>
-// Script para actualizar estadísticas (opcional)
-document.addEventListener('DOMContentLoaded', function() {
+  // Script para actualizar estadísticas (opcional)
+  document.addEventListener('DOMContentLoaded', function() {
     // Aquí puedes añadir código para cargar las estadísticas
     // Por ejemplo, una llamada AJAX para obtener los totales
-    
+
     // Simulación de carga de estadísticas
     setTimeout(() => {
-        document.getElementById('totalProducts').textContent = '0';
-        document.getElementById('inStock').textContent = '0';
-        document.getElementById('lowStock').textContent = '0';
-        document.getElementById('totalValue').textContent = '$0.00';
+      document.getElementById('totalProducts').textContent = '0';
+      document.getElementById('inStock').textContent = '0';
+      document.getElementById('lowStock').textContent = '0';
+      document.getElementById('totalValue').textContent = '$0.00';
     }, 500);
-});
+  });
 </script>

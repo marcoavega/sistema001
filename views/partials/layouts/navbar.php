@@ -85,7 +85,6 @@ $segment = explode('/', trim($uri, '/'))[0];
 .btn-theme-toggle {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    
     border-radius: 50%;
     width: 45px;
     height: 45px;
@@ -98,8 +97,15 @@ $segment = explode('/', trim($uri, '/'))[0];
 .btn-theme-toggle:hover {
     background: rgba(0, 0, 0, 0.2);
     transform: rotate(180deg) scale(1.1);
-  
     border-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
 }
 
 .btn-options {
@@ -270,14 +276,7 @@ $segment = explode('/', trim($uri, '/'))[0];
             <!-- Controles del lado derecho -->
             <div class="d-flex align-items-center gap-2">
 
-                <!-- Notificaciones -->
-                <div class="position-relative">
-                    <button class="btn btn-theme-toggle" title="Notificaciones">
-                        <i class="bi bi-bell-fill"></i>
-                        <span class="notification-badge">5</span>
-                    </button>
-                </div>
-
+            
                 <!-- Toggle de tema -->
                 <button class="btn btn-theme-toggle" id="themeToggleBtn" title="Cambiar tema">
                     <i class="bi bi-sun-fill" id="iconLight"></i>

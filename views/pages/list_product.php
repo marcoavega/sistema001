@@ -173,7 +173,7 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
 
           <!-- Panel de control principal -->
           <div class="card shadow-lg border-0 rounded-4">
-            <div class="card-header bg-gradient p-4">
+            <div class="card-header p-4">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
                   <h3 class="mb-1 fw-bold">Listado de Productos</h3>

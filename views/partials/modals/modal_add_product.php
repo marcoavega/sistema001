@@ -16,7 +16,7 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content border-0 shadow-lg">
       <!-- Header con gradiente -->
-      <div class="modal-header bg-gradient text-white position-relative overflow-hidden" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+      <div class="modal-header bg-gradient position-relative overflow-hidden">
         <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10">
           <div class="d-flex align-items-center justify-content-center h-100">
             <i class="fas fa-cube" style="font-size: 120px;"></i>
@@ -29,7 +29,7 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
           </h4>
           <small class="opacity-75">Complete la información del producto</small>
         </div>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
 
       <div class="modal-body p-4">
@@ -37,8 +37,8 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
           
           <!-- Información Básica -->
           <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-light border-0 py-3">
-              <h6 class="card-title mb-0 text-primary">
+            <div class="card-header border-0 py-3">
+              <h6 class="card-title mb-0">
                 <i class="fas fa-info-circle me-2"></i>
                 Información Básica
               </h6>
@@ -51,10 +51,9 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
                     Código de Producto
                   </label>
                   <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0">
                       <i class="fas fa-hashtag text-muted"></i>
                     </span>
-                    <input type="text" class="form-control border-start-0 ps-0" id="new-product-code" name="product_code" required placeholder="Ej. PROD001">
+                    <input type="text" class="form-control ps-0" id="new-product-code" name="product_code" required placeholder=" Ej. PROD001">
                   </div>
                 </div>
                 
@@ -64,10 +63,9 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
                     Código de Barras
                   </label>
                   <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0">
                       <i class="fas fa-barcode text-muted"></i>
                     </span>
-                    <input type="text" class="form-control border-start-0 ps-0" id="new-barcode" placeholder="7501234567890">
+                    <input type="text" class="form-control ps-0" id="new-barcode" placeholder=" 7501234567890">
                   </div>
                 </div>
                 
@@ -92,8 +90,8 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
 
           <!-- Clasificación -->
           <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-light border-0 py-3">
-              <h6 class="card-title mb-0 text-success">
+            <div class="card-header border-0 py-3">
+              <h6 class="card-title mb-0">
                 <i class="fas fa-sitemap me-2"></i>
                 Clasificación
               </h6>
@@ -135,8 +133,8 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
 
           <!-- Inventario y Precios -->
           <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-light border-0 py-3">
-              <h6 class="card-title mb-0 text-warning">
+            <div class="card-header border-0 py-3">
+              <h6 class="card-title mb-0">
                 <i class="fas fa-calculator me-2"></i>
                 Inventario y Precios
               </h6>
@@ -149,7 +147,7 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
                     Precio
                   </label>
                   <div class="input-group input-group-lg">
-                    <span class="input-group-text bg-success text-white">$</span>
+                    <span class="input-group-text text-white">$</span>
                     <input type="number" step="0.01" class="form-control" id="new-price" name="price" required placeholder="0.00">
                   </div>
                 </div>
@@ -160,7 +158,7 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
                     Stock Actual
                   </label>
                   <div class="input-group input-group-lg">
-                    <span class="input-group-text bg-info text-white">
+                    <span class="input-group-text  text-white">
                       <i class="fas fa-cubes"></i>
                     </span>
                     <input type="number" class="form-control" id="new-stock" name="stock" required placeholder="0">
@@ -173,7 +171,7 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
                     Stock Deseado
                   </label>
                   <div class="input-group input-group-lg">
-                    <span class="input-group-text bg-warning text-dark">
+                    <span class="input-group-text text-dark">
                       <i class="fas fa-target"></i>
                     </span>
                     <input type="number" class="form-control" id="new-desired-stock" name="desired_stock" placeholder="0">
@@ -215,8 +213,8 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
 
           <!-- Información Adicional -->
           <div class="card border-0 shadow-sm">
-            <div class="card-header bg-light border-0 py-3">
-              <h6 class="card-title mb-0 text-info">
+            <div class="card-header border-0 py-3">
+              <h6 class="card-title mb-0">
                 <i class="fas fa-cogs me-2"></i>
                 Información Adicional
               </h6>
@@ -244,7 +242,6 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
                     Ubicación
                   </label>
                   <div class="input-group input-group-lg">
-                    <span class="input-group-text bg-light">
                       <i class="fas fa-warehouse text-muted"></i>
                     </span>
                     <input type="text" class="form-control" id="new-location" name="location" placeholder="Ej. Estante A-1">
@@ -269,7 +266,7 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
                   </label>
                   <div class="input-group">
                     <input type="file" class="form-control form-control-lg" id="new-image" name="image_file" accept="image/*">
-                    <label class="input-group-text bg-primary text-white" for="new-image">
+                    <label class="input-group-text text-white" for="new-image">
                       <i class="fas fa-upload"></i>
                     </label>
                   </div>
@@ -286,7 +283,7 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
       </div>
 
       <!-- Footer con botones mejorados -->
-      <div class="modal-footer border-0 bg-light p-4">
+      <div class="modal-footer border-0 p-4">
         <div class="d-flex gap-2 w-100 justify-content-end">
           <button type="button" class="btn btn-outline-secondary btn-lg px-4" data-bs-dismiss="modal">
             <i class="fas fa-times me-2"></i>
@@ -304,9 +301,11 @@ $subcategories = $pdo->query("SELECT subcategory_id, subcategory_name FROM subca
 </div>
 
 <style>
+  /*
 .bg-gradient {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
 }
+*/
 
 .form-control:focus, .form-select:focus {
   border-color: #667eea;

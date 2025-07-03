@@ -404,6 +404,171 @@ require_once __DIR__ . '/../partials/layouts/lateral_menu_products.php';
     transform: scale(1.02);
     transition: transform 0.2s ease;
   }
+
+
+
+
+
+/* Estilos modernos para Tabulator - Responsive */
+
+/* Contenedor principal de la tabla */
+#products-table {
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+/* Header de la tabla */
+.tabulator .tabulator-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 600;
+}
+
+.tabulator .tabulator-header .tabulator-col {
+  border-right: 1px solid #dee2e6;
+  padding: 12px 8px;
+}
+
+.tabulator .tabulator-header .tabulator-col-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+/* Filas de la tabla */
+.tabulator .tabulator-tableHolder .tabulator-table .tabulator-row {
+  border-bottom: 1px solid #f1f3f4;
+  transition: all 0.2s ease;
+}
+
+.tabulator .tabulator-tableHolder .tabulator-table .tabulator-row:hover {
+  background-color: #f8f9fa !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.tabulator .tabulator-tableHolder .tabulator-table .tabulator-row .tabulator-cell {
+  padding: 12px 8px;
+  border-right: 1px solid #f1f3f4;
+  vertical-align: middle;
+}
+
+/* Botones de acción mejorados */
+.btn-group-sm .btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 6px;
+  margin: 0 2px;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(13, 110, 253, 0.25);
+}
+
+.btn-outline-danger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.25);
+}
+
+/* Paginación moderna */
+.tabulator .tabulator-footer {
+  background: #f8f9fa;
+  border-top: 2px solid #dee2e6;
+  padding: 15px;
+}
+
+.tabulator .tabulator-footer .tabulator-paginator {
+  color: #495057;
+  font-weight: 500;
+}
+
+.tabulator .tabulator-footer .tabulator-pages {
+  margin: 0 15px;
+}
+
+.tabulator .tabulator-footer .tabulator-page {
+  background: transparent;
+  border: 1px solid #dee2e6;
+  color: #495057;
+  margin: 0 2px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.tabulator .tabulator-footer .tabulator-page:hover {
+  background: #e9ecef;
+  transform: translateY(-1px);
+}
+
+.tabulator .tabulator-footer .tabulator-page.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+/* Selector de tamaño de página */
+.tabulator .tabulator-footer .tabulator-page-size {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-weight: 500;
+  color: #495057;
+}
+
+/* Loading placeholder mejorado */
+.tabulator .tabulator-placeholder {
+  color: #6c757d;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 40px;
+  background: #f8f9fa;
+}
+
+/* Responsive collapse mejorado */
+.tabulator .tabulator-responsive-collapse {
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  padding: 10px 15px;
+}
+
+.tabulator .tabulator-responsive-collapse-toggle {
+  background: #007bff;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  border: none;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.tabulator .tabulator-responsive-collapse-toggle:hover {
+  background: #0056b3;
+  transform: scale(1.1);
+}
+
+/* Badges y elementos mejorados */
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+}
+
+/* Links hover effect */
+.hover-primary:hover {
+  color: #007bff !important;
+  text-decoration: underline !important;
+}
+
+
 </style>
 
 <?php

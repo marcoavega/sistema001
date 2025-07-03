@@ -14,10 +14,6 @@ $segment = explode('/', trim($uri, '/'))[0];
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-.navbar-brand-modern {
-    
-}
-
 .navbar-brand-modern:hover {
     transform: scale(1.05);
     filter: brightness(1.2);
@@ -171,21 +167,6 @@ $segment = explode('/', trim($uri, '/'))[0];
     box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
 }
 
-.notification-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: #ff4757;
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 0.7rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: pulse 2s infinite;
-}
 
 @keyframes pulse {
     0% { transform: scale(1); }
@@ -242,7 +223,6 @@ $segment = explode('/', trim($uri, '/'))[0];
                         href="<?= BASE_URL ?>admin_users">
                         <i class="bi bi-people-fill nav-icon"></i>
                         <span class="small">Usuarios</span>
-                        <span class="notification-badge">3</span>
                     </a>
                 </li>
 
@@ -251,22 +231,6 @@ $segment = explode('/', trim($uri, '/'))[0];
                         href="<?= BASE_URL ?>inventory">
                         <i class="bi bi-box-seam nav-icon"></i>
                         <span class="small">Inventario</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link nav-link-modern d-flex flex-column align-items-center <?= $segment === 'reports' ? 'active' : '' ?>"
-                        href="<?= BASE_URL ?>reports">
-                        <i class="bi bi-graph-up nav-icon"></i>
-                        <span class="small">Reportes</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link nav-link-modern d-flex flex-column align-items-center <?= $segment === 'settings' ? 'active' : '' ?>"
-                        href="<?= BASE_URL ?>settings">
-                        <i class="bi bi-gear-fill nav-icon"></i>
-                        <span class="small">Ajustes</span>
                     </a>
                 </li>
 

@@ -36,141 +36,438 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Contenedor de la tabla
-  var productsTableElement = document.getElementById("products-table");
-  if (!productsTableElement) return;
+ var productsTableElement = document.getElementById("products-table");
+if (!productsTableElement) return;
 
-  var deleteProductID = null;
+var deleteProductID = null;
 
-  console.log("Inicializando Tabulator con paginación remota...");
-  var table = new Tabulator("#products-table", {
-    layout: "fitColumns",
-    responsiveLayout: "collapse",
-    placeholder: "Cargando productos...",
-    pagination: "remote",            // paginación remota
-    paginationSize: 20,              // filas por página inicial
-    paginationSizeSelector: [10, 20, 30, 50, 100, 200, 500, 1000, 2000, 3000, 4000, 5000, 10000], // opciones de tamaño de página
-    ajaxURL: BASE_URL + "api/products.php?action=list", // endpoint paginado
-    ajaxConfig: "GET",
-    ajaxParams: {},                  // filtros iniciales, si los hubiera
-    paginationDataSent: {
-      "page": "page",    // Tabulator enviará ?page=... 
-      "size": "size",    // ?size=...
-      // Si tu API necesitara otros nombres, cámbialos aquí.
+console.log("Inicializando Tabulator con paginación remota...");
+var table = new Tabulator("#products-table", {
+  layout: "fitColumns", // CAMBIADO: de fitDataFill a fitColumns para evitar columna vacía
+  placeholder: "Cargando productos...",
+  
+  // Configuración moderna de paginación
+  pagination: "remote",
+  paginationSize: 20,
+  paginationSizeSelector: [10, 20, 30, 50, 100, 200, 500, 1000, 2000, 3000, 4000, 5000, 10000],
+  paginationButtonCount: 7,
+  
+  // Configuración AJAX
+  ajaxURL: BASE_URL + "api/products.php?action=list",
+  ajaxConfig: "GET",
+  ajaxParams: {},
+  paginationDataSent: {
+    "page": "page",
+    "size": "size",
+  },
+  
+  // Indicador de carga moderno
+  ajaxRequesting: function (url, params) {
+    console.log("Tabulator request:", url, params);
+    document.querySelector("#products-table").style.opacity = "0.7";
+  },
+  
+  ajaxResponse: function (url, params, response) {
+    document.querySelector("#products-table").style.opacity = "1";
+    
+    if (response && Array.isArray(response.data)) {
+      return response.data;
+    } else {
+      console.warn("Respuesta inesperada para ajaxResponse:", response);
+      return [];
+    }
+  },
+  
+  paginationDataReceived: {
+    "last_page": "last_page",
+    "data": "data"
+  },
+  
+  // Configuración de columnas - TODAS VISIBLES CON ESPACIOS OPTIMIZADOS
+  columns: [
+    { 
+      title: "ID", 
+      field: "product_id", 
+      width: 90, // AMPLIADO
+      minWidth: 70,
+      sorter: "number", 
+      hozAlign: "center"
     },
-    ajaxRequesting: function (url, params) {
-      console.log("Tabulator request:", url, params);
-      // params.page, params.size, etc.
+    { 
+      title: "Código", 
+      field: "product_code",
+      width: 120, // AMPLIADO
+      minWidth: 120
     },
-    // Extraer el array de filas para Tabulator
-    ajaxResponse: function (url, params, response) {
-      // response es el objeto devuelto: { last_page: X, data: [...] }
-      // Retornamos el array de filas para Tabulator
-      if (response && Array.isArray(response.data)) {
-        return response.data;
-      } else {
-        console.warn("Respuesta inesperada para ajaxResponse:", response);
-        return [];
+    { 
+      title: "Código Barras", 
+      field: "barcode",
+      width: 160, // AMPLIADO
+      minWidth: 140
+    },
+    {
+      title: "Name",
+      field: "product_name",
+      width: 280, // AMPLIADO CONSIDERABLEMENTE
+      minWidth: 200,
+      formatter: function (cell) {
+        const data = cell.getData();
+        const productId = data.product_id;
+        const name = cell.getValue();
+        const link = BASE_URL + "product_detail?id=" + encodeURIComponent(productId);
+        return `<a href="${link}" class="text-decoration-none fw-semibold">${name}</a>`;
       }
     },
-    // Mapear los campos de la respuesta para que Tabulator sepa total de páginas y datos
-    paginationDataReceived: {
-      "last_page": "last_page",   // nombre de campo con número de páginas totales
-      "data": "data"              // campo con el array de filas
-      // Si tu endpoint devolviera "total" o "lastPage", cámbialo aquí.
+    { 
+      title: "Ubicación", 
+      field: "location",
+      width: 160, // AMPLIADO
+      minWidth: 120,
+      headerSort: true,
+      formatter: function(cell) {
+        const value = cell.getValue();
+        if (!value) return '<span class="text-muted">Sin ubicación</span>';
+        return `<span class="badge bg-light text-dark border">${value}</span>`;
+      }
     },
-    columns: [
-      { title: "ID", field: "product_id", width: 70, sorter: "number", hozAlign: "center" },
-      { title: "Código", field: "product_code" },
-      { title: "Código Barras", field: "barcode" },
-      {
-        title: "Name",
-        field: "product_name",
-        formatter: function (cell) {
-          const data = cell.getData();
-          const productId = data.product_id;
-          const name = cell.getValue();
-          const link = BASE_URL + "product_detail?id=" + encodeURIComponent(productId);
-          return `<a href="${link}" class="text-decoration-none fw-semibold">${name}</a>`;
+    {
+      title: "Precio",
+      field: "price",
+      width: 130, // AMPLIADO
+      minWidth: 110,
+      hozAlign: "right",
+      headerSort: true,
+      formatter: function(cell) {
+        const value = cell.getValue();
+        if (value == null || value === '') return '<span class="text-muted">N/A</span>';
+        return `<span class="fw-bold text-success">${parseFloat(value).toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>`;
+      }
+    },
+    { 
+      title: "Stock", 
+      field: "stock",
+      width: 100, // AMPLIADO
+      minWidth: 80,
+      sorter: "number", 
+      hozAlign: "center",
+      headerSort: true,
+      formatter: function(cell) {
+        const value = cell.getValue();
+        const numValue = parseInt(value);
+        let badgeClass = "bg-success";
+        if (numValue === 0) badgeClass = "bg-danger";
+        else if (numValue < 10) badgeClass = "bg-warning text-dark";
+        else if (numValue < 50) badgeClass = "bg-info";
+        
+        return `<span class="badge ${badgeClass}">${numValue}</span>`;
+      }
+    },
+    {
+      title: "Fecha",
+      field: "registration_date",
+      width: 140, // AMPLIADO
+      minWidth: 120,
+      headerSort: true,
+      formatter: function (cell) {
+        var value = cell.getValue();
+        if (!value) return '<span class="text-muted">N/A</span>';
+        var date = new Date(value);
+        if (isNaN(date.getTime())) return '<span class="text-muted">Fecha inválida</span>';
+        
+        var day = String(date.getDate()).padStart(2, "0");
+        var month = String(date.getMonth() + 1).padStart(2, "0");
+        var year = date.getFullYear();
+        return `<small class="text-muted">${day}/${month}/${year}</small>`;
+      },
+      cssClass: "small"
+    },
+    {
+      title: "Imagen",
+      field: "image_url",
+      width: 110, // AMPLIADO
+      minWidth: 90,
+      formatter: function (cell) {
+        var row = cell.getData();
+        if (!row.image_url) {
+          return '<div class="d-flex justify-content-center"><i class="fas fa-image text-muted" style="font-size: 24px;"></i></div>';
+        }
+        var version = row.image_version || Date.now();
+        var src = BASE_URL + row.image_url + "?v=" + version;
+        return `<div class="d-flex justify-content-center">
+                  <img src="${src}" 
+                       style="max-height:40px; max-width:40px; border-radius: 6px; object-fit: cover;" 
+                       alt="Imagen" 
+                       loading="lazy" 
+                       class="border shadow-sm" />
+                </div>`;
+      },
+      hozAlign: "center",
+      headerSort: false
+    },
+    {
+      title: "Acciones",
+      hozAlign: "center",
+      width: 180, // AMPLIADO CONSIDERABLEMENTE
+      minWidth: 150,
+      headerSort: false,
+      formatter: function () {
+        // Detectar móvil dinámicamente
+        const isMobile = window.innerWidth < 768;
+        if (isMobile) {
+          return `
+            <div class="btn-group-vertical btn-group-sm d-grid gap-1" role="group">
+              <button class="btn btn-outline-primary btn-sm edit-btn" title="Editar">
+                Editar
+              </button>
+              <button class="btn btn-outline-danger btn-sm delete-btn" title="Borrar">
+                Borrar
+              </button>
+            </div>
+          `;
+        } else {
+          return `
+            <div class="btn-group btn-group-sm" role="group">
+              <button class="btn btn-outline-primary edit-btn" title="Editar producto">
+                <i class="fas fa-edit"></i> Editar
+              </button>
+              <button class="btn btn-outline-danger delete-btn" title="Eliminar producto">
+                <i class="fas fa-trash"></i> Borrar
+              </button>
+            </div>
+          `;
         }
       },
-      { title: "Ubicación", field: "location" },
-      {
-        title: "Precio", field: "price", hozAlign: "right",
-        formatter: "money",
-        formatterParams: { symbol: "", precision: 2 },
-      },
-      { title: "Stock", field: "stock", sorter: "number", hozAlign: "center" },
-      {
-        title: "Registrado", field: "registration_date",
-        formatter: function (cell) {
-          var value = cell.getValue();
-          var date = new Date(value);
-          if (isNaN(date.getTime())) return "";
-          var day = String(date.getDate()).padStart(2, "0");
-          var month = String(date.getMonth() + 1).padStart(2, "0");
-          var year = date.getFullYear();
-          return day + "/" + month + "/" + year;
-        },
-      },
-      {
-        title: "Imagen", field: "image_url",
-        formatter: function (cell) {
-          var row = cell.getData();
-          if (!row.image_url) return "";
-          var version = row.image_version || Date.now();
-          var src = BASE_URL + row.image_url + "?v=" + version;
-          return "<img src='" + src + "' style='max-height:50px; max-width:50px;' alt='Imagen' loading='lazy' />";
-        },
-        hozAlign: "center",
-        width: 80,
-      },
-      {
-        title: "Acciones",
-        hozAlign: "center",
-        responsive: false,
-        formatter: function () {
-          return (
-            "<div class='btn-group'>" +
-            "<button class='btn btn-sm btn-info edit-btn me-1'>Editar</button>" +
-            "<button class='btn btn-sm btn-danger delete-btn'>Eliminar</button>" +
-            "</div>"
-          );
-        },
-        cellClick: function (e, cell) {
-          var rowData = cell.getRow().getData();
-          // EDITAR
-          if (e.target.classList.contains("edit-btn")) {
-            // Rellenar form de edición con rowData...
-            document.getElementById("edit-product-id").value = rowData.product_id;
-            document.getElementById("edit-product-code").value = rowData.product_code || "";
-            document.getElementById("edit-barcode").value = rowData.barcode || "";
-            document.getElementById("edit-product-name").value = rowData.product_name || "";
-            document.getElementById("edit-product-description").value = rowData.product_description || "";
-            document.getElementById("edit-location").value = rowData.location || "";
-            document.getElementById("edit-price").value = rowData.price ?? "";
-            document.getElementById("edit-stock").value = rowData.stock ?? "";
-            document.getElementById("edit-category").value = rowData.category_id ?? "";
-            document.getElementById("edit-supplier").value = rowData.supplier_id ?? "";
-            document.getElementById("edit-unit").value = rowData.unit_id ?? "";
-            document.getElementById("edit-currency").value = rowData.currency_id ?? "";
-            document.getElementById("edit-subcategory").value = rowData.subcategory_id ?? "";
-            document.getElementById("edit-desired-stock").value = rowData.desired_stock ?? "";
-            document.getElementById("edit-status").value = rowData.status != null ? rowData.status : "1";
+      cellClick: function (e, cell) {
+        var rowData = cell.getRow().getData();
+        
+        // EDITAR
+        if (e.target.classList.contains("edit-btn") || e.target.closest('.edit-btn')) {
+          document.getElementById("edit-product-id").value = rowData.product_id;
+          document.getElementById("edit-product-code").value = rowData.product_code || "";
+          document.getElementById("edit-barcode").value = rowData.barcode || "";
+          document.getElementById("edit-product-name").value = rowData.product_name || "";
+          document.getElementById("edit-product-description").value = rowData.product_description || "";
+          document.getElementById("edit-location").value = rowData.location || "";
+          document.getElementById("edit-price").value = rowData.price ?? "";
+          document.getElementById("edit-stock").value = rowData.stock ?? "";
+          document.getElementById("edit-category").value = rowData.category_id ?? "";
+          document.getElementById("edit-supplier").value = rowData.supplier_id ?? "";
+          document.getElementById("edit-unit").value = rowData.unit_id ?? "";
+          document.getElementById("edit-currency").value = rowData.currency_id ?? "";
+          document.getElementById("edit-subcategory").value = rowData.subcategory_id ?? "";
+          document.getElementById("edit-desired-stock").value = rowData.desired_stock ?? "";
+          document.getElementById("edit-status").value = rowData.status != null ? rowData.status : "1";
 
-            // Mostrar modal edición
-            var editModalEl = document.getElementById("editProductModal");
-            if (editModalEl) new bootstrap.Modal(editModalEl).show();
-          }
-          // ELIMINAR
-          if (e.target.classList.contains("delete-btn")) {
-            deleteProductID = rowData.product_id;
-            var deleteModalEl = document.getElementById("deleteProductModal");
-            if (deleteModalEl) new bootstrap.Modal(deleteModalEl).show();
-          }
-        },
-      },
-    ],
-  });
+          var editModalEl = document.getElementById("editProductModal");
+          if (editModalEl) new bootstrap.Modal(editModalEl).show();
+        }
+        
+        // ELIMINAR
+        if (e.target.classList.contains("delete-btn") || e.target.closest('.delete-btn')) {
+          deleteProductID = rowData.product_id;
+          var deleteModalEl = document.getElementById("deleteProductModal");
+          if (deleteModalEl) new bootstrap.Modal(deleteModalEl).show();
+        }
+      }
+    }
+  ],
+  
+  // Configuración adicional para mejorar la experiencia
+  headerSort: true,
+  headerSortTristate: true,
+  movableColumns: false,
+  resizableColumns: true,
+  tooltips: true,
+  
+  // Eventos adicionales para mejor UX
+  dataLoaded: function(data) {
+    console.log("Datos cargados:", data.length, "productos");
+  },
+  
+  renderComplete: function() {
+    this.element.style.transition = "opacity 0.3s ease";
+  },
+  
+  rowClick: function(e, row) {
+    // row.getElement().style.backgroundColor = "#f8f9fa";
+  }
+});
+
+// CSS mejorado para scroll horizontal funcional
+const style = document.createElement('style');
+style.textContent = `
+  /* Scroll horizontal para TODOS los tamaños */
+  .tabulator {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+  
+  /* Asegurar que la tabla ocupe todo el ancho disponible */
+  .tabulator-table {
+    min-width: 1450px; /* AUMENTADO: ancho mínimo para acomodar columnas más anchas */
+    touch-action: pan-x;
+    width: 100% !important;
+  }
+  
+  /* Mejorar scroll horizontal en móviles */
+  @media (max-width: 767px) {
+    .tabulator::-webkit-scrollbar {
+      height: 12px; /* Más alto para móviles */
+    }
+    
+    .tabulator::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 6px;
+    }
+    
+    .tabulator::-webkit-scrollbar-thumb {
+      background: #007bff;
+      border-radius: 6px;
+      border: 2px solid #f1f1f1;
+    }
+    
+    .tabulator::-webkit-scrollbar-thumb:hover {
+      background: #0056b3;
+    }
+    
+    /* Indicador visual de scroll */
+    .tabulator::after {
+      content: "← Desliza para ver más columnas →";
+      position: absolute;
+      bottom: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: #007bff;
+      font-weight: 500;
+      text-align: center;
+      pointer-events: none;
+    }
+    
+    /* Padding mejorado para móviles */
+    .tabulator-cell {
+      padding: 8px 6px !important;
+      font-size: 13px;
+    }
+    
+    .tabulator-col {
+      padding: 10px 6px !important;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    /* Botones más compactos en móviles */
+    .btn-group-vertical .btn {
+      font-size: 11px;
+      padding: 4px 8px;
+    }
+  }
+  
+  /* Scroll más sutil en desktop */
+  @media (min-width: 768px) {
+    .tabulator::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    .tabulator::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+    
+    .tabulator::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+    }
+    
+    .tabulator::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  }
+  
+  /* Estilos generales */
+  .tabulator {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+    margin-bottom: 30px; /* Espacio para el indicador de scroll */
+  }
+  
+  .tabulator-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 2px solid #dee2e6;
+  }
+  
+  .tabulator-row:hover {
+    background-color: #f8f9fa !important;
+  }
+  
+  /* Eliminar espacios vacíos innecesarios */
+  .tabulator-table {
+    border-spacing: 0;
+  }
+  
+  /* NUEVO: Prevenir columnas vacías adicionales */
+  .tabulator-col:empty {
+    display: none !important;
+  }
+  
+  .tabulator-cell:empty:not([data-field]) {
+    display: none !important;
+  }
+`;
+document.head.appendChild(style);
+
+// Redimensionar tabla al cambiar orientación
+window.addEventListener('resize', function() {
+  if (table) {
+    setTimeout(() => {
+      table.redraw(true);
+    }, 300);
+  }
+});
+
+// Indicador de scroll para móviles
+if (window.innerWidth < 768) {
+  setTimeout(() => {
+    const scrollHint = document.createElement('div');
+    scrollHint.innerHTML = '📱 Desliza horizontalmente para ver todas las columnas';
+    scrollHint.style.cssText = `
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #007bff;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 1000;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      animation: slideInOut 5s ease-in-out;
+    `;
+    
+    const hintStyle = document.createElement('style');
+    hintStyle.textContent = `
+      @keyframes slideInOut {
+        0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      }
+    `;
+    document.head.appendChild(hintStyle);
+    document.body.appendChild(scrollHint);
+    
+    setTimeout(() => {
+      scrollHint.remove();
+      hintStyle.remove();
+    }, 5000);
+  }, 1000);
+}
+
 
   // Búsqueda local en página actual
   var searchInput = document.getElementById("table-search");
